@@ -11,6 +11,8 @@ public enum PlayerCondition {
     MONARCHING,
     DASHING,
     TAKING_DAMAGE,
+    FALLING,
+
 
 
 }
