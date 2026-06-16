@@ -1,0 +1,26 @@
+animations/Effects/BlastSoul.png
+animations/Effects/CrystalLaser.png
+animations/Effects/Dash Effect.png
+animations/Effects/DownSlashEffect.png
+animations/Effects/LaserCircle.png
+animations/Effects/ShadowScream.png
+animations/Effects/SlashEffect.png
+animations/Effects/SlashEffectAlt.png
+animations/Effects/SoulScream.png
+animations/Effects/UpSlashEffect.png
+animations/Knight/Airborne.png
+animations/Knight/Dash.png
+animations/Knight/Death.png
+animations/Knight/Double Jump.png
+animations/Knight/DownSlash.png
+animations/Knight/Fireball Cast.png
+animations/Knight/Focus End.png
+animations/Knight/Focus Get.png
+animations/Knight/Focus.png
+animations/Knight/Idle Hurt.png
+animations/Knight/Idle.png
+animations/Knight/Landing.png
+animations/Knight/Run.png
+animations/Knight/Wall Slide.png
+animations/Knight/Walljump.png
+libgdx.png
