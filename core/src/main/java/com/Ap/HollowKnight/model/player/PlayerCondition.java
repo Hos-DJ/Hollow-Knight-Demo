@@ -12,6 +12,9 @@ public enum PlayerCondition {
     DASHING,
     TAKING_DAMAGE,
     FALLING,
+    LOOKING_DOWN,
+    LOOKING_UP,
+    VENGEFUL_SPIRIT,
 
 
 

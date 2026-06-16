@@ -17,9 +17,6 @@ public class AssetLoader {
         this.internalManager = new AssetManager();
         this.animationMap = new HashMap<>();
         for (AnimationType type : AnimationType.values()) {
-            loadAnimation(type);
-        }
-        for (AnimationType type : AnimationType.values()) {
             internalManager.load(type.getPath(), Texture.class);
         }
 

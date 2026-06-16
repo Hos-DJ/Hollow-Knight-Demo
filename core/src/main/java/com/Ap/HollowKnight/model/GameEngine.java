@@ -1,4 +1,4 @@
 package com.Ap.HollowKnight.model;
 
-public class GameModel{
+public class GameEngine {
 }

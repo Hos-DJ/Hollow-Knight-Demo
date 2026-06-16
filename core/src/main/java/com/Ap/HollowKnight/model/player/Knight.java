@@ -33,7 +33,7 @@ public class Knight extends PhysicalPart {
     private static final float DASH_COOLDOWN  = 0.6f;
     private static final float FOCUS_DURATION = 1.5f;
     private static final int   FOCUS_COST     = 33;
-    Knight(Vector2 position,Rectangle hitBox) {
+    public Knight(Vector2 position,Rectangle hitBox) {
         super(position,MAX_VELOCITY,hitBox);
     }
 
@@ -45,6 +45,7 @@ public class Knight extends PhysicalPart {
                 this.isDashing = false;
                 dashCooldownTime =DASH_COOLDOWN;
                 setGravityIncluded(true);
+                this.playerCondition = PlayerCondition.IDLE;
                 this.setCooldown(true);
                 getVelocity().x=0;
             }
@@ -80,11 +81,17 @@ public class Knight extends PhysicalPart {
         currentMasks = Math.max(0,currentMasks - amount);
     }
     public void jump(){
-        if(this.isOnGround()){
-            this.getVelocity().y = 400.0f;
-            setOnGround(false);
-            playerCondition = PlayerCondition.JUMPING;
+        if(!this.isOnGround()&& playerCondition==PlayerCondition.MONARCHING){
+            return;
         }
+        if(!this.isOnGround()){
+            playerCondition = PlayerCondition.MONARCHING;
+        }
+        if(this.isOnGround()){
+            setOnGround(false);
+        }
+        playerCondition = PlayerCondition.JUMPING;
+        this.getVelocity().y = 400.0f;
     }
 
     public void cutJump(){
@@ -120,5 +127,100 @@ public class Knight extends PhysicalPart {
                 playerCondition = PlayerCondition.IDLE;
         }
 
+    }
+
+    public void focus(){
+        if(this.isOnGround()){
+            this.getVelocity().x = 0.0f;
+            playerCondition = PlayerCondition.FOCUSING;
+        }
+    }
+
+    public float getFocusTime() {
+        return focusTime;
+    }
+
+    public void setFocusTime(float focusTime) {
+        this.focusTime = focusTime;
+    }
+
+    public float getDashCooldownTime() {
+        return dashCooldownTime;
+    }
+
+    public void setDashCooldownTime(float dashCooldownTime) {
+        this.dashCooldownTime = dashCooldownTime;
+    }
+
+    public boolean isInvincible() {
+        return isInvincible;
+    }
+
+    public void setInvincible(boolean invincible) {
+        isInvincible = invincible;
+    }
+
+    public boolean isDashing() {
+        return isDashing;
+    }
+
+    public void setDashing(boolean dashing) {
+        isDashing = dashing;
+    }
+
+    public float getFocusTimer() {
+        return focusTimer;
+    }
+
+    public void setFocusTimer(float focusTimer) {
+        this.focusTimer = focusTimer;
+    }
+
+    public float getDashTimer() {
+        return dashTimer;
+    }
+
+    public void setDashTimer(float dashTimer) {
+        this.dashTimer = dashTimer;
+    }
+
+    public int getCurrentSoul() {
+        return currentSoul;
+    }
+
+    public void setCurrentSoul(int currentSoul) {
+        this.currentSoul = currentSoul;
+    }
+
+    public int getCurrentMasks() {
+        return currentMasks;
+    }
+
+    public void setCurrentMasks(int currentMasks) {
+        this.currentMasks = currentMasks;
+    }
+
+    public Map<PlayerCondition, Animation<TextureRegion>> getAnimations() {
+        return animations;
+    }
+
+    public void setAnimations(Map<PlayerCondition, Animation<TextureRegion>> animations) {
+        this.animations = animations;
+    }
+
+    public PlayerCondition getPlayerCondition() {
+        return playerCondition;
+    }
+
+    public void setPlayerCondition(PlayerCondition playerCondition) {
+        this.playerCondition = playerCondition;
+    }
+
+    public Skin getSkin() {
+        return skin;
+    }
+
+    public void setSkin(Skin skin) {
+        this.skin = skin;
     }
 }
