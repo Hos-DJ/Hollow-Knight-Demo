@@ -1,6 +1,8 @@
 package com.Ap.HollowKnight.controller;
 
 import com.Ap.HollowKnight.HollowKnight;
+import com.Ap.HollowKnight.model.level.LevelModel;
+import com.Ap.HollowKnight.model.map.TiledMapHelper;
 import com.Ap.HollowKnight.view.screen.AchievementsScreen;
 import com.Ap.HollowKnight.view.screen.GameScreen;
 import com.Ap.HollowKnight.view.screen.InventoryScreen;
@@ -9,6 +11,8 @@ import com.Ap.HollowKnight.view.screen.PauseScreen;
 import com.Ap.HollowKnight.view.screen.SettingsScreen;
 import com.Ap.HollowKnight.view.screen.VictoryScreen;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 
 import java.util.HashMap;
 
@@ -32,10 +36,18 @@ public class ScreenManager {
         switch(name){
             case "MainMenuScreen" -> screens.put(name, new MainMenuScreen(game));
             case "SettingsScreen" -> screens.put(name, new SettingsScreen(game));
-            case "AchievementsScreen" -> screens.put(name, new AchievementsScreen(game));
+                case "AchievementsScreen" -> screens.put(name, new AchievementsScreen(game));
             case "InventoryScreen" -> screens.put(name, new InventoryScreen(game));
             case "PauseScreen" -> screens.put(name, new PauseScreen(game));
-            case "GameScreen" -> screens.put(name, new GameScreen(game));
+            case "GameScreen" -> {
+                TiledMapHelper mapHelper = new TiledMapHelper();
+                TiledMap map =mapHelper.loadMap("assets/Forgotton main.tmx");
+                TiledMapTileLayer mainLayer = (TiledMapTileLayer) map.getLayers().get(0);
+                float mapWidth = mainLayer.getWidth() * mainLayer.getTileWidth();
+                float mapHeight = mainLayer.getHeight() * mainLayer.getTileHeight();
+                LevelModel levelModel = new LevelModel(mapHelper.getRectangles(), mapWidth, mapHeight);
+                screens.put(name, new GameScreen(game, levelModel, map));
+            }
             case "VictoryScreen" -> screens.put(name, new VictoryScreen(game));
         }
     }

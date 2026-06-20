@@ -1,4 +1,4 @@
 package com.Ap.HollowKnight.model.enemy;
 
-public class HuskHornHead{
+public class Mossfly {
 }

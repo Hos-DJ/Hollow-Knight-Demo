@@ -1,51 +1,73 @@
 package com.Ap.HollowKnight.model.player;
 
+import com.Ap.HollowKnight.model.AttackDirection;
+import com.Ap.HollowKnight.model.Nail;
 import com.Ap.HollowKnight.model.game.FacingDirection;
 import com.Ap.HollowKnight.model.game.PhysicalPart;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.Ap.HollowKnight.model.level.LevelModel;
+import com.Ap.HollowKnight.model.map.Block;
+import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
-import java.util.Map;
+import java.util.ArrayList;
+
+import static com.Ap.HollowKnight.model.game.FacingDirection.RIGHT;
 
 public class Knight extends PhysicalPart {
-
+    private Vector2 safeSpot;
     private Skin skin;
     private PlayerCondition playerCondition = PlayerCondition.IDLE;
-    Map<PlayerCondition, Animation<TextureRegion>> animations;
     private int currentMasks= 5;
     private int currentSoul = 99;
     private float dashTimer;
     private float focusTimer;
     private boolean isDashing=false;
     private boolean isInvincible=false;
-    private float dashCooldownTime;
-    private float focusTime;
+    private float invincibleTimer =0 ;
 
-    private static final float DASH_SPPED = 200.0f;
-    private static final float MAX_VELOCITY = 500.0f;
+    private boolean canMonarch = true;
+    private float dashCooldownTime;
+    private Nail nail;
+    private AttackDirection currentAttackDirection=AttackDirection.RIGHT;
+    private float attackTimer = 0f;
+    private float attackCooldownTimer = 0f;
+
+    public static final int MAX_MASKS = 5 ;
+    private static final float INVINCIBILITY_DURATION = 1.0f;
+    private static final float DAMAGE_KNOCKBACK_SPEED  = 250f;
+    private static final float ATTACK_DURATION   = 0.15f;
+    private static final float ATTACK_COOLDOWN   = 0.25f;
+    private static final float NAIL_LENGTH       = 30f;
+    private static final float NAIL_THICKNESS    = 16f;
+    private static final int   MAX_SOUL          = 99;
+    private static final int   SOUL_PER_HIT      = 11;
+    private static final float POGO_BOUNCE_SPEED = 350f;
+    private static final float DASH_SPEED = 500.0f;
+    private static final float MAX_VELOCITY = 300.0f;
     private static final float DASH_DURATION  = 0.35f;  // seconds
     private static final float DASH_COOLDOWN  = 0.6f;
     private static final float FOCUS_DURATION = 1.5f;
     private static final int   FOCUS_COST     = 33;
-    public Knight(Vector2 position,Rectangle hitBox) {
-        super(position,MAX_VELOCITY,hitBox);
+    public Knight(Vector2 position,Rectangle hitBox,Vector2 spawnPoint) {
+
+        super(position,MAX_VELOCITY,hitBox,spawnPoint);
+        Rectangle nailHitBox = new Rectangle (position.x, position.y, NAIL_LENGTH, NAIL_THICKNESS);
+        this.nail = new Nail(new Vector2(this.getPosition().x,this.getPosition().y),nailHitBox,new Vector2(spawnPoint.x,spawnPoint.y));
+        safeSpot = new Vector2(spawnPoint.x,spawnPoint.y);
     }
 
     @Override
-    public void update(float delta, TiledMapTileLayer layer) {
+    public void update(float delta, MapLayer layer , ArrayList<Block> blocks) {
         if(isDashing) {
             dashTimer -= delta;
             if(dashTimer <= 0) {
                 this.isDashing = false;
                 dashCooldownTime =DASH_COOLDOWN;
                 setGravityIncluded(true);
-                this.playerCondition = PlayerCondition.IDLE;
+                this.playerCondition = (this.isOnGround())?PlayerCondition.IDLE : PlayerCondition.FALLING;
                 this.setCooldown(true);
                 getVelocity().x=0;
             }
@@ -57,41 +79,97 @@ public class Knight extends PhysicalPart {
             }
         }
         if (this.playerCondition == PlayerCondition.FOCUSING) {
-            focusTimer -= delta;
-            if (focusTimer <= 0) {
-                focusTime = 0.0f;
+            focusTimer += delta;
+            if (focusTimer >= FOCUS_DURATION) {
+                focusTimer = 0;
                 if (currentSoul >= FOCUS_COST) {
                     currentSoul -= FOCUS_COST;
-                    currentMasks = Math.min(currentMasks + 1, 5);
+                    currentMasks = Math.min(currentMasks + 1,MAX_MASKS);
                 }
                 playerCondition = PlayerCondition.IDLE;
             }
         }
-        else focusTime = 0.0f;
+        else focusTimer = 0.0f;
         if (!isOnGround() && getVelocity().y < 0 && playerCondition != PlayerCondition.DASHING) {
             playerCondition = PlayerCondition.FALLING;
         }
-        applyPhysics(delta,layer);
+        if (this.isAttacking()){
+            attackTimer-=delta;
+            if(attackTimer<=0){
+                setAttacking(false);
+                attackCooldownTimer = ATTACK_COOLDOWN;
+                playerCondition = isOnGround() ? PlayerCondition.IDLE : PlayerCondition.FALLING;
+            }
+        }
+        if(attackCooldownTimer>=0){
+            attackCooldownTimer-=delta;
+        }
 
+        if(this.isInvincible()){
+            invincibleTimer -= delta;
+            if(invincibleTimer<=0){
+                setInvincible(false);
+            }
+        }
 
+        if(this.playerCondition == PlayerCondition.TAKING_DAMAGE){
+            playerCondition = isOnGround() ? PlayerCondition.IDLE : PlayerCondition.FALLING;
+        }
+
+        updateNailHitBox();
+
+        if (!isOnGround() && getVelocity().y < 0
+            && playerCondition != PlayerCondition.DASHING
+            && playerCondition != PlayerCondition.ATTACKING) {
+            playerCondition = PlayerCondition.FALLING;
+        }
+
+        if(isOnGround()){
+            canMonarch = true;
+            if (playerCondition == PlayerCondition.FALLING
+                || playerCondition == PlayerCondition.JUMPING
+                || playerCondition == PlayerCondition.MONARCHING) {
+                playerCondition = (Math.abs(getVelocity().x) > 0.1f)
+                    ? PlayerCondition.MOVING
+                    : PlayerCondition.IDLE;
+            }
+
+        }
+
+        applyPhysics(delta,blocks);
     }
 
     @Override
     public void takeDamage(int amount) {
+        if(isInvincible())return ;
         currentMasks = Math.max(0,currentMasks - amount);
-    }
-    public void jump(){
-        if(!this.isOnGround()&& playerCondition==PlayerCondition.MONARCHING){
+        if (playerCondition == PlayerCondition.FOCUSING) {
+            cancelFocus();
+        }
+        if (this.currentMasks<=0){
+            die();
             return;
         }
-        if(!this.isOnGround()){
-            playerCondition = PlayerCondition.MONARCHING;
-        }
+
+        setInvincible(true);
+        this.invincibleTimer=INVINCIBILITY_DURATION;
+        this.playerCondition = PlayerCondition.TAKING_DAMAGE;
+        float knockBackDirection = (this.getFacingDirection()==RIGHT) ? 1f : -1f;
+        setKnockBackVelocity(new Vector2(knockBackDirection*DAMAGE_KNOCKBACK_SPEED,100f));
+    }
+    public void jump(){
+        if(playerCondition==PlayerCondition.FOCUSING)return ;
+
         if(this.isOnGround()){
             setOnGround(false);
+            playerCondition = PlayerCondition.JUMPING;
+            getVelocity().y = 400.0f;
         }
-        playerCondition = PlayerCondition.JUMPING;
-        this.getVelocity().y = 400.0f;
+        else if (this.canMonarch){
+            playerCondition = PlayerCondition.MONARCHING;
+            getVelocity().y = 400.0f;
+            canMonarch = false;
+        }
     }
 
     public void cutJump(){
@@ -100,10 +178,10 @@ public class Knight extends PhysicalPart {
         }
     }
     public void dash(){
-        if(!this.isCooldown()&&!this.isDashing){
-            float direction = (this.getFacingDirection()== FacingDirection.RIGHT)? 1.0f:-1.0f;
+        if(!this.isCooldown()&&!this.isDashing&& playerCondition!=PlayerCondition.FOCUSING){
+            float direction = (this.getFacingDirection()== RIGHT)? 1.0f:-1.0f;
             playerCondition = PlayerCondition.DASHING;
-            this.getVelocity().x = direction * DASH_SPPED ;
+            this.getVelocity().x = direction * DASH_SPEED;
             this.getVelocity().y=0.0f;
             this.setGravityIncluded(false);
             this.isDashing=true;
@@ -112,8 +190,8 @@ public class Knight extends PhysicalPart {
         }
     }
     public void move(){
-        if(!this.isDashing){
-            float direction =  (this.getFacingDirection()== FacingDirection.RIGHT)? 1.0f:-1.0f;
+        if(!this.isDashing&&playerCondition!=PlayerCondition.FOCUSING){
+            float direction =  (this.getFacingDirection()== RIGHT)? 1.0f:-1.0f;
             getVelocity().x = direction * MAX_VELOCITY;
             if(this.isOnGround())
                playerCondition = PlayerCondition.MOVING;
@@ -133,16 +211,92 @@ public class Knight extends PhysicalPart {
         if(this.isOnGround()){
             this.getVelocity().x = 0.0f;
             playerCondition = PlayerCondition.FOCUSING;
+            focusTimer = 0;
         }
     }
 
-    public float getFocusTime() {
-        return focusTime;
+    public void attack(AttackDirection direction){
+        if(isAttacking()||attackCooldownTimer>0||isDashing||playerCondition==PlayerCondition.FOCUSING){
+            return;
+        }
+        currentAttackDirection = direction;
+        this.setAttacking(true);
+        attackTimer= ATTACK_DURATION;
+        playerCondition = PlayerCondition.ATTACKING;
     }
 
-    public void setFocusTime(float focusTime) {
-        this.focusTime = focusTime;
+    public void die(){
+        this.setPosition(new Vector2(getSpawnPoint().x,getSpawnPoint().y));
+        this.setCurrentMasks(MAX_MASKS);
+        this.setCurrentSoul(0);
+        this.getVelocity().setZero();
+        this.getKnockBackVelocity().setZero();
+        this.playerCondition = PlayerCondition.IDLE;
+        setInvincible(false);
+        this.dashTimer = 0 ;
+        this.focusTimer=0;
+        this.attackTimer = 0;
+        this.attackCooldownTimer = 0;
+        this.dashCooldownTime = 0;
+        this.invincibleTimer = 0;
+
     }
+
+    private void updateNailHitBox(){
+        float nailX , nailY ,width , height;// for setting the rectangle
+        switch (currentAttackDirection){
+            case UP -> {
+                width  = NAIL_THICKNESS;
+                height = NAIL_LENGTH;
+                nailX = this.getHitBox().x+this.getHitBox().width/2f - width/2f;
+                nailY = this.getHitBox().y + this.getHitBox().height;
+            }
+            case DOWN -> {
+                width  = NAIL_THICKNESS;
+                height = NAIL_LENGTH;
+                nailX =  this.getHitBox().x+this.getHitBox().width/2f - width/2f;
+                nailY = this.getHitBox().y - height;
+            }
+            case LEFT -> {
+                width  = NAIL_LENGTH;
+                height = NAIL_THICKNESS;
+                nailX = this.getHitBox().x - width;
+                nailY = this.getHitBox().y +  this.getHitBox().height/2f -  height/2f;
+            }
+            default -> {
+                width  = NAIL_LENGTH;
+                height = NAIL_THICKNESS;
+                nailX = this.getHitBox().x+this.getHitBox().width;
+                nailY = this.getHitBox().y +  this.getHitBox().height/2f -  height/2f;
+            }
+
+        }
+        nail.getHitBox().setSize(width,height);
+        nail.setPosition(new Vector2(nailX,nailY));
+        nail.updateHitBox();
+        nail.setAttacking(isAttacking());
+    }
+
+    public void pogoBounce(){
+        this.getVelocity().y = POGO_BOUNCE_SPEED;
+        setCooldown(false);
+        dashCooldownTime = 0.0f;
+        canMonarch = true;
+
+    }
+
+    public void gainSoul(){
+        currentSoul = Math.min(currentSoul + SOUL_PER_HIT, MAX_SOUL);
+
+    }
+
+    public void cancelFocus(){
+        if (playerCondition == PlayerCondition.FOCUSING) {
+            focusTimer = 0f;
+            playerCondition = isOnGround() ? PlayerCondition.IDLE : PlayerCondition.FALLING;
+        }
+    }
+
 
     public float getDashCooldownTime() {
         return dashCooldownTime;
@@ -200,14 +354,6 @@ public class Knight extends PhysicalPart {
         this.currentMasks = currentMasks;
     }
 
-    public Map<PlayerCondition, Animation<TextureRegion>> getAnimations() {
-        return animations;
-    }
-
-    public void setAnimations(Map<PlayerCondition, Animation<TextureRegion>> animations) {
-        this.animations = animations;
-    }
-
     public PlayerCondition getPlayerCondition() {
         return playerCondition;
     }
@@ -222,5 +368,13 @@ public class Knight extends PhysicalPart {
 
     public void setSkin(Skin skin) {
         this.skin = skin;
+    }
+
+    public Nail getNail() {
+        return nail;
+    }
+
+    public AttackDirection getCurrentAttackDirection() {
+        return currentAttackDirection;
     }
 }

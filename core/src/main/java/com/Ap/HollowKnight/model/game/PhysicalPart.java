@@ -1,14 +1,25 @@
 package com.Ap.HollowKnight.model.game;
 
+import com.Ap.HollowKnight.model.level.LevelModel;
+import com.Ap.HollowKnight.model.map.Block;
+import com.Ap.HollowKnight.model.map.BlockType;
+import com.Ap.HollowKnight.model.player.Knight;
+import com.Ap.HollowKnight.model.player.PlayerCondition;
+import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+
+import java.util.ArrayList;
+import java.util.List;
+
 //todo: need to implement the collision with enemies and spikes
 public abstract class PhysicalPart {
     private Vector2 position;
     private Vector2 velocity;
     private Vector2 knockBackVelocity;
     private Vector2 acceleration;
+    private Vector2 spawnPoint;
     private Rectangle hitBox;
 
     // positioning
@@ -18,13 +29,14 @@ public abstract class PhysicalPart {
     private boolean gravityIncluded;
     private FacingDirection facingDirection;
     private float maxVelocity;
+    private static final float GROUND_SNAP_EPSILON = 0.05f;
+    protected static final float GRAVITY = -500f;
 
-    protected static final float GRAVITY = -10.0f;
-
-    public PhysicalPart(Vector2 position, float maxVelocity, Rectangle hitBox) {
+    public PhysicalPart(Vector2 position, float maxVelocity, Rectangle hitBox,Vector2 spawnPoint) {
         this.position         = position;
         this.maxVelocity      = maxVelocity;
         this.hitBox           = hitBox;
+        this.spawnPoint        = spawnPoint;
         this.velocity         = new Vector2(0f, 0f);
         this.knockBackVelocity= new Vector2(0f, 0f);
         this.acceleration     = new Vector2(0f, 0f);
@@ -38,92 +50,76 @@ public abstract class PhysicalPart {
     public void updateHitBox(){
         hitBox.setPosition(position.x, position.y);
     }
-    public abstract void update(float delta,TiledMapTileLayer layer);
+    public abstract void update(float delta, MapLayer layer, ArrayList<Block> blocks);
     public abstract void takeDamage(int amount);
 
-    public void applyPhysics(float delta, TiledMapTileLayer layer) {
-        if(!isOnGround&&gravityIncluded){
-            this.velocity.y+=GRAVITY *delta;
+    public void applyPhysics(float delta,ArrayList<Block> blocks) {
+
+        if (!isOnGround && gravityIncluded) {
+            velocity.y += GRAVITY * delta;
+        } else if (isOnGround) {
+            velocity.y = 0.0f;
         }
-        else if (isOnGround){
-            this.velocity.y=0.0f;
-        }
-        movingX(delta,layer);
-        movingY(delta,layer);
-        this.knockBackVelocity.scl(0.8f);
-        if (this.knockBackVelocity.len()<0.05f){
-            this.knockBackVelocity.setZero();
+        movingX(delta, blocks);
+        movingY(delta, blocks);
+        knockBackVelocity.scl(0.8f);
+        if (knockBackVelocity.len() < 0.05f) {
+            knockBackVelocity.setZero();
         }
         updateHitBox();
     }
-    public void movingX(float delta, TiledMapTileLayer layer) {
+
+    public void movingX(float delta, List<Block> blocks) {
         position.x += (velocity.x + knockBackVelocity.x) * delta;
-
         updateHitBox();
-
-        resolveHorizontalCollisions(layer);
+        resolveHorizontalCollisions(blocks);
     }
 
-    public void movingY(float delta, TiledMapTileLayer layer) {
+    public void movingY(float delta, List<Block> blocks) {
         setOnGround(false);
         position.y += (velocity.y + knockBackVelocity.y) * delta;
         updateHitBox();
-
-        resolveVerticalCollisions(layer);
+        resolveVerticalCollisions(blocks);
     }
 
-    private void resolveHorizontalCollisions(TiledMapTileLayer layer) {
-        if (layer == null) return;
-        int tileWidth = (int) layer.getTileWidth();
-        int startX = (int) (hitBox.x / tileWidth);
-        int endX = (int) ((hitBox.x + hitBox.width) / tileWidth);
-        int startY = (int) (hitBox.y / (int) layer.getTileHeight());
-        int endY = (int) ((hitBox.y + hitBox.height) / (int) layer.getTileHeight());
-
-        for (int row = startY; row <= endY; row++) {
-            for (int col = startX; col <= endX; col++) {
-                TiledMapTileLayer.Cell cell = layer.getCell(col, row);
-                if (cell != null && cell.getTile() != null && cell.getTile().getProperties().containsKey("solid")) {
-                    if ((velocity.x + knockBackVelocity.x) > 0) {
-                        position.x = col * tileWidth - hitBox.width;
-                    } else if ((velocity.x + knockBackVelocity.x) < 0) {
-                        position.x = (col + 1) * tileWidth;
-                    }
-                    velocity.x = 0;
-                    updateHitBox();
-                    return;
-                }
+    private void resolveHorizontalCollisions(List<Block> blocks) {
+        float moveX = velocity.x + knockBackVelocity.x;
+        for (Block block : blocks) {
+            if (!block.getType().blocksHorizontal()) continue;
+            if (!hitBox.overlaps(block.getBound())) continue;
+            if (moveX > 0) {
+                position.x = block.getBound().x - hitBox.width;
+            } else if (moveX < 0) {
+                position.x = block.getBound().x + block.getBound().width;
             }
+            velocity.x = 0;
+            updateHitBox();
         }
     }
 
-    private void resolveVerticalCollisions(TiledMapTileLayer layer) {
-        if (layer == null) return;
-        int tileHeight = (int) layer.getTileHeight();
-        int startX = (int) (hitBox.x / (int) layer.getTileWidth());
-        int endX = (int) ((hitBox.x + hitBox.width) / (int) layer.getTileWidth());
-        int startY = (int) (hitBox.y / tileHeight);
-        int endY = (int) ((hitBox.y + hitBox.height) / tileHeight);
-
-        boolean foundGround = false;
-
-        for (int row = startY; row <= endY; row++) {
-            for (int col = startX; col <= endX; col++) {
-                TiledMapTileLayer.Cell cell = layer.getCell(col, row);
-                if (cell != null && cell.getTile() != null && cell.getTile().getProperties().containsKey("solid")) {
-                    if ((velocity.y + knockBackVelocity.y) < 0) {
-                        position.y = (row + 1) * tileHeight;
-                        velocity.y = 0;
-                        foundGround = true; // Landing on platforms sets isGrounded = true (Phase 2.2)
-                    } else if ((velocity.y + knockBackVelocity.y) > 0) {
-                        position.y = row * tileHeight - hitBox.height;
-                        velocity.y = 0;
-                    }
-                    updateHitBox();
+    private void resolveVerticalCollisions(List<Block> blocks) {
+        float moveY = velocity.y + knockBackVelocity.y;
+        for (Block block : blocks) {
+            if (!block.getType().blocksVertical()) continue;
+            if (!hitBox.overlaps(block.getBound())) continue;
+            if(block.getType()== BlockType.GROUND)
+            {
+                if (moveY <= 0) {
+                    position.y = block.getBound().y + block.getBound().height-GROUND_SNAP_EPSILON;
+                    velocity.y = 0;
+                    setOnGround(true);
+                } else if (moveY > 0) {
+                    position.y = block.getBound().y - hitBox.height;
+                    velocity.y = 0;
                 }
             }
+            else if (block.getType() == BlockType.CEIL){
+                if(moveY > 0){
+                    velocity.y= 0 ;
+                }
+            }
+            updateHitBox();
         }
-        this.isOnGround = foundGround;
     }
     //getters
 
@@ -174,6 +170,10 @@ public abstract class PhysicalPart {
     }
 
 
+    public Vector2 getSpawnPoint() {
+        return spawnPoint;
+    }
+
     //setters
 
 
@@ -223,5 +223,7 @@ public abstract class PhysicalPart {
         this.maxVelocity = maxVelocity;
     }
 
-
+    public void setSpawnPoint(Vector2 spawnPoint) {
+        this.spawnPoint = spawnPoint;
+    }
 }

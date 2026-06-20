@@ -1,15 +1,19 @@
 package com.Ap.HollowKnight.controller;
 
+import com.Ap.HollowKnight.model.AttackDirection;
 import com.Ap.HollowKnight.model.game.FacingDirection;
 import com.Ap.HollowKnight.model.game.GameCamera;
 import com.Ap.HollowKnight.model.player.Knight;
 import com.Ap.HollowKnight.model.player.PlayerCondition;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 
 public class GameProcessor extends InputAdapter {
 
-    private Knight knight;
-    private GameCamera camera;
+    private final Knight knight;
+    private final GameCamera camera;
+
     public GameProcessor(Knight knight, GameCamera camera) {
         this.knight = knight;
         this.camera = camera;
@@ -18,31 +22,43 @@ public class GameProcessor extends InputAdapter {
     @Override
     public boolean keyDown(int keycode) {
         GameKeypad key = GameKeypad.fromKeycode(keycode);
-        if(key ==null)
+        if (key == null)
             return false;
         switch (key) {
-            case GameKeypad.RIGHT -> {
+            case RIGHT -> {
                 knight.setFacingDirection(FacingDirection.RIGHT);
                 knight.move();
             }
-            case GameKeypad.LEFT -> {
+            case LEFT -> {
                 knight.setFacingDirection(FacingDirection.LEFT);
                 knight.move();
             }
-            case GameKeypad.UP -> {
-                knight.setPlayerCondition(PlayerCondition.LOOKING_UP);
-                camera.setLookingUp(true);
+            case UP -> {
+                if(knight.getPlayerCondition() == PlayerCondition.IDLE){
+                    knight.setPlayerCondition(PlayerCondition.LOOKING_UP);
+                    camera.setLookingUp(true);
+
+                }
             }
-            case GameKeypad.DOWN -> {
-                knight.setPlayerCondition(PlayerCondition.LOOKING_DOWN);
-                camera.setLookingDown(true);
+            case DOWN -> {
+                if(knight.getPlayerCondition() == PlayerCondition.IDLE){
+                    knight.setPlayerCondition(PlayerCondition.LOOKING_DOWN);
+                    camera.setLookingDown(true);
+                }
             }
-            case GameKeypad.JUMP -> knight.jump();
-            case GameKeypad.DASH -> knight.dash();
-            case GameKeypad.ATTACK, GameKeypad.VENGEFUL_SPIRIT -> {
+            case JUMP -> knight.jump();
+            case DASH -> knight.dash();
+            case ATTACK -> {
+                handleAttacking();
+            }
+            case FOCUS -> {
+                if(knight.getPlayerCondition() == PlayerCondition.IDLE&&knight.getPlayerCondition()!= PlayerCondition.FOCUSING){
+                    knight.focus();
+                }
+            }
+            case VENGEFUL_SPIRIT -> {
                 //something will happen here
             }
-            case GameKeypad.FOCUS -> knight.focus();
         }
         return true;
     }
@@ -50,19 +66,66 @@ public class GameProcessor extends InputAdapter {
     @Override
     public boolean keyUp(int keycode) {
         GameKeypad key = GameKeypad.fromKeycode(keycode);
-        if(key ==null)
+        if (key == null)
             return false;
         switch (key) {
-            case GameKeypad.JUMP -> knight.cutJump();
-            case GameKeypad.DOWN -> {
-                camera.setLookingDown(false);
-                knight.setPlayerCondition(PlayerCondition.IDLE);
+            case JUMP -> knight.cutJump();
+            case DOWN -> {
+
+                if (knight.getPlayerCondition() == PlayerCondition.LOOKING_DOWN){
+                    camera.setLookingDown(false);
+                    knight.setPlayerCondition(PlayerCondition.IDLE);
+                }
             }
-            case GameKeypad.UP -> {
-                camera.setLookingUp(false);
-                knight.setPlayerCondition(PlayerCondition.IDLE);
+            case UP -> {
+                if(knight.getPlayerCondition() == PlayerCondition.LOOKING_UP){
+                    camera.setLookingUp(false);
+                    knight.setPlayerCondition(PlayerCondition.IDLE);
+                }
+            }
+            case RIGHT -> {
+                if (Gdx.input.isKeyPressed(GameKeypad.LEFT.getKeyNumber())) {
+                    knight.setFacingDirection(FacingDirection.LEFT);
+                    knight.move();
+                } else {
+                    knight.stop();
+                }
+            }
+            case LEFT -> {
+                if (Gdx.input.isKeyPressed(GameKeypad.RIGHT.getKeyNumber())) {
+                    knight.setFacingDirection(FacingDirection.RIGHT);
+                    knight.move();
+                } else {
+                    knight.stop();
+                }
+            }
+            case FOCUS ->  {
+                if(knight.getPlayerCondition() == PlayerCondition.FOCUSING){
+                    knight.cancelFocus();
+                }
             }
         }
         return true;
+    }
+
+    public void handleAttacking() {
+        AttackDirection direction;
+        if (Gdx.input.isKeyPressed(GameKeypad.DOWN.getKeyNumber()) && !knight.isOnGround()) {
+            direction = AttackDirection.DOWN;
+        } else if (Gdx.input.isKeyPressed(GameKeypad.UP.getKeyNumber())) {
+            direction = AttackDirection.UP;
+        } else if (Gdx.input.isKeyPressed(GameKeypad.RIGHT.getKeyNumber())) {
+            direction = AttackDirection.RIGHT;
+        } else if (Gdx.input.isKeyPressed(GameKeypad.LEFT.getKeyNumber())) {
+            direction = AttackDirection.LEFT;
+        } else {
+            direction = (knight.getFacingDirection() == FacingDirection.RIGHT) ? AttackDirection.RIGHT : AttackDirection.LEFT;
+        }
+        if(Gdx.input.isKeyJustPressed(GameKeypad.ATTACK.getKeyNumber())){
+            knight.attack(direction);
+            new CombatController().checkCombat(knight,null);
+        }
+
+
     }
 }

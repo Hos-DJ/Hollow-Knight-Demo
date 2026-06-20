@@ -45,7 +45,7 @@ public class AssetLoader {
             frames[i] = split[row][col];
         }
         Animation<TextureRegion> animation = new Animation<>(1/30f, frames);
-        animation.setPlayMode(Animation.PlayMode.LOOP);
+//        animation.setPlayMode(Animation.PlayMode.LOOP);
 
         animationMap.put(animationType, animation);
     }

@@ -1,3 +1,3 @@
 package com.Ap.HollowKnight.model.enemy;
-public class CrystalGuardian extends EnemyModel{
+public class CrystalGuardian {
 }
