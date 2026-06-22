@@ -2,12 +2,11 @@ package com.Ap.HollowKnight.model.player;
 
 import com.Ap.HollowKnight.model.AttackDirection;
 import com.Ap.HollowKnight.model.Nail;
-import com.Ap.HollowKnight.model.game.FacingDirection;
 import com.Ap.HollowKnight.model.game.PhysicalPart;
-import com.Ap.HollowKnight.model.level.LevelModel;
 import com.Ap.HollowKnight.model.map.Block;
+import com.Ap.HollowKnight.model.map.BlockType;
+import com.Ap.HollowKnight.view.EffectAnimationType;
 import com.badlogic.gdx.maps.MapLayer;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -17,7 +16,6 @@ import java.util.ArrayList;
 import static com.Ap.HollowKnight.model.game.FacingDirection.RIGHT;
 
 public class Knight extends PhysicalPart {
-    private Vector2 safeSpot;
     private Skin skin;
     private PlayerCondition playerCondition = PlayerCondition.IDLE;
     private int currentMasks= 5;
@@ -27,40 +25,42 @@ public class Knight extends PhysicalPart {
     private boolean isDashing=false;
     private boolean isInvincible=false;
     private float invincibleTimer =0 ;
-
+    private ArrayList <Vector2> safeSpots;
     private boolean canMonarch = true;
     private float dashCooldownTime;
     private Nail nail;
     private AttackDirection currentAttackDirection=AttackDirection.RIGHT;
     private float attackTimer = 0f;
     private float attackCooldownTimer = 0f;
+    private float respawnTimer = 0f;
 
     public static final int MAX_MASKS = 5 ;
-    private static final float INVINCIBILITY_DURATION = 1.0f;
+    private static final float INVINCIBILITY_DURATION = 4.0f;
     private static final float DAMAGE_KNOCKBACK_SPEED  = 250f;
     private static final float ATTACK_DURATION   = 0.15f;
     private static final float ATTACK_COOLDOWN   = 0.25f;
-    private static final float NAIL_LENGTH       = 30f;
-    private static final float NAIL_THICKNESS    = 16f;
+    private static final float NAIL_LENGTH       = 70f;
+    private static final float NAIL_THICKNESS    =90f;
     private static final int   MAX_SOUL          = 99;
     private static final int   SOUL_PER_HIT      = 11;
     private static final float POGO_BOUNCE_SPEED = 350f;
-    private static final float DASH_SPEED = 500.0f;
+    private static final float DASH_SPEED = 600.0f;
     private static final float MAX_VELOCITY = 300.0f;
     private static final float DASH_DURATION  = 0.35f;  // seconds
     private static final float DASH_COOLDOWN  = 0.6f;
     private static final float FOCUS_DURATION = 1.5f;
     private static final int   FOCUS_COST     = 33;
-    public Knight(Vector2 position,Rectangle hitBox,Vector2 spawnPoint) {
+    private static final float SPAWN_DELAY = 1f;
+    public Knight(Vector2 position,Rectangle hitBox,Vector2 spawnPoint , ArrayList <Vector2> safeSpots) {
 
-        super(position,MAX_VELOCITY,hitBox,spawnPoint);
+        super(position, hitBox,spawnPoint);
         Rectangle nailHitBox = new Rectangle (position.x, position.y, NAIL_LENGTH, NAIL_THICKNESS);
-        this.nail = new Nail(new Vector2(this.getPosition().x,this.getPosition().y),nailHitBox,new Vector2(spawnPoint.x,spawnPoint.y));
-        safeSpot = new Vector2(spawnPoint.x,spawnPoint.y);
+        this.nail = new Nail(new Vector2(this.getPosition().x,this.getPosition().y),nailHitBox,new Vector2(spawnPoint.x,spawnPoint.y), EffectAnimationType.NAIL_SLASH);
+        this.safeSpots = safeSpots;
     }
 
     @Override
-    public void update(float delta, MapLayer layer , ArrayList<Block> blocks) {
+    public void update(float delta, ArrayList<Block> blocks) {
         if(isDashing) {
             dashTimer -= delta;
             if(dashTimer <= 0) {
@@ -136,6 +136,15 @@ public class Knight extends PhysicalPart {
 
         }
 
+        for(Block block : blocks){
+            if(block.getType()!= BlockType.SPIKE) continue;
+            if(nail.getHitBox().overlaps(block.getBound())&& isAttacking()&&currentAttackDirection==AttackDirection.DOWN){
+                pogoBounce();
+            }
+        }
+
+
+
         applyPhysics(delta,blocks);
     }
 
@@ -154,9 +163,19 @@ public class Knight extends PhysicalPart {
         setInvincible(true);
         this.invincibleTimer=INVINCIBILITY_DURATION;
         this.playerCondition = PlayerCondition.TAKING_DAMAGE;
-        float knockBackDirection = (this.getFacingDirection()==RIGHT) ? 1f : -1f;
-        setKnockBackVelocity(new Vector2(knockBackDirection*DAMAGE_KNOCKBACK_SPEED,100f));
     }
+
+    @Override
+    public void hazardReact(){
+        currentMasks = Math.max(0,currentMasks - 1);
+        if(currentMasks<=0){
+            die();
+            return;
+        }
+        this.setPlayerCondition(PlayerCondition.TAKING_DAMAGE);
+        respawn();
+    }
+
     public void jump(){
         if(playerCondition==PlayerCondition.FOCUSING)return ;
 
@@ -199,7 +218,7 @@ public class Knight extends PhysicalPart {
         }
     }
     public void stop(){
-        if(!this.isDashing){
+        if(!this.isDashing&&this.getPlayerCondition()!=PlayerCondition.FOCUSING&&!this.isAttacking()){
             this.getVelocity().x = 0.0f;
             if(this.isOnGround())
                 playerCondition = PlayerCondition.IDLE;
@@ -280,6 +299,7 @@ public class Knight extends PhysicalPart {
     public void pogoBounce(){
         this.getVelocity().y = POGO_BOUNCE_SPEED;
         setCooldown(false);
+        this.setPlayerCondition(PlayerCondition.JUMPING);
         dashCooldownTime = 0.0f;
         canMonarch = true;
 
@@ -297,6 +317,26 @@ public class Knight extends PhysicalPart {
         }
     }
 
+    public void respawn(){
+        float distance = 1e10f;
+        Vector2 respawnPoint=null;
+        for(Vector2 safeSpot : safeSpots){
+            float dist = distanceBetweenTwoBorders(safeSpot,this.getPosition());
+            if(dist<distance){
+                respawnPoint = new Vector2(safeSpot.x,safeSpot.y);
+                distance = dist ;
+            }
+        }
+        this.getPosition().x= respawnPoint.x;
+        this.getPosition().y= respawnPoint.y;
+
+    }
+
+    public float distanceBetweenTwoBorders(Vector2 safeSpot, Vector2 target){
+        float y = safeSpot.y - target.y;
+        float x = safeSpot.x - target.x;
+        return (float) Math.sqrt(x * x + y * y);
+    }
 
     public float getDashCooldownTime() {
         return dashCooldownTime;

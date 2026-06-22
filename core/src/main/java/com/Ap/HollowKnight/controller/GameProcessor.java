@@ -1,22 +1,29 @@
 package com.Ap.HollowKnight.controller;
 
 import com.Ap.HollowKnight.model.AttackDirection;
+import com.Ap.HollowKnight.model.enemy.EnemyModel;
 import com.Ap.HollowKnight.model.game.FacingDirection;
 import com.Ap.HollowKnight.model.game.GameCamera;
 import com.Ap.HollowKnight.model.player.Knight;
 import com.Ap.HollowKnight.model.player.PlayerCondition;
+import com.Ap.HollowKnight.view.EffectAnimationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
+
+import java.util.ArrayList;
 
 public class GameProcessor extends InputAdapter {
 
     private final Knight knight;
     private final GameCamera camera;
+    private ArrayList<EnemyModel> enemies;
 
-    public GameProcessor(Knight knight, GameCamera camera) {
+    public GameProcessor(Knight knight, GameCamera camera, ArrayList<EnemyModel> enemies) {
         this.knight = knight;
         this.camera = camera;
+        this.enemies = enemies;
+
     }
 
     @Override
@@ -108,6 +115,21 @@ public class GameProcessor extends InputAdapter {
         return true;
     }
 
+    public void pollMovement() {
+        boolean rightHeld = Gdx.input.isKeyPressed(GameKeypad.RIGHT.getKeyNumber());
+        boolean leftHeld = Gdx.input.isKeyPressed(GameKeypad.LEFT.getKeyNumber());
+
+        if (rightHeld == leftHeld) {
+            knight.stop();
+        } else if (rightHeld) {
+            knight.setFacingDirection(FacingDirection.RIGHT);
+            knight.move();
+        } else {
+            knight.setFacingDirection(FacingDirection.LEFT);
+            knight.move();
+        }
+    }
+
     public void handleAttacking() {
         AttackDirection direction;
         if (Gdx.input.isKeyPressed(GameKeypad.DOWN.getKeyNumber()) && !knight.isOnGround()) {
@@ -123,7 +145,9 @@ public class GameProcessor extends InputAdapter {
         }
         if(Gdx.input.isKeyJustPressed(GameKeypad.ATTACK.getKeyNumber())){
             knight.attack(direction);
-            new CombatController().checkCombat(knight,null);
+            EffectAnimationType nailAnimation = direction.toAnimationType();
+            knight.getNail().setNailSlashType(nailAnimation);
+            CombatController.getInstance().checkCombat(knight,enemies);
         }
 
 

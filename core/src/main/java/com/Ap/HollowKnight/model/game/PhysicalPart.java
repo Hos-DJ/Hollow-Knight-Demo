@@ -1,17 +1,15 @@
 package com.Ap.HollowKnight.model.game;
 
-import com.Ap.HollowKnight.model.level.LevelModel;
 import com.Ap.HollowKnight.model.map.Block;
 import com.Ap.HollowKnight.model.map.BlockType;
-import com.Ap.HollowKnight.model.player.Knight;
-import com.Ap.HollowKnight.model.player.PlayerCondition;
 import com.badlogic.gdx.maps.MapLayer;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.lang.Math.min;
 
 //todo: need to implement the collision with enemies and spikes
 public abstract class PhysicalPart {
@@ -28,13 +26,11 @@ public abstract class PhysicalPart {
     private boolean isAttacking ;
     private boolean gravityIncluded;
     private FacingDirection facingDirection;
-    private float maxVelocity;
     private static final float GROUND_SNAP_EPSILON = 0.05f;
     protected static final float GRAVITY = -500f;
 
-    public PhysicalPart(Vector2 position, float maxVelocity, Rectangle hitBox,Vector2 spawnPoint) {
+    public PhysicalPart(Vector2 position, Rectangle hitBox, Vector2 spawnPoint) {
         this.position         = position;
-        this.maxVelocity      = maxVelocity;
         this.hitBox           = hitBox;
         this.spawnPoint        = spawnPoint;
         this.velocity         = new Vector2(0f, 0f);
@@ -50,13 +46,13 @@ public abstract class PhysicalPart {
     public void updateHitBox(){
         hitBox.setPosition(position.x, position.y);
     }
-    public abstract void update(float delta, MapLayer layer, ArrayList<Block> blocks);
+    public abstract void update(float delta, ArrayList<Block> blocks);
     public abstract void takeDamage(int amount);
-
+    public abstract void hazardReact();
     public void applyPhysics(float delta,ArrayList<Block> blocks) {
 
         if (!isOnGround && gravityIncluded) {
-            velocity.y += GRAVITY * delta;
+            velocity.y += min(GRAVITY * delta , 300.0f);
         } else if (isOnGround) {
             velocity.y = 0.0f;
         }
@@ -66,6 +62,7 @@ public abstract class PhysicalPart {
         if (knockBackVelocity.len() < 0.05f) {
             knockBackVelocity.setZero();
         }
+        resolveHazardCollisions(blocks);
         updateHitBox();
     }
 
@@ -108,7 +105,7 @@ public abstract class PhysicalPart {
                     position.y = block.getBound().y + block.getBound().height-GROUND_SNAP_EPSILON;
                     velocity.y = 0;
                     setOnGround(true);
-                } else if (moveY > 0) {
+                } else if (moveY > 0 && block.getType()!=BlockType.GROUND) {
                     position.y = block.getBound().y - hitBox.height;
                     velocity.y = 0;
                 }
@@ -119,6 +116,15 @@ public abstract class PhysicalPart {
                 }
             }
             updateHitBox();
+        }
+    }
+
+    public void resolveHazardCollisions(ArrayList<Block> blocks) {
+        for(Block block : blocks) {
+            if(this.hitBox.overlaps(block.getBound())&&block.getType()== BlockType.SPIKE){
+                this.hazardReact();
+                break;
+            }
         }
     }
     //getters
@@ -163,10 +169,6 @@ public abstract class PhysicalPart {
 
     public boolean isGravityIncluded() {
         return gravityIncluded;
-    }
-
-    public float getMaxVelocity() {
-        return maxVelocity;
     }
 
 
@@ -217,10 +219,6 @@ public abstract class PhysicalPart {
 
     public void setGravityIncluded(boolean gravityIncluded) {
         this.gravityIncluded = gravityIncluded;
-    }
-
-    public void setMaxVelocity(float maxVelocity) {
-        this.maxVelocity = maxVelocity;
     }
 
     public void setSpawnPoint(Vector2 spawnPoint) {

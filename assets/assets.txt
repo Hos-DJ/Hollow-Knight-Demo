@@ -8949,6 +8949,7 @@ animation/Particles & Effects/bee_particle_anim.png
 animation/Particles & Effects/binding shield flash.png
 animation/Particles & Effects/black_grass_Particle.png
 animation/Particles & Effects/black_soul_orb.png
+animation/Particles & Effects/black_soul_orb.png.p
 animation/Particles & Effects/blue_butterfly.png
 animation/Particles & Effects/blue_shrine_clouds.png
 animation/Particles & Effects/boss_door_fog.png
@@ -9122,6 +9123,7 @@ animation/Particles & Effects/np_scenery_splats_0002_3.png
 animation/Particles & Effects/np_scenery_splats_0003_2.png
 animation/Particles & Effects/np_scenery_splats_0004_1.png
 animation/Particles & Effects/overcharm_shatter_particle.png
+animation/Particles & Effects/particle.png
 animation/Particles & Effects/particle_01.png
 animation/Particles & Effects/particle_centipede.png
 animation/Particles & Effects/particle_drip.png
@@ -9447,31 +9449,8 @@ animation/Zote/Talk_004.png
 animation/Zote/Turn.png
 animation/Zote/Turn_000.png
 animation/Zote/Turn_001.png
-animations/Effects/BlastSoul.png
-animations/Effects/CrystalLaser.png
-animations/Effects/Dash Effect.png
-animations/Effects/DownSlashEffect.png
-animations/Effects/LaserCircle.png
-animations/Effects/ShadowScream.png
-animations/Effects/SlashEffect.png
-animations/Effects/SlashEffectAlt.png
-animations/Effects/SoulScream.png
-animations/Effects/UpSlashEffect.png
-animations/Knight/Airborne.png
-animations/Knight/Dash.png
-animations/Knight/Death.png
-animations/Knight/Double Jump.png
-animations/Knight/DownSlash.png
-animations/Knight/Fireball Cast.png
-animations/Knight/Focus End.png
-animations/Knight/Focus Get.png
-animations/Knight/Focus.png
-animations/Knight/Idle Hurt.png
-animations/Knight/Idle.png
-animations/Knight/Landing.png
-animations/Knight/Run.png
-animations/Knight/Wall Slide.png
-animations/Knight/Walljump.png
+background.png
+black_soul_orb.png
 cd_floor_02.tsx
 cd_floor_highway_06.tsx
 cd_wall_01.tsx
@@ -9488,12 +9467,15 @@ fung_new_0133_Layer-236.tsx
 fung_new_0136_Layer-233.tsx
 fung_pillar_wall_0000_3.tsx
 fung_pillar_wall_0001_2.tsx
+gdx-particle-editor.jar
 highway_01_layered_0004_Layer-5.tsx
 highway_FG_0007_Layer-78.tsx
 hunter_scenery_0001_a.tsx
 hunter_scenery_0002_a.tsx
 libgdx.png
 mine_globe_02.tsx
+particle.png
+particleDemo.p
 ruin_layered_0057_l.tsx
 ruin_village_thing_0000_a.tsx
 shelf_short.tsx
