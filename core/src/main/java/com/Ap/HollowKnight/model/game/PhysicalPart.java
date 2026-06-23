@@ -27,7 +27,7 @@ public abstract class PhysicalPart {
     private boolean gravityIncluded;
     private FacingDirection facingDirection;
     private static final float GROUND_SNAP_EPSILON = 0.05f;
-    protected static final float GRAVITY = -500f;
+    protected static final float GRAVITY = -700.0f;
 
     public PhysicalPart(Vector2 position, Rectangle hitBox, Vector2 spawnPoint) {
         this.position         = position;

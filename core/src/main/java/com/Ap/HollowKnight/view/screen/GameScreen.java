@@ -215,15 +215,7 @@ public class GameScreen extends BaseScreen {
             if (animType == null) continue;
 
             Animation<TextureRegion> animation = AssetLoader.getInstance().getAnimation(animType);
-
-            // Set PlayMode based on the specific type
-            if (animType instanceof CrawlidAnimationType) {
-                animation.setPlayMode(((CrawlidAnimationType) animType).getPlayMode());
-            } else if (animType instanceof HuskHornHeadAnimationType) {
-                animation.setPlayMode(((HuskHornHeadAnimationType) animType).getPlayMode());
-            }else if(animType instanceof MossflyAnimationType){
-                animation.setPlayMode(((MossflyAnimationType) animType).getPlayMode());
-            }
+            animation.setPlayMode(animType.getPlayMode());
 
             TextureRegion currentFrame = animation.getKeyFrame(stateTime);
             boolean isFacingRight = enemy.getFacingDirection() == FacingDirection.RIGHT;
@@ -374,7 +366,7 @@ public class GameScreen extends BaseScreen {
         }
 
         else if (enemy instanceof Mossfly){
-            if (enemy.isDead()) return HuskHornHeadAnimationType.DEATH_LAND;
+            if (enemy.isDead()) return MossflyAnimationType.DEATH_LAND;
             switch (enemy.getCurrentState()) {
                 case IDLE: return MossflyAnimationType.SHAKE;
                 case RUNNING: return MossflyAnimationType.FLY;

@@ -3,6 +3,7 @@ package com.Ap.HollowKnight.model.map;
 import com.Ap.HollowKnight.model.enemy.Crawlid;
 import com.Ap.HollowKnight.model.enemy.EnemyModel;
 import com.Ap.HollowKnight.model.enemy.HuskHornHead;
+import com.Ap.HollowKnight.model.enemy.Mossfly;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.PointMapObject;
@@ -83,7 +84,8 @@ public class TiledMapHelper {
                     case "HuskHornHead":
                         enemies.add(new HuskHornHead(new Vector2(x, y), new Rectangle(x, y, 70f, 120f), new Vector2(x, y), 30));
                         break;
-                    default:
+                    case "Mossfly":
+                        enemies.add(new Mossfly(new Vector2(x,y),new Rectangle(x,y, 90f,90f),new Vector2(x, y)));
                         break;
                 }
             }

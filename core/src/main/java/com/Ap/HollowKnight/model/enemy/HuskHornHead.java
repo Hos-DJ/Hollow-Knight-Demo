@@ -8,20 +8,19 @@ import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
 
-public class HuskHornHead extends EnemyModel{
+public class HuskHornHead extends EnemyModel {
     private static final float PATROL_SPEED = 100.0f;
     private static final float RUNNING_SPEED = 220.0f;
-    private static final float WALK_DURATION     = 2.5f;
-    private static final float REST_DURATION     = 6.0f;
-    private static final float FOV_WIDTH         = 400f;
-    private static final float FOV_VERTICAL_PAD  = 16f;
+    private static final float WALK_DURATION = 2.5f;
+    private static final float REST_DURATION = 6.0f;
+    private static final float FOV_WIDTH = 400f;
+    private static final float FOV_VERTICAL_PAD = 16f;
 
-    private float restingTimer =0f;
+    private float restingTimer = 0f;
     private float walkingTimer = WALK_DURATION;
-    private Rectangle fov = new Rectangle();
+    private final Rectangle fov = new Rectangle();
 
     public HuskHornHead(Vector2 position, Rectangle hitBox, Vector2 spawnPoint, int hp) {
-
         super(position, hitBox, spawnPoint, hp);
         this.getVelocity().x = PATROL_SPEED;
     }
@@ -29,29 +28,31 @@ public class HuskHornHead extends EnemyModel{
     @Override
     public void update(float delta, ArrayList<Block> blocks) {
         updateFOV();
-        Rectangle HitBox  = LevelModel.getInstance().getKnight().getHitBox();
-        if(fov.overlaps(HitBox)){
+        Rectangle knightHitBox = LevelModel.getInstance().getKnight().getHitBox();
+        if (fov.overlaps(knightHitBox)) {
             charge();
         }
-        switch(this.getCurrentState()){
-            case IDLE ->{
-                restingTimer -=delta;
-                if(restingTimer<=0){
+
+        switch (this.getCurrentState()) {
+            case IDLE -> {
+                restingTimer -= delta;
+                if (restingTimer <= 0) {
                     this.setCurrentState(EnemyState.PATROLLING);
-                    this.getVelocity().x = (this.getFacingDirection()==FacingDirection.RIGHT)? PATROL_SPEED : -PATROL_SPEED;
-                    walkingTimer =  WALK_DURATION;
+                    this.getVelocity().x = getPatrolVelocity();
+                    walkingTimer = WALK_DURATION;
                 }
             }
             case PATROLLING -> {
                 walkingTimer -= delta;
-                if(walkingTimer<=0){
-                    this.getVelocity().x = 0 ;
+                if (walkingTimer <= 0) {
+                    this.getVelocity().x = 0;
                     this.setCurrentState(EnemyState.IDLE);
                     restingTimer = REST_DURATION;
                 }
             }
         }
-        if(isHeadingForWall(blocks)||isHeadingForCliff(blocks)){
+
+        if (isHeadingForWall(blocks) || isHeadingForCliff(blocks)) {
             turn();
         }
 
@@ -61,12 +62,11 @@ public class HuskHornHead extends EnemyModel{
     private void turn() {
         if (getFacingDirection() == FacingDirection.RIGHT) {
             setFacingDirection(FacingDirection.LEFT);
-            getVelocity().x = -PATROL_SPEED;
         } else {
             setFacingDirection(FacingDirection.RIGHT);
-            getVelocity().x = PATROL_SPEED;
         }
 
+        getVelocity().x = getPatrolVelocity();
         this.setCurrentState(EnemyState.TURNING);
     }
 
@@ -74,16 +74,20 @@ public class HuskHornHead extends EnemyModel{
         float fovX = (getFacingDirection() == FacingDirection.RIGHT)
             ? getHitBox().x + getHitBox().width
             : getHitBox().x - FOV_WIDTH;
-        float fovY   = getHitBox().y - FOV_VERTICAL_PAD;
-        float fovH   = getHitBox().height + FOV_VERTICAL_PAD * 2f;
-        fov.set(fovX, fovY, FOV_WIDTH, fovH);
+        float fovY = getHitBox().y - FOV_VERTICAL_PAD;
+        float fovHeight = getHitBox().height + FOV_VERTICAL_PAD * 2f;
+        fov.set(fovX, fovY, FOV_WIDTH, fovHeight);
     }
 
-    private void charge(){
-        if(this.getCurrentState()==EnemyState.RUNNING)return;
-        this.setCurrentState(EnemyState.RUNNING);
-        this.getVelocity().x = (this.getFacingDirection()==FacingDirection.RIGHT)? RUNNING_SPEED : -RUNNING_SPEED;
+    private void charge() {
+        if (this.getCurrentState() == EnemyState.RUNNING) return;
 
+        this.setCurrentState(EnemyState.RUNNING);
+        this.getVelocity().x = getFacingDirection() == FacingDirection.RIGHT ? RUNNING_SPEED : -RUNNING_SPEED;
+    }
+
+    private float getPatrolVelocity() {
+        return getFacingDirection() == FacingDirection.RIGHT ? PATROL_SPEED : -PATROL_SPEED;
     }
 
     @Override

@@ -7,6 +7,8 @@ GreenPath.tiled-project
 GreenPath.tiled-session
 Grimm_town_signs_0000_2.tsx
 Main_tent_chain.tsx
+Mighty_Zote.tsx
+Mighty_Zote_0021_2.tsx
 animation/Airborne.png
 animation/Airborne_000.png
 animation/Airborne_001.png
@@ -5526,6 +5528,8 @@ animation/Architecture & Environment/Grass & Vines/break_rag_anim0010.png
 animation/Architecture & Environment/Grass & Vines/break_rag_anim0011.png
 animation/Architecture & Environment/Grass & Vines/break_rag_anim0012.png
 animation/Architecture & Environment/Grass & Vines/break_rag_anim0013.png
+animation/Architecture & Environment/Grass & Vines/forgotton grass.png
+animation/Architecture & Environment/Grass & Vines/forgtton grass_2.png
 animation/Architecture & Environment/Grass & Vines/fung_vine_cut000.png
 animation/Architecture & Environment/Grass & Vines/fung_vine_cut001.png
 animation/Architecture & Environment/Grass & Vines/fung_vine_cut002.png
@@ -9458,16 +9462,39 @@ cd_wall_04.tsx
 final_boss_chain.tsx
 flames.tsx
 floor_layered_0000_04_green.tsx
+forgotton grass.tsx
+forgtton grass_2.tsx
+fung_Ground.tsx
+fung_big_roof_0002_a.tsx
+fung_big_roof_0004_a.tsx
+fung_floor1_0001_Layer-2.tsx
+fung_floor1_0002_Layer-0.tsx
+fung_new_0069_Layer-279 #624037.tsx
+fung_new_0080_Layer-273.tsx
 fung_new_0094_Layer-263.tsx
+fung_new_0116_Layer-266.tsx
 fung_new_0118_Layer-248.tsx
+fung_new_0119_Layer-247.tsx
+fung_new_0120_Layer-246.tsx
+fung_new_0126_03.tsx
 fung_new_0127_02.tsx
 fung_new_0128_01.tsx
 fung_new_0129_Layer-240.tsx
+fung_new_0131_Layer-238.tsx
 fung_new_0133_Layer-236.tsx
 fung_new_0136_Layer-233.tsx
 fung_pillar_wall_0000_3.tsx
 fung_pillar_wall_0001_2.tsx
+fungd_rock_01_0002_a.tsx
+fungd_rock_03_0001_Layer-1.tsx
+fungd_spikes_01.tsx
+fungd_spikes_04.tsx
+fungd_spikes_05.tsx
+fungd_spikes_06.tsx
+fungd_spikes_08.tsx
+fungd_spikes_0_0003_b.tsx
 gdx-particle-editor.jar
+grass_break_wall.tsx
 highway_01_layered_0004_Layer-5.tsx
 highway_FG_0007_Layer-78.tsx
 hunter_scenery_0001_a.tsx
@@ -9476,16 +9503,22 @@ libgdx.png
 mine_globe_02.tsx
 particle.png
 particleDemo.p
+roof_FG_rock_08_0000_06.tsx
+roof_FG_rock_08_0002_04.tsx
 ruin_layered_0057_l.tsx
 ruin_village_thing_0000_a.tsx
 shelf_short.tsx
 shelf_tall.tsx
 shop_0000_a.tsx
+sign_post.tsx
+sign_post_broken.tsx
 spikes0002.tsx
 spikes_still.tsx
 statue_07.tsx
 statue_07_base.tsx
+thorn_plinth.tsx
 vil_floor_01.tsx
+vine_platform_01.tsx
 wallpaper_small.tsx
 well_extension_0000_2.tsx
 wp_additions_01_0006_a.tsx

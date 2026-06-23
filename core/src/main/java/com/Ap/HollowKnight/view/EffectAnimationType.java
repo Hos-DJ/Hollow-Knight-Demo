@@ -2,7 +2,7 @@ package com.Ap.HollowKnight.view;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 
-public enum EffectAnimationType implements AnimationType{
+public enum EffectAnimationType implements AnimationType {
     BLAST_SOUL("animation/Effects/BlastSoul.png", 8, 1, 8, Animation.PlayMode.NORMAL),
     CRYSTAL_LASER("animation/Effects/CrystalLaser.png", 15, 1, 15, Animation.PlayMode.NORMAL),
     DASH_EFFECT("animation/Effects/Dash Effect.png", 8, 1, 8, Animation.PlayMode.NORMAL),
@@ -14,38 +14,14 @@ public enum EffectAnimationType implements AnimationType{
     SHADOW_SCREAM("animation/Effects/ShadowScream.png", 13, 1, 14, Animation.PlayMode.NORMAL),
     SOUL_SCREAM("animation/Effects/SoulScream.png", 13, 1, 13, Animation.PlayMode.NORMAL);
 
+    private final Spec spec;
 
-    private final String path ;
-    private final int frameCount;
-    private final int rowCount;
-    private final int colCount;
-    private final Animation.PlayMode playMode;
-
-    EffectAnimationType(String path, int frameCount, int rowCount, int colCount , Animation.PlayMode playMode) {
-        this.path = path;
-        this.frameCount = frameCount;
-        this.rowCount = rowCount;
-        this.colCount = colCount;
-        this.playMode = playMode;
+    EffectAnimationType(String path, int frameCount, int rowCount, int colCount, Animation.PlayMode playMode) {
+        this.spec = new Spec(path, frameCount, rowCount, colCount, playMode);
     }
 
-    public String getPath() {
-        return path;
-    }
-
-    public int getFrameCount() {
-        return frameCount;
-    }
-
-    public int getRowCount() {
-        return rowCount;
-    }
-
-    public int getColCount() {
-        return colCount;
-    }
-
-    public Animation.PlayMode getPlayMode() {
-        return playMode;
+    @Override
+    public Spec getSpec() {
+        return spec;
     }
 }
