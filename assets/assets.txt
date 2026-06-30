@@ -290,6 +290,11 @@ HUD/SoulOrb_Half.png
 Main_tent_chain.tsx
 Mighty_Zote.tsx
 Mighty_Zote_0021_2.tsx
+Ui/Achievements/Defeat Boss.png
+Ui/Achievements/Game Completion.png
+Ui/Achievements/Secret Discovered.png
+Ui/Achievements/Speedrun.png
+Ui/Achievements/True Hunter.png
 Ui/Audio/backgroundMusic/City of Tears.mp3
 Ui/Audio/backgroundMusic/Greenpath.mp3
 Ui/Audio/backgroundMusic/Main Theme.mp3

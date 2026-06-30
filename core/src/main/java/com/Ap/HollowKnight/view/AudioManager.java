@@ -63,6 +63,19 @@ public class AudioManager{
         currentTrackType = null;
     }
 
+    public void changeSfxVolume(float volume) {
+        sfxVolume = volume;
+    }
+
+    public void changeMusicVolume(float volume) {
+        musicVolume = volume;
+        if(currentTrack != null){
+            currentTrack.setVolume(musicVolume);
+        }
+    }
+
+
+
 //    public void playSfxZote() {
 //        Sound[] zoteSounds =  new Sound[3];
 //        zoteSounds[0]=

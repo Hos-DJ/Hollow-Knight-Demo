@@ -1,6 +1,7 @@
 package com.Ap.HollowKnight.view.screen;
 
 import com.Ap.HollowKnight.HollowKnight;
+import com.Ap.HollowKnight.controller.SettingsController;
 import com.Ap.HollowKnight.view.AssetLoader;
 import com.Ap.HollowKnight.view.AudioManager;
 import com.badlogic.gdx.Gdx;
@@ -10,10 +11,12 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -27,10 +30,11 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public abstract class BaseScreen implements Screen {
     protected final HollowKnight game;
-
+    private SettingsController settingsController;
     protected Stage stage;
     protected Table rootTable;
     protected AudioManager audioManager;
+    private Texture brightnessTexture;
     protected Stack mainStack;
     protected Stack modalStack;
     protected Stack toastStack;
@@ -42,7 +46,8 @@ public abstract class BaseScreen implements Screen {
     protected AssetLoader loader;
     protected ParticleEffect mainMenuGlowingDots;
     protected Slider.SliderStyle sliderStyle;
-    TextButton.TextButtonStyle  buttonStyle;
+    protected TextButton.TextButtonStyle  buttonStyle;
+    protected Label.LabelStyle labelStyle;
     protected InputMultiplexer inputMultiplexer;
 
     protected BaseScreen(HollowKnight game) {
@@ -57,8 +62,17 @@ public abstract class BaseScreen implements Screen {
         buttonStyle.font = loader.getFont("font_24");
         buttonStyle.fontColor = Color.LIGHT_GRAY;
         buttonStyle.overFontColor = Color.WHITE;
+        labelStyle = new Label.LabelStyle();
+        labelStyle.font = loader.getFont("font_24");
+        labelStyle.fontColor = Color.WHITE;
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pixmap.setColor(Color.BLACK);
+        pixmap.fill();
+        brightnessTexture = new Texture(pixmap);
+        pixmap.dispose();
         this.game = game;
         sliderStyle = getSliderStyle();
+        settingsController = SettingsController.getInstance();
     }
 
     private Slider.SliderStyle getSliderStyle() {
@@ -136,6 +150,15 @@ public abstract class BaseScreen implements Screen {
             stage.act(delta);
             stage.draw();
         }
+        float brightness = settingsController.getBrightness();
+        if(brightness>0.9f)
+            brightness=0.9f;
+        batch.begin();
+        batch.setColor(0f, 0f, 0f, brightness);
+        batch.draw(brightnessTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.setColor(Color.WHITE);
+        batch.end();
+
     }
 
     @Override

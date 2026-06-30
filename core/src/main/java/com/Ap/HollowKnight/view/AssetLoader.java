@@ -45,7 +45,7 @@ public class AssetLoader {
         params14.fontParameters.size = 14;
         params14.fontParameters.color = Color.LIGHT_GRAY;
         internalManager.load("font_14.ttf", BitmapFont.class, params14);
-
+        queueAchievements(AchievementsAssets.values());
         queueTextures(KnightAnimationType.values());
         queueTextures(EffectAnimationType.values());
         queueTextures(CrawlidAnimationType.values());
@@ -83,6 +83,12 @@ public class AssetLoader {
     private void queueTextures(AnimationType[] animationTypes) {
         for (AnimationType type : animationTypes) {
             type.loadTexture(internalManager);
+        }
+    }
+
+    private void queueAchievements(AchievementsAssets[] achievementsAssets) {
+        for (AchievementsAssets asset : achievementsAssets) {
+            internalManager.load(asset.getPath(), Texture.class);
         }
     }
 
@@ -124,5 +130,9 @@ public class AssetLoader {
 
     public BitmapFont getFont(String key) {
         return fontMap.get(key);
+    }
+
+    public Texture getAchievement(AchievementsAssets achievement) {
+        return internalManager.get(achievement.getPath(), Texture.class);
     }
 }

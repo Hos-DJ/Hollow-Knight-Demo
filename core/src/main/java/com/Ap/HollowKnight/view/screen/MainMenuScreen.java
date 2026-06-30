@@ -46,7 +46,7 @@ public class MainMenuScreen extends BaseScreen {
         });
         TextButton achievementBtn = new TextButton("Achievement", buttonStyle);
         setupButton(achievementBtn,()->{
-
+            ScreenManager.getInstance().setScreen("AchievementsScreen");
         });
         TextButton guideBtn = new TextButton("Guide", buttonStyle);
         setupButton(guideBtn,()->{
