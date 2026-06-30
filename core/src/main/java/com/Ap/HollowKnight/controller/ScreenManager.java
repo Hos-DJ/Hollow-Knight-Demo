@@ -3,13 +3,7 @@ package com.Ap.HollowKnight.controller;
 import com.Ap.HollowKnight.HollowKnight;
 import com.Ap.HollowKnight.model.level.LevelModel;
 import com.Ap.HollowKnight.model.map.TiledMapHelper;
-import com.Ap.HollowKnight.view.screen.AchievementsScreen;
-import com.Ap.HollowKnight.view.screen.GameScreen;
-import com.Ap.HollowKnight.view.screen.InventoryScreen;
-import com.Ap.HollowKnight.view.screen.MainMenuScreen;
-import com.Ap.HollowKnight.view.screen.PauseScreen;
-import com.Ap.HollowKnight.view.screen.SettingsScreen;
-import com.Ap.HollowKnight.view.screen.VictoryScreen;
+import com.Ap.HollowKnight.view.screen.*;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -55,7 +49,7 @@ public class ScreenManager {
         TiledMapTileLayer mainLayer = (TiledMapTileLayer) map.getLayers().get(0);
         float mapWidth = mainLayer.getWidth() * mainLayer.getTileWidth();
         float mapHeight = mainLayer.getHeight() * mainLayer.getTileHeight();
-        LevelModel.getInstance(mapHelper.getRectangles(), mapHelper.getEnemies(), mapWidth, mapHeight, mapHelper.getSafeSpots(), mapHelper.spawnPoint());
+        LevelModel.getInstance(mapHelper.getRectangles(), mapHelper.getEnemies(), mapWidth, mapHeight, mapHelper.getSafeSpots(), mapHelper.spawnPoint(),mapHelper.getZote());
         screens.put(name, new GameScreen(game, map));
     }
 

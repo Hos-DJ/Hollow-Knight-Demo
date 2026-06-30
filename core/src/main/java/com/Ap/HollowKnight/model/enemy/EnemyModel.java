@@ -4,55 +4,53 @@ import com.Ap.HollowKnight.model.game.FacingDirection;
 import com.Ap.HollowKnight.model.game.PhysicalPart;
 import com.Ap.HollowKnight.model.map.Block;
 import com.Ap.HollowKnight.model.map.BlockType;
-import com.Ap.HollowKnight.model.player.PlayerCondition;
-import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
 
-import static com.Ap.HollowKnight.model.game.FacingDirection.RIGHT;
-
 public abstract class EnemyModel extends PhysicalPart {
     private int hp;
     private boolean isDead = false;
-    private EnemyState  currentState = EnemyState.PATROLLING;
+    private EnemyState currentState = EnemyState.PATROLLING;
     private static final float CLIFF_PROBE_AHEAD = 5f;
     private static final float CLIFF_PROBE_DEPTH = 5f;
-    private static final float WALL_PROBE_AHEAD  = 3f;
+    private static final float WALL_PROBE_AHEAD = 6f;
+
     public EnemyModel(Vector2 position, Rectangle hitBox, Vector2 spawnPoint, int hp) {
         super(position, hitBox, spawnPoint);
         this.hp = hp;
     }
 
     public boolean isHeadingForCliff(ArrayList<Block> blocks) {
-    if (!isOnGround()) return false;
+        if (!isOnGround()) return false;
 
-    float checkX = (getFacingDirection() == FacingDirection.RIGHT)
-        ? getHitBox().x + getHitBox().width + CLIFF_PROBE_AHEAD
-        : getHitBox().x - CLIFF_PROBE_AHEAD;
-    float checkY = getHitBox().y - CLIFF_PROBE_DEPTH;
+        float checkX = (getFacingDirection() == FacingDirection.RIGHT)
+            ? getHitBox().x + getHitBox().width + CLIFF_PROBE_AHEAD
+            : getHitBox().x - CLIFF_PROBE_AHEAD;
+        float checkY = getHitBox().y - CLIFF_PROBE_DEPTH;
 
-        for(Block block : blocks) {
-            if(block.getType()!= BlockType.GROUND) continue;
-            if(block.getBound().contains(checkX, checkY)) {
+        for (Block block : blocks) {
+            if (block.getType() != BlockType.GROUND) continue;
+            if (block.getBound().contains(checkX, checkY)) {
                 return false;
             }
         }
 
         return true;
     }
+
     public boolean isHeadingForWall(ArrayList<Block> blocks) {
         float checkX = (getFacingDirection() == FacingDirection.RIGHT)
             ? getHitBox().x + getHitBox().width + WALL_PROBE_AHEAD
             : getHitBox().x - WALL_PROBE_AHEAD;
 
 
-        float checkYLow  = getHitBox().y + 4f;
+        float checkYLow = getHitBox().y;
         float checkYHigh = getHitBox().y + getHitBox().height - 4f;
 
         for (Block block : blocks) {
-            if (block.getType() != BlockType.WALL&&block.getType()!=BlockType.SPIKE) continue;
+            if (block.getType() != BlockType.WALL && block.getType() != BlockType.SPIKE) continue;
             if (block.getBound().contains(checkX, checkYLow)
                 || block.getBound().contains(checkX, checkYHigh)) {
                 return true;
@@ -62,13 +60,11 @@ public abstract class EnemyModel extends PhysicalPart {
     }
 
 
-
     @Override
-    public void update(float delta,ArrayList<Block> blocks) {
+    public void update(float delta, ArrayList<Block> blocks) {
 
 
-
-        applyPhysics(delta,blocks);
+        applyPhysics(delta, blocks);
     }
 
     @Override
@@ -91,7 +87,7 @@ public abstract class EnemyModel extends PhysicalPart {
     }
 
     protected void die() {
-        isDead =  true;
+        isDead = true;
         setGravityIncluded(true);
     }
 

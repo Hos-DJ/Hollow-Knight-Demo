@@ -8,7 +8,7 @@ public enum BlockType {
 
     private final String name;
 
-    BlockType(String name){
+    BlockType(String name) {
         this.name = name;
     }
 
@@ -16,14 +16,15 @@ public enum BlockType {
         return name;
     }
 
-    public static BlockType fromName(String name){
-        for (BlockType blockType : BlockType.values()){
-            if (blockType.getName().equals(name)){
+    public static BlockType fromName(String name) {
+        for (BlockType blockType : BlockType.values()) {
+            if (blockType.getName().equals(name)) {
                 return blockType;
             }
         }
         return null;
     }
+
     public boolean blocksVertical() {
         return this == GROUND || this == CEIL;
     }

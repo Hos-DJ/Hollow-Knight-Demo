@@ -1,9 +1,7 @@
 package com.Ap.HollowKnight.model.map;
 
-import com.Ap.HollowKnight.model.enemy.Crawlid;
-import com.Ap.HollowKnight.model.enemy.EnemyModel;
-import com.Ap.HollowKnight.model.enemy.HuskHornHead;
-import com.Ap.HollowKnight.model.enemy.Mossfly;
+import com.Ap.HollowKnight.model.enemy.*;
+import com.Ap.HollowKnight.model.zote.Zote;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.PointMapObject;
@@ -85,12 +83,31 @@ public class TiledMapHelper {
                         enemies.add(new HuskHornHead(new Vector2(x, y), new Rectangle(x, y, 70f, 120f), new Vector2(x, y), 30));
                         break;
                     case "Mossfly":
-                        enemies.add(new Mossfly(new Vector2(x,y),new Rectangle(x,y, 90f,90f),new Vector2(x, y)));
+                        enemies.add(new Mossfly(new Vector2(x, y), new Rectangle(x, y, 90f, 90f), new Vector2(x, y)));
                         break;
+                    case "CrystalGuardian":
+                        enemies.add(new CrystalGuardian(new Vector2(x, y), new Rectangle(x, y, 60f, 110f), new Vector2(x, y), 60));
                 }
             }
         }
         return enemies;
+    }
+
+    public Zote getZote() {
+        MapLayer layer = tiledMap.getLayers().get("collision objects");
+        for (MapObject object : layer.getObjects()) {
+            if (object instanceof PointMapObject &&
+                object.getProperties().containsKey("spawnPointOf")) {
+                float x = object.getProperties().get("x", Float.class);
+                float y = object.getProperties().get("y", Float.class);
+                String enemyType = object.getProperties().get("spawnPointOf", String.class);
+                if (enemyType.equals("Zote")) {
+                    return new Zote(new Vector2(x, y), new Rectangle(x, y, 120, 60f), new Vector2(x, y));
+                }
+            }
+        }
+        return null;
+
     }
 
 }

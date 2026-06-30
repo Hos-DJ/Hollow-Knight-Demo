@@ -6,5 +6,7 @@ public enum EnemyState {
     TURNING,
     IDLE,
     DEATH_LAND,
-    DEATH_AIR;
+    DEATH_AIR,
+    SHOOTING,
+    CHARGING;
 }

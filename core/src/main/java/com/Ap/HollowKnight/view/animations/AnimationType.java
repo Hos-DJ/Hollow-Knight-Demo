@@ -1,4 +1,4 @@
-package com.Ap.HollowKnight.view;
+package com.Ap.HollowKnight.view.animations;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;

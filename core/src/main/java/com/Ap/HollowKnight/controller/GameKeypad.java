@@ -11,20 +11,23 @@ public enum GameKeypad {
     DASH(Input.Keys.SHIFT_LEFT),
     ATTACK(Input.Keys.J),
     FOCUS(Input.Keys.E),
-    VENGEFUL_SPIRIT(Input.Keys.Z);
+    INVENTORY(Input.Keys.I),
+    VENGEFUL_SPIRIT(Input.Keys.Z),
+    HOWLING_WRATH(Input.Keys.X);
 
+    private int keyNumber;
 
-
-    private int keyNumber ;
-     private GameKeypad(int keyNumber) {
+    private GameKeypad(int keyNumber) {
         this.keyNumber = keyNumber;
-     }
-     public int getKeyNumber() {
-         return keyNumber;
-     }
-     public void setKeyNumber(int keyNumber) {
-         this.keyNumber = keyNumber;
-     }
+    }
+
+    public int getKeyNumber() {
+        return keyNumber;
+    }
+
+    public void setKeyNumber(int keyNumber) {
+        this.keyNumber = keyNumber;
+    }
 
     public static GameKeypad fromKeycode(int keycode) {
         for (GameKeypad key : values()) {

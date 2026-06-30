@@ -1,4 +1,4 @@
-package com.Ap.HollowKnight.view;
+package com.Ap.HollowKnight.view.animations;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 

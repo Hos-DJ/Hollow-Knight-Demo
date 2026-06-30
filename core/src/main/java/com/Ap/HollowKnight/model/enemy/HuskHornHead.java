@@ -13,9 +13,11 @@ public class HuskHornHead extends EnemyModel {
     private static final float RUNNING_SPEED = 220.0f;
     private static final float WALK_DURATION = 2.5f;
     private static final float REST_DURATION = 6.0f;
+    private static final float TURN_DURATION = 1.0f;
     private static final float FOV_WIDTH = 400f;
     private static final float FOV_VERTICAL_PAD = 16f;
 
+    private float turningTimer = 0f;
     private float restingTimer = 0f;
     private float walkingTimer = WALK_DURATION;
     private final Rectangle fov = new Rectangle();
@@ -50,6 +52,12 @@ public class HuskHornHead extends EnemyModel {
                     restingTimer = REST_DURATION;
                 }
             }
+            case TURNING -> {
+                turningTimer -= delta;
+                if (turningTimer <= 0) {
+                    this.setCurrentState(EnemyState.PATROLLING);
+                }
+            }
         }
 
         if (isHeadingForWall(blocks) || isHeadingForCliff(blocks)) {
@@ -66,8 +74,9 @@ public class HuskHornHead extends EnemyModel {
             setFacingDirection(FacingDirection.RIGHT);
         }
 
-        getVelocity().x = getPatrolVelocity();
+        getVelocity().x = -getPatrolVelocity();
         this.setCurrentState(EnemyState.TURNING);
+        turningTimer = TURN_DURATION;
     }
 
     private void updateFOV() {
@@ -77,6 +86,11 @@ public class HuskHornHead extends EnemyModel {
         float fovY = getHitBox().y - FOV_VERTICAL_PAD;
         float fovHeight = getHitBox().height + FOV_VERTICAL_PAD * 2f;
         fov.set(fovX, fovY, FOV_WIDTH, fovHeight);
+    }
+
+    public Rectangle getFov() {
+        updateFOV();
+        return fov;
     }
 
     private void charge() {

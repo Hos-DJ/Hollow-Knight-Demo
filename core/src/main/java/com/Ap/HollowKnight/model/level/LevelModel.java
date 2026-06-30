@@ -3,6 +3,8 @@ package com.Ap.HollowKnight.model.level;
 import com.Ap.HollowKnight.model.enemy.EnemyModel;
 import com.Ap.HollowKnight.model.map.Block;
 import com.Ap.HollowKnight.model.player.Knight;
+import com.Ap.HollowKnight.model.zote.Zote;
+import com.Ap.HollowKnight.view.PlayerHUD;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
@@ -12,10 +14,12 @@ public class LevelModel {
     private static LevelModel instance;
 
     private ArrayList<Block> blocks;
-    private ArrayList <Vector2> safeSpots;
+    private ArrayList<Vector2> safeSpots;
     private Vector2 spawnPoint;
-    private ArrayList <EnemyModel> enemies;
+    private ArrayList<EnemyModel> enemies;
     private Knight knight;
+    private PlayerHUD hud;
+    private Zote zote;
     private float mapWidth;
     private float mapHeight;
 
@@ -29,21 +33,23 @@ public class LevelModel {
         return instance;
     }
 
-    public static LevelModel getInstance(ArrayList<Block> blocks, ArrayList<EnemyModel> enemies, float mapWidth, float mapHeight, ArrayList<Vector2> safeSpots, Vector2 spawnPoint) {
+    public static LevelModel getInstance(ArrayList<Block> blocks, ArrayList<EnemyModel> enemies, float mapWidth, float mapHeight, ArrayList<Vector2> safeSpots, Vector2 spawnPoint,Zote zote) {
         if (instance == null) {
             instance = new LevelModel();
         }
-        instance.initialize(blocks, enemies, mapWidth, mapHeight, safeSpots, spawnPoint);
+        instance.initialize(blocks, enemies, mapWidth, mapHeight, safeSpots, spawnPoint,zote);
         return instance;
     }
 
-    private void initialize(ArrayList<Block> blocks,ArrayList <EnemyModel> enemies, float mapWidth, float mapHeight,ArrayList<Vector2> safeSpots,Vector2 spawnPoint) {
+    private void initialize(ArrayList<Block> blocks, ArrayList<EnemyModel> enemies, float mapWidth, float mapHeight, ArrayList<Vector2> safeSpots, Vector2 spawnPoint , Zote zote) {
         this.blocks = blocks;
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
         this.safeSpots = safeSpots;
         this.spawnPoint = spawnPoint;
-        this.knight = new Knight(spawnPoint, new Rectangle(0, 0, 32, 64), spawnPoint,this.safeSpots);
+        this.zote = zote;
+        this.hud = new PlayerHUD();
+        this.knight = new Knight(spawnPoint, new Rectangle(0, 0, 32, 64), spawnPoint, this.safeSpots,hud);
         this.enemies = enemies;
     }
 
@@ -101,5 +107,17 @@ public class LevelModel {
 
     public void setEnemies(ArrayList<EnemyModel> enemies) {
         this.enemies = enemies;
+    }
+
+    public Zote getZote() {
+        return zote;
+    }
+
+    public void setZote(Zote zote) {
+        this.zote = zote;
+    }
+
+    public PlayerHUD getHud() {
+        return hud;
     }
 }

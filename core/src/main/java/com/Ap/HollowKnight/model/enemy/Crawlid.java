@@ -2,25 +2,25 @@ package com.Ap.HollowKnight.model.enemy;
 
 import com.Ap.HollowKnight.model.game.FacingDirection;
 import com.Ap.HollowKnight.model.map.Block;
-import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
 
-public class Crawlid extends EnemyModel{
+public class Crawlid extends EnemyModel {
     private final float SPEED = 150.0f;
+
     public Crawlid(Vector2 position, Rectangle hitBox, Vector2 spawnPoint) {
         super(position, hitBox, spawnPoint, 30);
-        this.setVelocity(new Vector2(SPEED,0));
+        this.setVelocity(new Vector2(SPEED, 0));
     }
 
     @Override
-    public void update(float delta,ArrayList<Block> blocks) {
-        if(this.isHeadingForCliff(blocks)|| this.isHeadingForWall(blocks)){
+    public void update(float delta, ArrayList<Block> blocks) {
+        if (this.isHeadingForCliff(blocks) || this.isHeadingForWall(blocks)) {
             turn();
         }
-        super.update(delta,blocks);
+        super.update(delta, blocks);
     }
 
     @Override

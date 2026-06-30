@@ -3,29 +3,30 @@ package com.Ap.HollowKnight.view.screen;
 import com.Ap.HollowKnight.HollowKnight;
 import com.Ap.HollowKnight.controller.GameFlowController;
 import com.Ap.HollowKnight.controller.GameProcessor;
-import com.Ap.HollowKnight.model.enemy.Crawlid;
-import com.Ap.HollowKnight.model.enemy.EnemyModel;
-import com.Ap.HollowKnight.model.enemy.HuskHornHead;
-import com.Ap.HollowKnight.model.enemy.Mossfly;
+import com.Ap.HollowKnight.model.enemy.*;
 import com.Ap.HollowKnight.model.game.FacingDirection;
 import com.Ap.HollowKnight.model.game.GameCamera;
 import com.Ap.HollowKnight.model.level.LevelModel;
 import com.Ap.HollowKnight.model.map.Block;
 import com.Ap.HollowKnight.model.player.Knight;
 import com.Ap.HollowKnight.model.player.PlayerCondition;
+import com.Ap.HollowKnight.model.spells.HowlingWrath;
+import com.Ap.HollowKnight.model.spells.VengefulSprit;
+import com.Ap.HollowKnight.model.zote.Zote;
+import com.Ap.HollowKnight.model.zote.ZoteState;
 import com.Ap.HollowKnight.view.*;
+import com.Ap.HollowKnight.view.animations.*;
+import com.Ap.HollowKnight.view.sounds.MusicType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.ParticleEffect;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -34,11 +35,8 @@ import java.util.ArrayList;
 
 public class GameScreen extends BaseScreen {
 
-    // Cleaning: Grouped all MVC and View components together for better readability.
-    // No logic was changed here, just organizing the variables you already had.
     private final LevelModel levelModel;
     private final TiledMap map;
-    private Knight knight;
     private GameProcessor inputController;
     private GameFlowController gameFlowController;
 
@@ -50,26 +48,30 @@ public class GameScreen extends BaseScreen {
     private PlayerHUD hud;
     private OrthogonalTiledMapRenderer renderer;
     private Texture background;
-    private ParticleEffect bgEffect;
+    private ParticleEffect glowingDots;
+    private BitmapFont font;
 
     private ArrayList<Block> blocks;
     private float stateTime = 0f;
     private PlayerCondition previousCondition;
-    private ArrayList <EnemyModel> enemies;
+    private ArrayList<EnemyModel> enemies;
+    private Knight knight;
+    private Zote zote;
 
-    // New: Added independent timers to track attack and dash durations separately.
-    // This prevents the bug where the effect animation disappears because the main stateTime resets too early when inputs are spammed.
     private float attackStateTime = 0f;
     private boolean wasAttacking = false;
     private float dashStateTime = 0f;
     private boolean wasDashing = false;
+    private float vengefulSpellTime = 0f;
+    private boolean wasVengefulActive = false;
+    private float howlingSpellTime = 0f;
+    private boolean wasHowlingActive = false;
 
-    // Cleaning: Moved your magic numbers (like 90f and 128f) into final constants at the top of the class so they are easy to adjust later.
     private final int[] backGrounds = {0};
     private final int[] foreGrounds = {1, 2};
     private final float KNIGHT_SPRITE_WIDTH = 90f;
     private final float KNIGHT_SPRITE_HEIGHT = 128f;
-    private final float EFFECT_SPRITE_SIZE = 120f;
+    private final float EFFECT_SPRITE_SIZE = 150.0f;
     private static final float PARALLAX_FACTOR = 0.5f;
 
     public GameScreen(HollowKnight game, TiledMap map) {
@@ -80,40 +82,41 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public void show() {
-        // Cleaning: Retained your exact initialization logic, just removed the TiledMapHelper
-        // since the map and blocks are now safely injected via the constructor.
+        super.show();
         this.blocks = levelModel.getBlocks();
         this.batch = new SpriteBatch();
+        this.hudCamera = new OrthographicCamera();
+        audioManager.playMusic(MusicType.CITY_OF_TEARS);
+        hudCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        this.hud = levelModel.getHud();
 
         Vector2 spawnPoint = new Vector2(levelModel.getSpawnPoint().x, levelModel.getSpawnPoint().y);
         this.knight = levelModel.getKnight();
+        this.zote = levelModel.getZote();
         knight.setOnGround(true);
 
         this.camera = new GameCamera();
         this.enemies = levelModel.getEnemies();
-        this.inputController = new GameProcessor(knight, camera,enemies);
+        this.inputController = new GameProcessor(knight, camera, enemies,zote);
         this.viewport = new ScreenViewport(camera);
-        Gdx.input.setInputProcessor(inputController);
+        addInputProcessor(inputController);
         this.background = new Texture(Gdx.files.internal("background.png"));
         background.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.ClampToEdge);
+        this.font = loader.getFont("font_24");
 
         this.renderer = new OrthogonalTiledMapRenderer(map);
         this.shapeRenderer = new ShapeRenderer();
 
-        this.hudCamera = new OrthographicCamera();
-        hudCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        this.hud = new PlayerHUD();
 
-        this.gameFlowController = new GameFlowController(this.knight, map, blocks,inputController,enemies);
-        this.bgEffect = new ParticleEffect();
-        bgEffect.load(Gdx.files.internal("particleDemo.p"), Gdx.files.internal("animation/Particles & Effects"));
-        bgEffect.start();
+        this.gameFlowController = new GameFlowController(this.knight, map, blocks, inputController, enemies,zote);
+        this.glowingDots = new ParticleEffect();
+        glowingDots.load(Gdx.files.internal("particle/glowParticle.p"), Gdx.files.internal("particle"));
+        glowingDots.start();
     }
 
     @Override
     public void render(float delta) {
-        // Cleaning: The render loop is exactly the same logically, but split into helper methods
-        // to cure the "God-Class" syndrome and make it readable like a book.
+        delta = Math.min(delta, 0.05f);
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -130,20 +133,35 @@ public class GameScreen extends BaseScreen {
 
         renderer.render(backGrounds);
         batch.begin();
-        bgEffect.update(Gdx.graphics.getDeltaTime());
-        bgEffect.draw(batch);
+        batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+        float emitterX = camera.position.x;
+        float emitterY = camera.position.y;
+        glowingDots.setPosition(emitterX, emitterY);
+        glowingDots.update(delta);
+        glowingDots.draw(batch);
+        batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         drawEnemies();
+
+        drawEnemyEffects();
+        drawZote();
         drawKnightAndEffects();
         batch.end();
+        if(zote.isPlayerNearby()&&(zote.getStatus()== ZoteState.IDLE||zote.getStatus()== ZoteState.TALKING)){
+            drawZotePrompt();
+        }
 
         renderer.render(foreGrounds);
-        hud.render(knight, hudCamera);
+        if(zote.isPlayerNearby()&&(zote.getStatus()== ZoteState.IDLE||zote.getStatus()== ZoteState.TALKING)){
+            drawZotePrompt();
+        }
+        hud.render(knight, hudCamera,delta);
 
         drawDebugHitboxes();
+        stage.act(delta);
+        stage.draw();
     }
 
     private void updateTimers(float delta) {
-        // Cleaning: Extracted your previous stateTime logic exactly as you wrote it.
         PlayerCondition current = knight.getPlayerCondition();
         if (current != previousCondition) {
             stateTime = 0f;
@@ -151,8 +169,6 @@ public class GameScreen extends BaseScreen {
         }
         stateTime += delta;
 
-        // New: Added logic to track attack and dash time independently from the main stateTime.
-        // This ensures effect animations play fully, fixing the bug where they wouldn't render if the player rapidly changed states.
         if (knight.isAttacking() && !wasAttacking) {
             attackStateTime = 0f;
         } else if (knight.isAttacking()) {
@@ -166,23 +182,29 @@ public class GameScreen extends BaseScreen {
             dashStateTime += delta;
         }
         wasDashing = knight.isDashing();
+        boolean vengefulActive = knight.getSpellManager().getVengefulSprit().isActive();
+        if (vengefulActive && !wasVengefulActive) vengefulSpellTime = 0f;
+        else if (vengefulActive) vengefulSpellTime += delta;
+        wasVengefulActive = vengefulActive;
+
+        boolean howlingActive = knight.getSpellManager().getHowlingWraiths().isActive();
+        if (howlingActive && !wasHowlingActive) howlingSpellTime = 0f;
+        else if (howlingActive) howlingSpellTime += delta;
+        wasHowlingActive = howlingActive;
     }
 
     private void drawKnightAndEffects() {
         boolean isFacingRight = knight.getFacingDirection() == FacingDirection.RIGHT;
 
-        // Cleaning: Extracted the Knight fetching logic. Retained your precise offset math.
         KnightAnimationType drawKnight = getDrawKnight();
-        Animation<TextureRegion> knightAnim = AssetLoader.getInstance().getAnimation(drawKnight);
+        Animation<TextureRegion> knightAnim = loader.getAnimation(drawKnight);
         knightAnim.setPlayMode(drawKnight.getPlayMode());
         TextureRegion currentKnightFrame = knightAnim.getKeyFrame(stateTime);
 
         float offsetX = (knight.getHitBox().width - KNIGHT_SPRITE_WIDTH) / 2f;
         float offsetY = 0f;
 
-        // New: Replaced currentKnightFrame.flip() with the advanced batch.draw() parameters.
-        // Flipping the TextureRegion directly corrupts the cached memory (causing vibration bugs). Using the flipX parameter in batch.draw is the safe libGDX standard.
-        batch.draw(
+           batch.draw(
             currentKnightFrame.getTexture(),
             knight.getPosition().x + offsetX,
             knight.getPosition().y + offsetY,
@@ -193,16 +215,23 @@ public class GameScreen extends BaseScreen {
             currentKnightFrame.getRegionWidth(),
             currentKnightFrame.getRegionHeight(),
 
-            isFacingRight, // Flip X
-            false           // Flip Y
+            isFacingRight,
+            false
         );
 
-        // Cleaning: Extracted effect drawing logic, only calling it if an effect actually exists.
         EffectAnimationType drawEffect = getDrawEffect();
         if (drawEffect != null) {
-            // New: Assigning the correct independent timer based on the effect type to prevent the visual stutter.
-            float effectTimer = (drawEffect == EffectAnimationType.DASH_EFFECT) ? dashStateTime : attackStateTime;
-            Animation<TextureRegion> effectAnim = AssetLoader.getInstance().getAnimation(drawEffect);
+            float effectTimer;
+            if (drawEffect == EffectAnimationType.DASH_EFFECT) {
+                effectTimer = dashStateTime;
+            } else if (drawEffect == EffectAnimationType.SOUL_BALL) {
+                effectTimer = vengefulSpellTime;
+            } else if (drawEffect == EffectAnimationType.SOUL_SCREAM) {
+                effectTimer = howlingSpellTime;
+            } else {
+                effectTimer = attackStateTime;
+            }
+            Animation<TextureRegion> effectAnim = loader.getAnimation(drawEffect);
             TextureRegion currentEffectFrame = effectAnim.getKeyFrame(effectTimer);
 
             handleDrawingEffect(currentEffectFrame, drawEffect, isFacingRight);
@@ -214,24 +243,24 @@ public class GameScreen extends BaseScreen {
             AnimationType animType = getEnemyAnimationType(enemy);
             if (animType == null) continue;
 
-            Animation<TextureRegion> animation = AssetLoader.getInstance().getAnimation(animType);
+            Animation<TextureRegion> animation = loader.getAnimation(animType);
             animation.setPlayMode(animType.getPlayMode());
 
             TextureRegion currentFrame = animation.getKeyFrame(stateTime);
             boolean isFacingRight = enemy.getFacingDirection() == FacingDirection.RIGHT;
 
-            // Calculating sprite dimensions. We use a 1.5x scaling factor as a baseline
-            // so the graphics generously cover the tight physical hitbox bounds.
-            float drawWidth = enemy.getHitBox().width *1.5f;
+            float drawWidth = enemy.getHitBox().width * 1.5f;
             float drawHeight = enemy.getHitBox().height * 1.5f;
 
-            // Center the graphic over the physical hitbox horizontally
             float offsetX = (enemy.getHitBox().width - drawWidth) / 2f;
 
-            // Keep the feet planted on the bottom of the hitbox
             float offsetY = 0f;
 
-            // Safe drawing to avoid TextureRegion memory corruption
+            boolean flipX = !isFacingRight;
+            if (enemy instanceof HuskHornHead || enemy instanceof CrystalGuardian) {
+                flipX = isFacingRight;
+            }
+
             batch.draw(
                 currentFrame.getTexture(),
                 enemy.getPosition().x + offsetX,
@@ -242,10 +271,69 @@ public class GameScreen extends BaseScreen {
                 currentFrame.getRegionY(),
                 currentFrame.getRegionWidth(),
                 currentFrame.getRegionHeight(),
-                (enemy instanceof HuskHornHead) == isFacingRight, // Flip X based on facing direction
-                false           // Flip Y
+                flipX,
+                false
             );
         }
+    }
+
+    private void drawEnemyEffects() {
+        for (EnemyModel enemy : enemies) {
+            if (enemy instanceof CrystalGuardian) {
+                CrystalGuardian cg = (CrystalGuardian) enemy;
+                boolean isFacingRight = cg.getFacingDirection() == FacingDirection.RIGHT;
+
+                if (cg.getCurrentState() == EnemyState.CHARGING) {
+                    Animation<TextureRegion> anim = loader.getAnimation(EffectAnimationType.LASER_CIRCLE);
+                    TextureRegion frame = anim.getKeyFrame(stateTime, true);
+
+                    float size = 150f;
+                    float ex = cg.getHitBox().x + cg.getHitBox().width / 2f - size / 2f + (isFacingRight ? 30f : -30f);
+                    float ey = cg.getHitBox().y + cg.getHitBox().height / 2f - size / 2f;
+
+                    batch.draw(
+                        frame.getTexture(), ex, ey, size, size,
+                        frame.getRegionX(), frame.getRegionY(), frame.getRegionWidth(), frame.getRegionHeight(),
+                        !isFacingRight, false
+                    );
+                } else if (cg.getCurrentState() == EnemyState.SHOOTING) {
+                    Animation<TextureRegion> anim = loader.getAnimation(EffectAnimationType.CRYSTAL_LASER);
+                    TextureRegion frame = anim.getKeyFrame(stateTime, true);
+
+                    Rectangle laserRect = cg.getLaser();
+
+                    batch.draw(
+                        frame.getTexture(),
+                        laserRect.x, laserRect.y, laserRect.width, laserRect.height,
+                        frame.getRegionX(), frame.getRegionY(), frame.getRegionWidth(), frame.getRegionHeight(),
+                        !isFacingRight, false
+                    );
+                }
+            }
+        }
+    }
+    private void drawZote(){
+        boolean isFacingRight = zote.getFacingDirection() == FacingDirection.RIGHT;
+        ZoteAnimationType drawZote = getZoteAnimationType();
+        Animation<TextureRegion> zoteAnim = loader.getAnimation(drawZote);
+        zoteAnim.setPlayMode(drawZote.getPlayMode());
+        TextureRegion currentZoteFrame = zoteAnim.getKeyFrame(stateTime);
+
+        batch.draw(
+            currentZoteFrame.getTexture(),
+            zote.getPosition().x ,
+            zote.getPosition().y ,
+            KNIGHT_SPRITE_WIDTH,
+            KNIGHT_SPRITE_HEIGHT,
+            currentZoteFrame.getRegionX(),
+            currentZoteFrame.getRegionY(),
+            currentZoteFrame.getRegionWidth(),
+            currentZoteFrame.getRegionHeight(),
+
+            isFacingRight,
+            false
+        );
+
     }
 
     private void handleDrawingEffect(TextureRegion effectFrame, EffectAnimationType type, boolean isFacingRight) {
@@ -253,22 +341,28 @@ public class GameScreen extends BaseScreen {
 
         float effectX, effectY;
 
-        // New: Instead of random offset numbers, the effect coordinates are mathematically locked to your physical hitboxes.
-        if (type == EffectAnimationType.DASH_EFFECT) {
-            // Dash effect centers on the Knight's hitbox, slightly trailing behind based on facing direction.
+        if (type == EffectAnimationType.SOUL_BALL) {
+            VengefulSprit vs = knight.getSpellManager().getVengefulSprit();
+            effectX = vs.getPosition().x-vs.getHitBox().width / 2f;
+            effectY = vs.getPosition().y -  vs.getHitBox().height ;
+        }
+        else if (type == EffectAnimationType.SOUL_SCREAM) {
+            HowlingWrath hw = knight.getSpellManager().getHowlingWraiths();
+            effectX = hw.getPosition().x-hw.getHitBox().width / 2f;
+            effectY = hw.getPosition().y;
+        }
+        else if (type == EffectAnimationType.DASH_EFFECT) {
             effectX = knight.getHitBox().x + knight.getHitBox().width / 2f - EFFECT_SPRITE_SIZE / 2f;
             effectX += isFacingRight ? -30f : 30f;
             effectY = knight.getHitBox().y + knight.getHitBox().height / 2f - EFFECT_SPRITE_SIZE / 2f;
         } else {
-            // Nail effect flawlessly locks onto the exact center of the invisible physical Nail HitBox from your model.
             Rectangle nailHitBox = knight.getNail().getHitBox();
             effectX = nailHitBox.x + nailHitBox.width / 2f - EFFECT_SPRITE_SIZE / 2f;
             effectY = nailHitBox.y + nailHitBox.height / 2f - EFFECT_SPRITE_SIZE / 2f;
         }
 
-        boolean flipEffectX = (type == EffectAnimationType.DASH_EFFECT) != isFacingRight;
+        boolean flipEffectX = (type == EffectAnimationType.DASH_EFFECT || type == EffectAnimationType.SOUL_BALL) != isFacingRight;
 
-        // New: Again, used the advanced batch.draw() to avoid corrupting TextureRegion memory via flip().
         batch.draw(
             effectFrame.getTexture(),
             effectX,
@@ -284,7 +378,7 @@ public class GameScreen extends BaseScreen {
         );
     }
 
-    public void drawBackGroundImage(){
+    public void drawBackGroundImage() {
         float cameraX = camera.position.x;
         float cameraY = camera.position.y;
         float viewW = camera.viewportWidth;
@@ -296,7 +390,7 @@ public class GameScreen extends BaseScreen {
         float drawX = cameraX - viewW / 2f;
         float drawY = cameraY - viewH / 2f;
 
-        int srcX = (int)(bgX) % background.getWidth();
+        int srcX = (int) (bgX) % background.getWidth();
         int srcY = 0;
 
         batch.draw(
@@ -309,34 +403,86 @@ public class GameScreen extends BaseScreen {
         );
     }
 
+    private void drawZotePrompt() {
+        Zote zote = levelModel.getZote();
+        if (!zote.isPlayerNearby()) return;
+
+        float bobbingOffset = (float) Math.sin(Gdx.graphics.getFrameId() * 0.06f) * 4f;
+
+        float promptX = zote.getHitBox().x + zote.getHitBox().width / 2f;
+        float promptY = zote.getHitBox().y + zote.getHitBox().height + 20f + bobbingOffset;
+
+        String textToRender = (zote.getStatus() ==ZoteState.TALKING) ? zote.showDialogue() : "[ E ]  Talk";
+
+        GlyphLayout layout = new GlyphLayout(font, textToRender);
+        float paddingX = 14f;
+        float paddingY = 8f;
+        float boxWidth = layout.width + (paddingX * 2);
+        float boxHeight = layout.height + (paddingY * 2);
+
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(0f, 0f, 0f, 0.6f);
+        shapeRenderer.rect(promptX - boxWidth / 2f, promptY, boxWidth, boxHeight);
+        shapeRenderer.end();
+
+        batch.setProjectionMatrix(camera.combined);
+        batch.begin();
+
+        font.draw(batch, layout, promptX - layout.width / 2f, promptY + paddingY + layout.height);
+        batch.end();
+
+    }
+
     private KnightAnimationType getDrawKnight() {
-        // Cleaning: Simplified your switch statement. Logic is identical, just less typing.
         switch (knight.getPlayerCondition()) {
-            case MOVING:     return KnightAnimationType.KNIGHT_RUN;
-            case DASHING:    return KnightAnimationType.KNIGHT_DASH;
-            case FALLING:    return KnightAnimationType.KNIGHT_LANDING;
-            case FOCUSING:   return KnightAnimationType.KNIGHT_FOCUS;
-            case MONARCHING: return KnightAnimationType.KNIGHT_DOUBLE_JUMP;
-            case JUMPING:    return KnightAnimationType.KNIGHT_AIRBORNE;
+            case MOVING:
+                return KnightAnimationType.KNIGHT_RUN;
+            case DASHING:
+                return KnightAnimationType.KNIGHT_DASH;
+            case FALLING:
+                return KnightAnimationType.KNIGHT_LANDING;
+            case FOCUSING:
+                return KnightAnimationType.KNIGHT_FOCUS;
+            case MONARCHING:
+                return KnightAnimationType.KNIGHT_DOUBLE_JUMP;
+            case JUMPING:
+                return KnightAnimationType.KNIGHT_AIRBORNE;
             case ATTACKING:
                 switch (knight.getCurrentAttackDirection()) {
-                    case UP:   return KnightAnimationType.KNIGHT_UP_SLASH;
-                    case DOWN: return KnightAnimationType.KNIGHT_DOWN_SLASH;
-                    default:   return KnightAnimationType.KNIGHT_SLASH;
+                    case UP:
+                        return KnightAnimationType.KNIGHT_UP_SLASH;
+                    case DOWN:
+                        return KnightAnimationType.KNIGHT_DOWN_SLASH;
+                    default:
+                        return KnightAnimationType.KNIGHT_SLASH;
                 }
-            default:         return KnightAnimationType.KNIGHT_IDLE;
+            case VENGEFUL_SPIRIT:
+                return KnightAnimationType.KNIGHT_FIREBALL_CAST;
+            case HOWLING_WRATH:
+                return KnightAnimationType.KNIGHT_UP_SLASH;
+            default:
+                return KnightAnimationType.KNIGHT_IDLE;
         }
     }
 
-    private EffectAnimationType getDrawEffect() {
-        // Cleaning: Condensing your large switch/if-else logic into a very direct lookup structure.
-        if (knight.isDashing()) return EffectAnimationType.DASH_EFFECT;
 
+    private EffectAnimationType getDrawEffect() {
+        if (knight.isDashing()) return EffectAnimationType.DASH_EFFECT;
+        if (knight.getSpellManager().getVengefulSprit().isActive()) {
+            return EffectAnimationType.SOUL_BALL;
+        }
+        if (knight.getSpellManager().getHowlingWraiths().isActive()) {
+            return EffectAnimationType.SOUL_SCREAM;
+        }
         if (knight.isAttacking()) {
             switch (knight.getCurrentAttackDirection()) {
-                case UP:   return EffectAnimationType.NAIL_UP_SLASH;
-                case DOWN: return EffectAnimationType.NAIL_DOWN_SLASH;
-                default:   return EffectAnimationType.NAIL_SLASH;
+                case UP:
+                    return EffectAnimationType.NAIL_UP_SLASH;
+                case DOWN:
+                    return EffectAnimationType.NAIL_DOWN_SLASH;
+                default:
+                    return EffectAnimationType.NAIL_SLASH;
             }
         }
         return null;
@@ -347,39 +493,67 @@ public class GameScreen extends BaseScreen {
             if (enemy.isDead()) return CrawlidAnimationType.DEATH_LAND;
 
             switch (enemy.getCurrentState()) {
-                case TURNING: return CrawlidAnimationType.TURN;
+                case TURNING:
+                    return CrawlidAnimationType.TURN;
                 case PATROLLING:
                 case RUNNING:
-                default: return CrawlidAnimationType.WALK;
+                default:
+                    return CrawlidAnimationType.WALK;
             }
-        }
-        else if (enemy instanceof HuskHornHead) {
+        } else if (enemy instanceof HuskHornHead) {
             if (enemy.isDead()) return HuskHornHeadAnimationType.DEATH_LAND;
 
             switch (enemy.getCurrentState()) {
-                case IDLE: return HuskHornHeadAnimationType.IDLE;
-                case RUNNING: return HuskHornHeadAnimationType.ATTACK; // Husk charges when running
-                case TURNING: return HuskHornHeadAnimationType.TURN;
+                case IDLE:
+                    return HuskHornHeadAnimationType.IDLE;
+                case RUNNING:
+                    return HuskHornHeadAnimationType.ATTACK;
+                case TURNING:
+                    return HuskHornHeadAnimationType.TURN;
                 case PATROLLING:
-                default: return HuskHornHeadAnimationType.WALK;
+                default:
+                    return HuskHornHeadAnimationType.WALK;
             }
-        }
-
-        else if (enemy instanceof Mossfly){
+        } else if (enemy instanceof Mossfly) {
             if (enemy.isDead()) return MossflyAnimationType.DEATH_LAND;
             switch (enemy.getCurrentState()) {
-                case IDLE: return MossflyAnimationType.SHAKE;
-                case RUNNING: return MossflyAnimationType.FLY;
+                case IDLE:
+                    return MossflyAnimationType.SHAKE;
+                case RUNNING:
+                    return MossflyAnimationType.FLY;
             }
         }
+        else if (enemy instanceof CrystalGuardian) {
+            if (enemy.isDead()) return CrystalGuardianAnimationType.DEATH_LAND;
+
+            return switch (enemy.getCurrentState()) {
+                case IDLE -> CrystalGuardianAnimationType.IDLE;
+                case CHARGING -> CrystalGuardianAnimationType.SHOOT;
+                case RUNNING -> CrystalGuardianAnimationType.RUN;
+                case SHOOTING -> CrystalGuardianAnimationType.SHOOT;
+                case TURNING -> CrystalGuardianAnimationType.TURN;
+                default -> CrystalGuardianAnimationType.IDLE;
+            };
+        }
+
         return null;
+    }
+
+    private ZoteAnimationType getZoteAnimationType() {
+        return switch (zote.getStatus()) {
+            case IDLE -> ZoteAnimationType.IDLE;
+            case KNOCKING -> ZoteAnimationType.KNOCK;
+            case ENRAGED -> ZoteAnimationType.ATTACK;
+            case WAKING -> ZoteAnimationType.WAKE;
+            case RESTING -> ZoteAnimationType.REST;
+            case TALKING -> ZoteAnimationType.TALK;
+        };
     }
 
     private void drawDebugHitboxes() {
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
-        // Cleaning: Removed the duplicate draw call you had for the Knight's main green hitbox.
         shapeRenderer.setColor(Color.RED);
         shapeRenderer.rect(knight.getHitBox().x, knight.getHitBox().y, knight.getHitBox().width, knight.getHitBox().height);
 
@@ -391,14 +565,51 @@ public class GameScreen extends BaseScreen {
         for (Block block : blocks) {
             shapeRenderer.rect(block.getBound().x, block.getBound().y, block.getBound().width, block.getBound().height);
         }
-        for(EnemyModel enemy : enemies) {
-            shapeRenderer.rect(enemy.getHitBox().x,enemy.getHitBox().y , enemy.getHitBox().width , enemy.getHitBox().height);
+        for (EnemyModel enemy : enemies) {
+            shapeRenderer.rect(enemy.getHitBox().x, enemy.getHitBox().y, enemy.getHitBox().width, enemy.getHitBox().height);
+        }
+
+        shapeRenderer.setColor(Color.YELLOW);
+        for (EnemyModel enemy : enemies) {
+            if (enemy instanceof HuskHornHead) {
+                Rectangle fov = ((HuskHornHead) enemy).getFov();
+                shapeRenderer.rect(fov.x, fov.y, fov.width, fov.height);
+            }
+            else if (enemy instanceof CrystalGuardian) {
+                CrystalGuardian cg = (CrystalGuardian) enemy;
+                shapeRenderer.rect(cg.getFov().x, cg.getFov().y, cg.getFov().width, cg.getFov().height);
+
+                shapeRenderer.setColor(Color.MAGENTA);
+                shapeRenderer.rect(cg.getLaser().x, cg.getLaser().y, cg.getLaser().width, cg.getLaser().height);
+
+            }
+        }
+
+        shapeRenderer.setColor(Color.CYAN);
+        for (EnemyModel enemy : enemies) {
+            if (enemy instanceof Mossfly) {
+                Circle patrolCircle = ((Mossfly) enemy).getPatrolCircle();
+                shapeRenderer.circle(patrolCircle.x, patrolCircle.y, patrolCircle.radius);
+            }
+        }
+
+        shapeRenderer.setColor(Color.ORANGE);
+
+        VengefulSprit vs = knight.getSpellManager().getVengefulSprit();
+        if (vs.isActive()) {
+            shapeRenderer.rect(vs.getHitBox().x, vs.getHitBox().y, vs.getHitBox().width, vs.getHitBox().height);
+        }
+
+        HowlingWrath hw = knight.getSpellManager().getHowlingWraiths();
+        if (hw.isActive()) {
+            shapeRenderer.rect(hw.getHitBox().x, hw.getHitBox().y, hw.getHitBox().width, hw.getHitBox().height);
         }
         shapeRenderer.end();
     }
 
     @Override
     public void resize(int width, int height) {
+        super.resize(width, height);
         camera.setToOrtho(false, width, height);
         hudCamera.setToOrtho(false, width, height);
     }

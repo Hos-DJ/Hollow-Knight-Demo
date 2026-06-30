@@ -4,7 +4,7 @@ public enum PlayerCondition {
     IDLE,
     MOVING,
     ATTACKING,
-    SKILLING,
+    HOWLING_WRATH,
     FOCUSING,
     JUMPING,
     BOWING,
@@ -15,7 +15,6 @@ public enum PlayerCondition {
     LOOKING_DOWN,
     LOOKING_UP,
     VENGEFUL_SPIRIT,
-
 
 
 }

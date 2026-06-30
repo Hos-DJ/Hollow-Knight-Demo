@@ -14,9 +14,11 @@ public class GameCamera extends OrthographicCamera {
     public float getShake() {
         return shake;
     }
+
     public float getShakeDuration() {
         return shakeDuration;
     }
+
     public void initializeShake(float shake, float shakeDuration) {
         this.shake = shake;
         this.shakeDuration = shakeDuration;
@@ -38,36 +40,35 @@ public class GameCamera extends OrthographicCamera {
         this.lookingDown = lookingDown;
     }
 
-    public void shaker(float delta){
-        if(shake>0){
-            this.position.x+=(Math.random()-0.5) *shake;
-            this.position.y+=(Math.random()-0.5) *shake;
-            shake-=delta;
-            shakeDuration -=delta;
+    public void shaker(float delta) {
+        if (shake > 0) {
+            this.position.x += (Math.random() - 0.5) * shake;
+            this.position.y += (Math.random() - 0.5) * shake;
+            shake -= delta;
+            shakeDuration -= delta;
         }
 
 
     }
 
-    public void updatePosition(Knight knight , Rectangle bounds , float delta){
+    public void updatePosition(Knight knight, Rectangle bounds, float delta) {
         float speed = 5.0f;
         float lerp = speed * Gdx.graphics.getDeltaTime();
         float targetX = knight.getHitBox().x + knight.getHitBox().width / 2f;
         float targetY = knight.getHitBox().y + knight.getHitBox().height / 2f;
         float CAMERA_OFFSET = 150.0f;
-        if(this.lookingUp){
+        if (this.lookingUp) {
             targetY += CAMERA_OFFSET;
-        }
-        else if (this.lookingDown){
+        } else if (this.lookingDown) {
             targetY -= CAMERA_OFFSET;
         }
 
-        this.position.x += (targetX - this.position.x)*lerp;
-        this.position.y += (targetY - this.position.y)*lerp;
+        this.position.x += (targetX - this.position.x) * lerp;
+        this.position.y += (targetY - this.position.y) * lerp;
 
-        if(bounds != null){
-            float halfWidth = bounds.width/2f;
-            float halfHeight = bounds.height/2f;
+        if (bounds != null) {
+            float halfWidth = bounds.width / 2f;
+            float halfHeight = bounds.height / 2f;
 
             position.x = Math.clamp(position.x,
                 bounds.x + halfWidth, bounds.x + bounds.width - halfWidth);

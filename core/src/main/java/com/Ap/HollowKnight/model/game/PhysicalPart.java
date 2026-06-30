@@ -2,7 +2,6 @@ package com.Ap.HollowKnight.model.game;
 
 import com.Ap.HollowKnight.model.map.Block;
 import com.Ap.HollowKnight.model.map.BlockType;
-import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
@@ -23,36 +22,41 @@ public abstract class PhysicalPart {
     // positioning
     private boolean isOnGround;
     private boolean isCooldown;
-    private boolean isAttacking ;
+    private boolean isAttacking;
     private boolean gravityIncluded;
     private FacingDirection facingDirection;
     private static final float GROUND_SNAP_EPSILON = 0.05f;
     protected static final float GRAVITY = -700.0f;
 
     public PhysicalPart(Vector2 position, Rectangle hitBox, Vector2 spawnPoint) {
-        this.position         = position;
-        this.hitBox           = hitBox;
-        this.spawnPoint        = spawnPoint;
-        this.velocity         = new Vector2(0f, 0f);
-        this.knockBackVelocity= new Vector2(0f, 0f);
-        this.acceleration     = new Vector2(0f, 0f);
-        this.facingDirection  = FacingDirection.RIGHT;
-        this.isOnGround       = false;
-        this.isCooldown       = false;
-        this.isAttacking      = false;
-        this.gravityIncluded  = true;
+        this.position = position;
+        this.hitBox = hitBox;
+        this.spawnPoint = spawnPoint;
+        this.velocity = new Vector2(0f, 0f);
+        this.knockBackVelocity = new Vector2(0f, 0f);
+        this.acceleration = new Vector2(0f, 0f);
+        this.facingDirection = FacingDirection.RIGHT;
+        this.isOnGround = false;
+        this.isCooldown = false;
+        this.isAttacking = false;
+        this.gravityIncluded = true;
         updateHitBox();
     }
-    public void updateHitBox(){
+
+    public void updateHitBox() {
         hitBox.setPosition(position.x, position.y);
     }
+
     public abstract void update(float delta, ArrayList<Block> blocks);
+
     public abstract void takeDamage(int amount);
+
     public abstract void hazardReact();
-    public void applyPhysics(float delta,ArrayList<Block> blocks) {
+
+    public void applyPhysics(float delta, ArrayList<Block> blocks) {
 
         if (!isOnGround && gravityIncluded) {
-            velocity.y += min(GRAVITY * delta , 300.0f);
+            velocity.y += min(GRAVITY * delta, 300.0f);
         } else if (isOnGround) {
             velocity.y = 0.0f;
         }
@@ -99,20 +103,18 @@ public abstract class PhysicalPart {
         for (Block block : blocks) {
             if (!block.getType().blocksVertical()) continue;
             if (!hitBox.overlaps(block.getBound())) continue;
-            if(block.getType()== BlockType.GROUND)
-            {
+            if (block.getType() == BlockType.GROUND) {
                 if (moveY <= 0) {
-                    position.y = block.getBound().y + block.getBound().height-GROUND_SNAP_EPSILON;
+                    position.y = block.getBound().y + block.getBound().height - GROUND_SNAP_EPSILON;
                     velocity.y = 0;
                     setOnGround(true);
-                } else if (moveY > 0 && block.getType()!=BlockType.GROUND) {
+                } else if (moveY > 0 && block.getType() != BlockType.GROUND) {
                     position.y = block.getBound().y - hitBox.height;
                     velocity.y = 0;
                 }
-            }
-            else if (block.getType() == BlockType.CEIL){
-                if(moveY > 0){
-                    velocity.y= 0 ;
+            } else if (block.getType() == BlockType.CEIL) {
+                if (moveY > 0) {
+                    velocity.y = 0;
                 }
             }
             updateHitBox();
@@ -120,15 +122,14 @@ public abstract class PhysicalPart {
     }
 
     public void resolveHazardCollisions(ArrayList<Block> blocks) {
-        for(Block block : blocks) {
-            if(this.hitBox.overlaps(block.getBound())&&block.getType()== BlockType.SPIKE){
+        for (Block block : blocks) {
+            if (this.hitBox.overlaps(block.getBound()) && block.getType() == BlockType.SPIKE) {
                 this.hazardReact();
                 break;
             }
         }
     }
     //getters
-
 
 
     public Vector2 getPosition() {
@@ -177,7 +178,6 @@ public abstract class PhysicalPart {
     }
 
     //setters
-
 
 
     public void setPosition(Vector2 position) {

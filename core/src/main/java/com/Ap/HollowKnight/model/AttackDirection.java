@@ -1,9 +1,9 @@
 package com.Ap.HollowKnight.model;
 
-import com.Ap.HollowKnight.view.EffectAnimationType;
+import com.Ap.HollowKnight.view.animations.EffectAnimationType;
 
 public enum AttackDirection {
-    UP,DOWN,RIGHT,LEFT;
+    UP, DOWN, RIGHT, LEFT;
 
     public EffectAnimationType toAnimationType() {
         return switch (this) {
