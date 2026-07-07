@@ -1,7 +1,9 @@
 package com.Ap.HollowKnight.model.level;
 
+import com.Ap.HollowKnight.model.boss.FalseKnight;
 import com.Ap.HollowKnight.model.enemy.EnemyModel;
 import com.Ap.HollowKnight.model.map.Block;
+import com.Ap.HollowKnight.model.map.DestructibleWall;
 import com.Ap.HollowKnight.model.player.Knight;
 import com.Ap.HollowKnight.model.zote.Zote;
 import com.Ap.HollowKnight.view.PlayerHUD;
@@ -14,10 +16,12 @@ public class LevelModel {
     private static LevelModel instance;
 
     private ArrayList<Block> blocks;
+    private DestructibleWall  destructibleWall;
     private ArrayList<Vector2> safeSpots;
     private Vector2 spawnPoint;
     private ArrayList<EnemyModel> enemies;
     private Knight knight;
+    private FalseKnight falseKnight;
     private PlayerHUD hud;
     private Zote zote;
     private float mapWidth;
@@ -33,15 +37,15 @@ public class LevelModel {
         return instance;
     }
 
-    public static LevelModel getInstance(ArrayList<Block> blocks, ArrayList<EnemyModel> enemies, float mapWidth, float mapHeight, ArrayList<Vector2> safeSpots, Vector2 spawnPoint,Zote zote) {
+    public static LevelModel getInstance(ArrayList<Block> blocks, ArrayList<EnemyModel> enemies, float mapWidth, float mapHeight, ArrayList<Vector2> safeSpots, Vector2 spawnPoint,Zote zote,DestructibleWall wall) {
         if (instance == null) {
             instance = new LevelModel();
         }
-        instance.initialize(blocks, enemies, mapWidth, mapHeight, safeSpots, spawnPoint,zote);
+        instance.initialize(blocks, enemies, mapWidth, mapHeight, safeSpots, spawnPoint,zote,wall);
         return instance;
     }
 
-    private void initialize(ArrayList<Block> blocks, ArrayList<EnemyModel> enemies, float mapWidth, float mapHeight, ArrayList<Vector2> safeSpots, Vector2 spawnPoint , Zote zote) {
+    private void initialize(ArrayList<Block> blocks, ArrayList<EnemyModel> enemies, float mapWidth, float mapHeight, ArrayList<Vector2> safeSpots, Vector2 spawnPoint , Zote zote,DestructibleWall wall) {
         this.blocks = blocks;
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
@@ -49,8 +53,10 @@ public class LevelModel {
         this.spawnPoint = spawnPoint;
         this.zote = zote;
         this.hud = new PlayerHUD();
-        this.knight = new Knight(spawnPoint, new Rectangle(0, 0, 32, 64), spawnPoint, this.safeSpots,hud);
+        this.knight = new Knight(spawnPoint, new Rectangle(0, 0, 35, 75), spawnPoint, this.safeSpots,hud);
         this.enemies = enemies;
+        this.destructibleWall= wall;
+        this.blocks.add(wall);
     }
 
     public ArrayList<Block> getBlocks() {
@@ -119,5 +125,13 @@ public class LevelModel {
 
     public PlayerHUD getHud() {
         return hud;
+    }
+
+    public DestructibleWall getDestructibleWall() {
+        return destructibleWall;
+    }
+
+    public void setDestructibleWall(DestructibleWall destructibleWall) {
+        this.destructibleWall = destructibleWall;
     }
 }

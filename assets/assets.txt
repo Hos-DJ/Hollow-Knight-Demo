@@ -292,6 +292,7 @@ Mighty_Zote.tsx
 Mighty_Zote_0021_2.tsx
 Ui/Achievements/Defeat Boss.png
 Ui/Achievements/Game Completion.png
+Ui/Achievements/LD-MidTerm2-Sol.pdf
 Ui/Achievements/Secret Discovered.png
 Ui/Achievements/Speedrun.png
 Ui/Achievements/True Hunter.png
@@ -301,6 +302,14 @@ Ui/Audio/backgroundMusic/Main Theme.mp3
 Ui/Audio/backgroundMusic/Manitis Lords.mp3
 Ui/Audio/button-click.wav
 Ui/Audio/button-hover.wav
+Ui/Charms/DASH_MASTER.png
+Ui/Charms/HEAVY_BLOW.png
+Ui/Charms/QUICK_FOCUS.png
+Ui/Charms/QUICK_SLASH.png
+Ui/Charms/SHARP_SHADOW.png
+Ui/Charms/SOUL_CATCHER.png
+Ui/Charms/UNBREAKABLE_STRENGTH.png
+Ui/Charms/VOID_HEART.png
 Ui/Hollow-Knight-Logo-PNG-Pic.png
 Ui/MainMenuParticle.p
 Ui/Menu_Theme_Surface.png
@@ -6938,88 +6947,6 @@ animation/Architecture & Environment/window_sill.png
 animation/Architecture & Environment/window_sill_02.png
 animation/Architecture & Environment/wood_plank_01.png
 animation/Architecture & Environment/wood_plank_02.png
-animation/Buzzer/Buzzer_aaaaa_info.txt
-animation/Buzzer/Buzzer_full_0.png
-animation/Buzzer/Chase_000.png
-animation/Buzzer/Chase_001.png
-animation/Buzzer/Chase_002.png
-animation/Buzzer/Chase_003.png
-animation/Buzzer/Death Air_000.png
-animation/Buzzer/Death Air_001.png
-animation/Buzzer/Death Air_002.png
-animation/Buzzer/Fly_000.png
-animation/Buzzer/Fly_001.png
-animation/Buzzer/Fly_002.png
-animation/Buzzer/Fly_003.png
-animation/Buzzer/Idle_000.png
-animation/Buzzer/Idle_001.png
-animation/Buzzer/Idle_002.png
-animation/Buzzer/Idle_003.png
-animation/Buzzer/Idle_004.png
-animation/Buzzer/Startle_000.png
-animation/Buzzer/Startle_001.png
-animation/Buzzer/Startle_002.png
-animation/Buzzer/Startle_003.png
-animation/Buzzer/TurnToFly_000.png
-animation/Buzzer/TurnToFly_001.png
-animation/Buzzer/TurnToFly_002.png
-animation/Buzzer/TurnToFly_003.png
-animation/Buzzer/TurnToFly_004.png
-animation/Buzzer/TurnToFly_005.png
-animation/Cockroach/Attack Anticipate.png
-animation/Cockroach/Attack Anticipate_000.png
-animation/Cockroach/Attack Anticipate_001.png
-animation/Cockroach/Attack Anticipate_002.png
-animation/Cockroach/Attack Anticipate_003.png
-animation/Cockroach/Attack Anticipate_004.png
-animation/Cockroach/Attack Cooldown.png
-animation/Cockroach/Attack Lunge.png
-animation/Cockroach/Attack Lunge_000.png
-animation/Cockroach/Attack Lunge_001.png
-animation/Cockroach/Attack Lunge_002.png
-animation/Cockroach/Attack Lunge_003.png
-animation/Cockroach/Attack Lunge_004.png
-animation/Cockroach/Attack Lunge_005.png
-animation/Cockroach/Attack Lunge_006.png
-animation/Cockroach/Attack Lunge_007.png
-animation/Cockroach/Death Air.png
-animation/Cockroach/Death Land.png
-animation/Cockroach/Death Land_000.png
-animation/Cockroach/Death Land_001.png
-animation/Cockroach/Death Land_002.png
-animation/Cockroach/Death Land_003.png
-animation/Cockroach/Death Land_004.png
-animation/Cockroach/Death Land_005.png
-animation/Cockroach/Death Land_006.png
-animation/Cockroach/Death Land_007.png
-animation/Cockroach/Fall.png
-animation/Cockroach/Fall_000.png
-animation/Cockroach/Fall_001.png
-animation/Cockroach/Fall_002.png
-animation/Cockroach/Fall_003.png
-animation/Cockroach/Fall_004.png
-animation/Cockroach/HW3-403105939.circ
-animation/Cockroach/Idle.png
-animation/Cockroach/Idle_000.png
-animation/Cockroach/Idle_001.png
-animation/Cockroach/Idle_002.png
-animation/Cockroach/Idle_003.png
-animation/Cockroach/Idle_004.png
-animation/Cockroach/Idle_005.png
-animation/Cockroach/Idle_006.png
-animation/Cockroach/Turn.png
-animation/Cockroach/Turn_000.png
-animation/Cockroach/Turn_001.png
-animation/Cockroach/Walk.png
-animation/Cockroach/Walk_000.png
-animation/Cockroach/Walk_001.png
-animation/Cockroach/Walk_002.png
-animation/Cockroach/Walk_003.png
-animation/Cockroach/Walk_004.png
-animation/Cockroach/Walk_005.png
-animation/Cockroach/Walk_006.png
-animation/Cockroach/Zombie Basic 1_aaaaa_info.txt
-animation/Cockroach/Zombie Basic 1_full_0.png
 animation/Crawlid/Crawler_aaaaa_info.txt
 animation/Crawlid/Crawler_full_0.png
 animation/Crawlid/Death Air.png
@@ -7038,21 +6965,6 @@ animation/Crawlid/Walk_002.png
 animation/Crawlid/Walk_003.png
 animation/Crawlid/turn_000.png
 animation/Crawlid/turn_001.png
-animation/Crystal_Crawler/Death Air.png
-animation/Crystal_Crawler/Death Air_000.png
-animation/Crystal_Crawler/Death Air_001.png
-animation/Crystal_Crawler/Death Air_002.png
-animation/Crystal_Crawler/Death Land.png
-animation/Crystal_Crawler/Death Land_000.png
-animation/Crystal_Crawler/Death Land_001.png
-animation/Crystal_Crawler/Turn.png
-animation/Crystal_Crawler/Turn_000.png
-animation/Crystal_Crawler/Turn_001.png
-animation/Crystal_Crawler/Walk.png
-animation/Crystal_Crawler/Walk_000.png
-animation/Crystal_Crawler/Walk_001.png
-animation/Crystal_Crawler/Walk_002.png
-animation/Crystal_Crawler/Walk_003.png
 animation/Crystal_Hunter/Attack Recover.png
 animation/Crystal_Hunter/Attack.png
 animation/Crystal_Hunter/Attack_000.png
@@ -8044,55 +7956,6 @@ animation/LookUp_002.png
 animation/LookUp_003.png
 animation/LookUp_004.png
 animation/LookUp_005.png
-animation/Mosquito/Attack Anticipate.png
-animation/Mosquito/Attack Anticipate_000.png
-animation/Mosquito/Attack Anticipate_001.png
-animation/Mosquito/Attack Anticipate_002.png
-animation/Mosquito/Attack Anticipate_003.png
-animation/Mosquito/Attack Anticipate_004.png
-animation/Mosquito/Attack Anticipate_005.png
-animation/Mosquito/Attack.png
-animation/Mosquito/Attack_000.png
-animation/Mosquito/Attack_001.png
-animation/Mosquito/Attack_002.png
-animation/Mosquito/Death Air.png
-animation/Mosquito/Death Air_000.png
-animation/Mosquito/Death Air_001.png
-animation/Mosquito/Death Air_002.png
-animation/Mosquito/Death Land.png
-animation/Mosquito/Death Land_000.png
-animation/Mosquito/Death Land_001.png
-animation/Mosquito/Idle.png
-animation/Mosquito/Idle_000.png
-animation/Mosquito/Idle_001.png
-animation/Mosquito/Idle_002.png
-animation/Mosquito/Idle_003.png
-animation/Mosquito/Idle_004.png
-animation/Mosquito/Idle_005.png
-animation/Mosquito/Idle_006.png
-animation/Mosquito/Idle_007.png
-animation/Mosquito/Turn.png
-animation/Mosquito/Turn2.png
-animation/Mosquito/Turn2_000.png
-animation/Mosquito/Turn2_001.png
-animation/Mosquito/Turn_000.png
-animation/Mosquito/Turn_001.png
-animation/Mosscreep/Death Air.png
-animation/Mosscreep/Death Air_000.png
-animation/Mosscreep/Death Air_001.png
-animation/Mosscreep/Death Air_002.png
-animation/Mosscreep/Death Air_003.png
-animation/Mosscreep/Death Land.png
-animation/Mosscreep/Death Land_000.png
-animation/Mosscreep/Death Land_001.png
-animation/Mosscreep/Turn.png
-animation/Mosscreep/Turn_000.png
-animation/Mosscreep/Turn_001.png
-animation/Mosscreep/Turn_002.png
-animation/Mosscreep/Walk.png
-animation/Mosscreep/Walk_000.png
-animation/Mosscreep/Walk_001.png
-animation/Mosscreep/Walk_002.png
 animation/Mossfly/Appear.png
 animation/Mossfly/Appear_000.png
 animation/Mossfly/Appear_001.png
@@ -9329,25 +9192,6 @@ animation/Run_009.png
 animation/Run_010.png
 animation/Run_011.png
 animation/Run_012.png
-animation/Running_Lance/Charge Antic_002.png
-animation/Running_Lance/Charge Antic_003.png
-animation/Running_Lance/Charge Antic_004.png
-animation/Running_Lance/Charge Antic_005.png
-animation/Running_Lance/Charge Antic_006.png
-animation/Running_Lance/Charge Antic_007.png
-animation/Running_Lance/Charge_000.png
-animation/Running_Lance/Charge_001.png
-animation/Running_Lance/Charge_002.png
-animation/Running_Lance/Charge_003.png
-animation/Running_Lance/Charge_004.png
-animation/Running_Lance/Charge_005.png
-animation/Running_Lance/Death Air_000.png
-animation/Running_Lance/Death Air_001.png
-animation/Running_Lance/Death Land_000.png
-animation/Running_Lance/Death Land_001.png
-animation/Running_Lance/Death Land_002.png
-animation/Running_Lance/Turn_000.png
-animation/Running_Lance/Turn_001.png
 animation/Scream.png
 animation/Scream_000.png
 animation/Scream_001.png
@@ -9368,25 +9212,6 @@ animation/Slash_001.png
 animation/Slash_002.png
 animation/Slash_003.png
 animation/Slash_004.png
-animation/Tiktik/Climber_aaaaa_info.txt
-animation/Tiktik/Climber_full_0.png
-animation/Tiktik/Death Air.png
-animation/Tiktik/Death Air_000.png
-animation/Tiktik/Death Air_001.png
-animation/Tiktik/Death Air_002.png
-animation/Tiktik/Death Air_003.png
-animation/Tiktik/Death Land.png
-animation/Tiktik/Death Land_000.png
-animation/Tiktik/Death Land_001.png
-animation/Tiktik/Death Land_002.png
-animation/Tiktik/Turn.png
-animation/Tiktik/Turn_000.png
-animation/Tiktik/Turn_001.png
-animation/Tiktik/Walk.png
-animation/Tiktik/Walk_000.png
-animation/Tiktik/Walk_001.png
-animation/Tiktik/Walk_002.png
-animation/Tiktik/Walk_003.png
 animation/UpSlash.png
 animation/UpSlash_000.png
 animation/UpSlash_001.png
@@ -9411,35 +9236,6 @@ animation/Walljump_005.png
 animation/Walljump_006.png
 animation/Walljump_007.png
 animation/Walljump_008.png
-animation/Winged_Sentry/Charge Antic.png
-animation/Winged_Sentry/Charge Antic_000.png
-animation/Winged_Sentry/Charge Antic_001.png
-animation/Winged_Sentry/Charge Antic_002.png
-animation/Winged_Sentry/Charge Antic_003.png
-animation/Winged_Sentry/Charge.png
-animation/Winged_Sentry/Charge_000.png
-animation/Winged_Sentry/Charge_001.png
-animation/Winged_Sentry/Charge_002.png
-animation/Winged_Sentry/Death Air.png
-animation/Winged_Sentry/Death Air_000.png
-animation/Winged_Sentry/Death Air_001.png
-animation/Winged_Sentry/Death Land.png
-animation/Winged_Sentry/Death Land_000.png
-animation/Winged_Sentry/Death Land_001.png
-animation/Winged_Sentry/Death Land_002.png
-animation/Winged_Sentry/Death Land_003.png
-animation/Winged_Sentry/Idle.png
-animation/Winged_Sentry/Idle_000.png
-animation/Winged_Sentry/Idle_001.png
-animation/Winged_Sentry/Idle_002.png
-animation/Winged_Sentry/Idle_003.png
-animation/Winged_Sentry/Idle_004.png
-animation/Winged_Sentry/Idle_005.png
-animation/Winged_Sentry/Idle_006.png
-animation/Winged_Sentry/Turn To Fly.png
-animation/Winged_Sentry/Turn To Fly_000.png
-animation/Winged_Sentry/Turn To Fly_001.png
-animation/Winged_Sentry/Turn To Fly_002.png
 animation/Zote/Attack.png
 animation/Zote/Attack_000.png
 animation/Zote/Attack_001.png

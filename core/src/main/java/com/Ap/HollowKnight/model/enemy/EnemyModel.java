@@ -1,5 +1,7 @@
 package com.Ap.HollowKnight.model.enemy;
 
+import com.Ap.HollowKnight.controller.events.GameEvent;
+import com.Ap.HollowKnight.controller.events.GameEventMessenger;
 import com.Ap.HollowKnight.model.game.FacingDirection;
 import com.Ap.HollowKnight.model.game.PhysicalPart;
 import com.Ap.HollowKnight.model.map.Block;
@@ -89,6 +91,7 @@ public abstract class EnemyModel extends PhysicalPart {
     protected void die() {
         isDead = true;
         setGravityIncluded(true);
+        GameEventMessenger.getInstance().dispatch(GameEvent.ENEMY_KILLED,this.getClass().getSimpleName());
     }
 
     public EnemyState getCurrentState() {

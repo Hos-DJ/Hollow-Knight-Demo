@@ -15,6 +15,8 @@ public enum PlayerCondition {
     LOOKING_DOWN,
     LOOKING_UP,
     VENGEFUL_SPIRIT,
+    WALL_JUMPING,
+    WALL_SLIDING;
 
 
 }

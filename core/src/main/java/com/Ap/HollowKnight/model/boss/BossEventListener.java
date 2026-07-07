@@ -1,4 +1,4 @@
 package com.Ap.HollowKnight.model.boss;
 
-public class FalseKnightModel {
+public interface BossEventListener {
 }

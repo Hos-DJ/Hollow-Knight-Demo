@@ -37,7 +37,6 @@ public class Crawlid extends EnemyModel {
             getVelocity().x = SPEED;
         }
 
-        this.setCurrentState(EnemyState.TURNING);
     }
 
 

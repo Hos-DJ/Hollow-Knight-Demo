@@ -16,7 +16,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -46,7 +45,8 @@ public abstract class BaseScreen implements Screen {
     protected AssetLoader loader;
     protected ParticleEffect mainMenuGlowingDots;
     protected Slider.SliderStyle sliderStyle;
-    protected TextButton.TextButtonStyle  buttonStyle;
+    protected ScrollPane.ScrollPaneStyle scrollPaneStyle;
+    protected TextButton.TextButtonStyle buttonStyle;
     protected Label.LabelStyle labelStyle;
     protected InputMultiplexer inputMultiplexer;
 
@@ -57,7 +57,7 @@ public abstract class BaseScreen implements Screen {
         this.mainMenuGlowingDots = new ParticleEffect();
         this.audioManager = AudioManager.getInstance();
         this.background = new Texture("Ui/Menu_Theme_Surface.png");
-        mainMenuGlowingDots.load(Gdx.files.internal("Ui/MainMenuParticle.p"),Gdx.files.internal("Ui"));
+        mainMenuGlowingDots.load(Gdx.files.internal("Ui/MainMenuParticle.p"), Gdx.files.internal("Ui"));
         buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = loader.getFont("font_24");
         buttonStyle.fontColor = Color.LIGHT_GRAY;
@@ -65,6 +65,7 @@ public abstract class BaseScreen implements Screen {
         labelStyle = new Label.LabelStyle();
         labelStyle.font = loader.getFont("font_24");
         labelStyle.fontColor = Color.WHITE;
+
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap.setColor(Color.BLACK);
         pixmap.fill();
@@ -72,19 +73,38 @@ public abstract class BaseScreen implements Screen {
         pixmap.dispose();
         this.game = game;
         sliderStyle = getSliderStyle();
+        scrollPaneStyle = getScrollPaneStyle();
         settingsController = SettingsController.getInstance();
     }
 
     private Slider.SliderStyle getSliderStyle() {
         TextureAtlas atlas = loader.getAtlas("Ui/Slider/slider.atlas");
         TextureRegionDrawable bgDrawable = new TextureRegionDrawable(atlas.findRegion("slider_white"));
-        bgDrawable.setMinHeight(2f);
+        bgDrawable.setMinWidth(2f);
         TextureRegionDrawable knobDrawable = new TextureRegionDrawable(atlas.findRegion("slider_arrow"));
         Slider.SliderStyle sliderStyle = new Slider.SliderStyle(bgDrawable, knobDrawable);
         return sliderStyle;
     }
 
-    protected void setupButton(TextButton button, Runnable clickAction) {
+    private ScrollPane.ScrollPaneStyle getScrollPaneStyle() {
+        Pixmap trackPixmap = new Pixmap(4, 100, Pixmap.Format.RGBA8888);
+        trackPixmap.setColor(new Color(1f, 1f, 1f, 0.2f));
+        trackPixmap.fill();
+        Texture trackTexture = new Texture(trackPixmap);
+        trackPixmap.dispose();
+        Pixmap knobPixmap = new Pixmap(6, 40, Pixmap.Format.RGBA8888);
+        knobPixmap.setColor(Color.WHITE);
+        knobPixmap.fill();
+        Texture knobTexture = new Texture(knobPixmap);
+        knobPixmap.dispose();
+        ScrollPane.ScrollPaneStyle style = new ScrollPane.ScrollPaneStyle();
+        style.vScroll = new TextureRegionDrawable(trackTexture);
+        style.vScrollKnob = new TextureRegionDrawable(knobTexture);
+        return style;
+
+    }
+
+    public void setupButton(TextButton button, Runnable clickAction) {
         button.setTransform(true);
         button.setOrigin(Align.center);
 
@@ -113,6 +133,7 @@ public abstract class BaseScreen implements Screen {
             }
         });
     }
+
     @Override
     public void show() {
         stage = new Stage(new ScreenViewport());
@@ -151,8 +172,11 @@ public abstract class BaseScreen implements Screen {
             stage.draw();
         }
         float brightness = settingsController.getBrightness();
-        if(brightness>0.9f)
-            brightness=0.9f;
+        if (brightness > 0.9f)
+            brightness = 0.9f;
+        if (stage != null && batch != null) {
+            batch.setProjectionMatrix(stage.getCamera().combined);
+        }
         batch.begin();
         batch.setColor(0f, 0f, 0f, brightness);
         batch.draw(brightnessTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -169,18 +193,97 @@ public abstract class BaseScreen implements Screen {
     }
 
     @Override
-    public void pause() {}
+    public void pause() {
+    }
 
     @Override
-    public void resume() {}
+    public void resume() {
+    }
 
     @Override
-    public void hide() {}
+    public void hide() {
+    }
 
     @Override
     public void dispose() {
         if (stage != null) {
             stage.dispose();
         }
+    }
+
+    public Stack getMainStack() {
+        return mainStack;
+    }
+
+    public Stack getModalStack() {
+        return modalStack;
+    }
+
+    public Stack getToastStack() {
+        return toastStack;
+    }
+
+    public AssetLoader getLoader() {
+        return loader;
+    }
+
+    public HollowKnight getGame() {
+        return game;
+    }
+
+    public SettingsController getSettingsController() {
+        return settingsController;
+    }
+
+    public Stage getStage() {
+        return stage;
+    }
+
+    public Table getRootTable() {
+        return rootTable;
+    }
+
+    public AudioManager getAudioManager() {
+        return audioManager;
+    }
+
+    public Texture getBrightnessTexture() {
+        return brightnessTexture;
+    }
+
+    public Texture getBackground() {
+        return background;
+    }
+
+    public Image getGameLogo() {
+        return gameLogo;
+    }
+
+    public SpriteBatch getBatch() {
+        return batch;
+    }
+
+    public Sound getClickSound() {
+        return clickSound;
+    }
+
+    public Sound getHoverSound() {
+        return hoverSound;
+    }
+
+    public ParticleEffect getMainMenuGlowingDots() {
+        return mainMenuGlowingDots;
+    }
+
+    public TextButton.TextButtonStyle getButtonStyle() {
+        return buttonStyle;
+    }
+
+    public Label.LabelStyle getLabelStyle() {
+        return labelStyle;
+    }
+
+    public InputMultiplexer getInputMultiplexer() {
+        return inputMultiplexer;
     }
 }

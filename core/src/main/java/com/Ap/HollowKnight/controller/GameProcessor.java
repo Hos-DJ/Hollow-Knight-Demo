@@ -4,6 +4,8 @@ import com.Ap.HollowKnight.model.AttackDirection;
 import com.Ap.HollowKnight.model.enemy.EnemyModel;
 import com.Ap.HollowKnight.model.game.FacingDirection;
 import com.Ap.HollowKnight.model.game.GameCamera;
+import com.Ap.HollowKnight.model.level.LevelModel;
+import com.Ap.HollowKnight.model.map.DestructibleWall;
 import com.Ap.HollowKnight.model.player.Knight;
 import com.Ap.HollowKnight.model.player.PlayerCondition;
 import com.Ap.HollowKnight.model.zote.Zote;
@@ -22,6 +24,10 @@ public class GameProcessor extends InputAdapter {
     private final GameCamera camera;
     private ArrayList<EnemyModel> enemies;
     private final Zote zote;
+    private boolean paused =false;
+    private boolean isInventory = false ;
+    private boolean inventoryTriggered = false;
+    private boolean isWallDestroyed = false;
 
     public GameProcessor(Knight knight, GameCamera camera, ArrayList<EnemyModel> enemies,Zote zote) {
         this.knight = knight;
@@ -33,7 +39,19 @@ public class GameProcessor extends InputAdapter {
 
     @Override
     public boolean keyDown(int keycode) {
-
+        if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            paused = true;
+        }
+        GameKeypad key = GameKeypad.fromKeycode(keycode);
+        if (key == GameKeypad.INVENTORY) {
+            if (!paused) {
+                inventoryTriggered = true;
+            }
+            return true;
+        }
+        if (isInventory) {
+            return true;
+        }
         if(zote.getStatus()== ZoteState.TALKING){
             if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)){
                 boolean success =zote.nextDialogue();
@@ -44,7 +62,6 @@ public class GameProcessor extends InputAdapter {
             return true;
         }
         else{
-            GameKeypad key = GameKeypad.fromKeycode(keycode);
             if (key == null)
                 return false;
             switch (key) {
@@ -101,8 +118,12 @@ public class GameProcessor extends InputAdapter {
     @Override
     public boolean keyUp(int keycode) {
         GameKeypad key = GameKeypad.fromKeycode(keycode);
-        if (key == null)
+        if(isInventory){
+            return true;
+        }
+        if (key == null) {
             return false;
+        }
         if(zote.getStatus()== ZoteState.TALKING){
             return false;
         }
@@ -110,14 +131,16 @@ public class GameProcessor extends InputAdapter {
             case JUMP -> knight.cutJump();
             case DOWN -> {
 
+                camera.setLookingDown(false);
+
                 if (knight.getPlayerCondition() == PlayerCondition.LOOKING_DOWN) {
-                    camera.setLookingDown(false);
                     knight.setPlayerCondition(PlayerCondition.IDLE);
                 }
             }
             case UP -> {
+                camera.setLookingUp(false);
+
                 if (knight.getPlayerCondition() == PlayerCondition.LOOKING_UP) {
-                    camera.setLookingUp(false);
                     knight.setPlayerCondition(PlayerCondition.IDLE);
                 }
             }
@@ -147,15 +170,26 @@ public class GameProcessor extends InputAdapter {
     }
 
     public void pollMovement() {
+        if(isInventory){
+            knight.stop();
+            return;
+        }
+        if (knight.getWallJumpTimer() > 0) {
+            return;
+        }
         boolean rightHeld = Gdx.input.isKeyPressed(GameKeypad.RIGHT.getKeyNumber());
         boolean leftHeld = Gdx.input.isKeyPressed(GameKeypad.LEFT.getKeyNumber());
 
         if (rightHeld == leftHeld) {
             knight.stop();
         } else if (rightHeld) {
+            camera.setLookingDown(false);
+            camera.setLookingUp(false);
             knight.setFacingDirection(FacingDirection.RIGHT);
             knight.move();
         } else {
+            camera.setLookingDown(false);
+            camera.setLookingUp(false);
             knight.setFacingDirection(FacingDirection.LEFT);
             knight.move();
         }
@@ -180,11 +214,45 @@ public class GameProcessor extends InputAdapter {
             {
                 EffectAnimationType nailAnimation = direction.toAnimationType();
                 knight.getNail().setNailSlashType(nailAnimation);
-                CombatController.getInstance().checkCombat(knight, enemies);
+                DestructibleWall wall = LevelModel.getInstance().getDestructibleWall();
+                CombatController.getInstance().checkCombat(knight, enemies, wall);
+                if(wall.isDestroyed())
+                    isWallDestroyed = true;
+
             }
 
         }
+    }
 
+    public boolean isPaused() {
+        return paused;
+    }
 
+    public void setPaused(boolean paused) {
+        this.paused = paused;
+    }
+
+    public boolean isInventory() {
+        return isInventory;
+    }
+
+    public void setInventory(boolean inventory) {
+        isInventory = inventory;
+    }
+
+    public boolean isInventoryTriggered() {
+        return inventoryTriggered;
+    }
+
+    public void setInventoryTriggered(boolean inventoryTriggered) {
+        this.inventoryTriggered = inventoryTriggered;
+    }
+
+    public boolean isWallDestroyed() {
+        return isWallDestroyed;
+    }
+
+    public void setWallDestroyed(boolean wallDestroyed) {
+        isWallDestroyed = wallDestroyed;
     }
 }

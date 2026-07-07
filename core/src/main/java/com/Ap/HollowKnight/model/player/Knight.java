@@ -2,6 +2,7 @@ package com.Ap.HollowKnight.model.player;
 
 import com.Ap.HollowKnight.model.AttackDirection;
 import com.Ap.HollowKnight.model.Nail;
+import com.Ap.HollowKnight.model.game.FacingDirection;
 import com.Ap.HollowKnight.model.game.PhysicalPart;
 import com.Ap.HollowKnight.model.map.Block;
 import com.Ap.HollowKnight.model.map.BlockType;
@@ -13,31 +14,57 @@ import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
 
+import static com.Ap.HollowKnight.model.game.FacingDirection.LEFT;
 import static com.Ap.HollowKnight.model.game.FacingDirection.RIGHT;
 
 public class Knight extends PhysicalPart {
-    public static final int MAX_MASKS = 5;
-    private static final float INVINCIBILITY_DURATION = 4.0f;
-    private static final float DAMAGE_KNOCKBACK_SPEED = 250f;
-    private static final float JUMP_VELOCITY = 450.0f;
-    private static final float ATTACK_DURATION = 0.15f;
-    private static final float ATTACK_COOLDOWN = 0.25f;
-    private static final float NAIL_LENGTH = 70f;
-    private static final float NAIL_THICKNESS = 90f;
-    private static final int MAX_SOUL = 99;
-    private static final int SOUL_PER_HIT = 11;
-    private static final float POGO_BOUNCE_SPEED = 350f;
-    private static final float DASH_SPEED = 600.0f;
-    private static final float MAX_VELOCITY = 300.0f;
-    private static final float DASH_DURATION = 0.35f;
-    private static final float DASH_COOLDOWN = 0.6f;
-    private static final float FOCUS_DURATION = 1.5f;
-    private static final int FOCUS_COST = 33;
-    private static final float SPAWN_DELAY = 1f;
-    private static final float CAST_DELAY = 0.5f;
+    public final int MAX_MASKS = 5;
+    private final float INVINCIBILITY_DURATION = 4.0f;
+    private final float JUMP_VELOCITY = 450.0f;
+    private final float ATTACK_DURATION = 0.15f;
+    private final float ATTACK_COOLDOWN = 0.3f;
+    private final float NAIL_LENGTH = 70f;
+    private final float NAIL_THICKNESS = 90f;
+    private final int MAX_SOUL = 99;
+    private final int SOUL_PER_HIT = 11;
+    private final float POGO_BOUNCE_SPEED = 350f;
+    private final float DASH_SPEED = 600.0f;
+    private final float WALL_JUMP_HORIZONTAL_SPEED = 120;
+    private final float WALL_JUMP_VERTICAL_SPEED = 500;
+    private final float MAX_VELOCITY = 300.0f;
+    private final float DASH_DURATION = 0.35f;
+    private final float DASH_COOLDOWN = 0.6f;
+    private final float FOCUS_DURATION = 1.5f;
+    private final int FOCUS_COST = 33;
+    private final float SPAWN_DELAY = 1f;
+    private final float CAST_DELAY = 0.5f;
+    private final float DAMAGE_KNOCKBACK_SPEED = 500.0f;
+    private final int BASE_SPELL_DAMAGE = 15;
+    private final int NAIL_DAMAGE = 11;
+    private final int DAMAGE_MULTIPLIER = 2;
+    private final float DASH_COOLDOWN_MULTIPLIER = 0.5f;
+    private final float SPELL_DAMAGE_MULTIPLIER = 1.5f;
+    private final float KNOCKBACK_DAMAGE_MULTIPLIER = 2f;
+    private final int SOUL_PER_HIT_MULTIPLIER = 2;
+    private final float DASH_SPEED_MULTIPLIER = 1.2f;
+    private final float ATTACK_COOLDOWN_MULTIPLIER = 0.5f;
+    private final float FOCUS_DURATION_MULTIPLIER = 0.5f;
 
     private int currentMasks = 5;
     private int currentSoul = 99;
+
+    // Current
+    private float currentDashCooldown = DASH_COOLDOWN;
+    private int currentNailDamage = NAIL_DAMAGE;
+    private int currentSoulPerHit =  SOUL_PER_HIT;
+    private float currentKnockBack = DAMAGE_KNOCKBACK_SPEED;
+    private float currentAttackCooldown = ATTACK_COOLDOWN;
+    private float currentFocusDuration = FOCUS_DURATION;
+    private float currentDashSpeed = DASH_SPEED;
+    private int currentSpellDamage = BASE_SPELL_DAMAGE;
+
+    private boolean hasSharpShadow = false;
+    private boolean hasVoidHeart = false;
 
     private PlayerCondition playerCondition = PlayerCondition.IDLE;
     private AttackDirection currentAttackDirection = AttackDirection.RIGHT;
@@ -53,12 +80,14 @@ public class Knight extends PhysicalPart {
     private float attackCooldownTimer = 0f;
     private float respawnTimer = 0f;
     private float castDurationTimer = 0f;
+    private float wallJumpTimer = 0f;
 
     private Vector2 lastCheckpoint;
     private Nail nail;
     private ArrayList<Vector2> safeSpots;
     private PlayerHUD hud;
     private final SpellManager spellManager = new SpellManager();
+    private final CharmManager charmManager = new CharmManager();
 
     public Knight(Vector2 position, Rectangle hitBox, Vector2 spawnPoint, ArrayList<Vector2> safeSpots , PlayerHUD hud) {
         super(position, hitBox, spawnPoint);
@@ -67,7 +96,6 @@ public class Knight extends PhysicalPart {
         this.safeSpots = safeSpots;
         this.lastCheckpoint = new Vector2(spawnPoint);
         this.hud = hud;
-
     }
 
     @Override
@@ -76,7 +104,7 @@ public class Knight extends PhysicalPart {
             dashTimer -= delta;
             if (dashTimer <= 0) {
                 isDashing = false;
-                dashCooldownTime = DASH_COOLDOWN;
+                dashCooldownTime = currentDashCooldown;
                 setGravityIncluded(true);
                 playerCondition = isOnGround() ? PlayerCondition.IDLE : PlayerCondition.FALLING;
                 setCooldown(true);
@@ -102,7 +130,8 @@ public class Knight extends PhysicalPart {
 
         if (playerCondition == PlayerCondition.FOCUSING) {
             focusTimer += delta;
-            if (focusTimer >= FOCUS_DURATION) {
+            // تغییر به Current
+            if (focusTimer >= currentFocusDuration) {
                 focusTimer = 0;
                 if (currentSoul >= FOCUS_COST) {
                     currentSoul -= FOCUS_COST;
@@ -115,7 +144,7 @@ public class Knight extends PhysicalPart {
             focusTimer = 0.0f;
         }
 
-        if (!isOnGround() && getVelocity().y < 0 && playerCondition != PlayerCondition.DASHING) {
+        if (!isOnGround() && getVelocity().y < 0 && playerCondition != PlayerCondition.DASHING&&playerCondition!=PlayerCondition.JUMPING) {
             playerCondition = PlayerCondition.FALLING;
         }
 
@@ -123,7 +152,7 @@ public class Knight extends PhysicalPart {
             attackTimer -= delta;
             if (attackTimer <= 0) {
                 setAttacking(false);
-                attackCooldownTimer = ATTACK_COOLDOWN;
+                attackCooldownTimer = currentAttackCooldown;
                 playerCondition = isOnGround() ? PlayerCondition.IDLE : PlayerCondition.FALLING;
             }
         }
@@ -146,11 +175,11 @@ public class Knight extends PhysicalPart {
         updateNailHitBox();
         spellManager.update(delta, blocks);
 
-        if (!isOnGround() && getVelocity().y < 0
-            && playerCondition != PlayerCondition.DASHING
-            && playerCondition != PlayerCondition.ATTACKING) {
-            playerCondition = PlayerCondition.FALLING;
-        }
+//        if (!isOnGround() && getVelocity().y < 0
+//            && playerCondition != PlayerCondition.DASHING
+//            && playerCondition != PlayerCondition.ATTACKING) {
+//            playerCondition = PlayerCondition.FALLING;
+//        }
 
         if (isOnGround()) {
             canMonarch = true;
@@ -169,6 +198,19 @@ public class Knight extends PhysicalPart {
         }
 
         applyPhysics(delta, blocks);
+
+        if (!isOnGround() && isTouchingWall() && getVelocity().y < 0) {
+            playerCondition = PlayerCondition.WALL_SLIDING;
+
+            if (getVelocity().y < -150.0f) {
+                getVelocity().y = -150.0f;
+            }
+            canMonarch = true;
+            setFacingDirection(getWallDirection() == 1 ? RIGHT : LEFT);
+        }
+        if (wallJumpTimer > 0) {
+            wallJumpTimer -= delta;
+        }
     }
 
     @Override
@@ -247,7 +289,15 @@ public class Knight extends PhysicalPart {
             setOnGround(false);
             playerCondition = PlayerCondition.JUMPING;
             getVelocity().y = JUMP_VELOCITY;
-        } else if (canMonarch) {
+        }else if (isTouchingWall() && !isOnGround()){
+            playerCondition = PlayerCondition.WALL_JUMPING;
+            getVelocity().y = WALL_JUMP_VERTICAL_SPEED;
+            getVelocity().x = -getWallDirection() * WALL_JUMP_HORIZONTAL_SPEED;
+            setFacingDirection(getWallDirection() == 1 ? LEFT : FacingDirection.RIGHT);
+            wallJumpTimer = 0.25f;
+        }
+
+        else if (canMonarch) {
             playerCondition = PlayerCondition.MONARCHING;
             getVelocity().y = JUMP_VELOCITY;
             canMonarch = false;
@@ -264,7 +314,7 @@ public class Knight extends PhysicalPart {
         if (!isCooldown() && !isDashing && playerCondition != PlayerCondition.FOCUSING) {
             float direction = (getFacingDirection() == RIGHT) ? 1.0f : -1.0f;
             playerCondition = PlayerCondition.DASHING;
-            getVelocity().x = direction * DASH_SPEED;
+            getVelocity().x = direction * currentDashSpeed;
             getVelocity().y = 0.0f;
             setGravityIncluded(false);
             isDashing = true;
@@ -326,7 +376,6 @@ public class Knight extends PhysicalPart {
         attackCooldownTimer = 0;
         dashCooldownTime = 0;
         invincibleTimer = 0;
-//        wallJumpCooldownTimer = 0
     }
 
     private void updateNailHitBox() {
@@ -372,7 +421,7 @@ public class Knight extends PhysicalPart {
     }
 
     public void gainSoul() {
-        currentSoul = Math.min(currentSoul + SOUL_PER_HIT, MAX_SOUL);
+        currentSoul = Math.min(currentSoul + currentSoulPerHit, MAX_SOUL);
     }
 
     public void cancelFocus() {
@@ -390,79 +439,91 @@ public class Knight extends PhysicalPart {
         setInvincible(true);
     }
 
-    public float getDashCooldownTime() {
-        return dashCooldownTime;
+    // ---------- Getters for CombatController and SpellManager ----------
+    public float getCurrentKnockBack() { return currentKnockBack; }
+    public int getCurrentNailDamage() { return currentNailDamage; }
+    public int getCurrentSoulPerHit() { return currentSoulPerHit; }
+    public float getCurrentAttackCooldown() { return currentAttackCooldown; }
+    public float getCurrentFocusDuration() { return currentFocusDuration; }
+    public float getCurrentDashCooldown() { return currentDashCooldown; }
+
+    public float getCurrentDashSpeed() { return currentDashSpeed; }
+    public void setCurrentDashSpeed(float currentDashSpeed) { this.currentDashSpeed = currentDashSpeed; }
+
+    public boolean hasSharpShadow() { return hasSharpShadow; }
+    public void setHasSharpShadow(boolean hasSharpShadow) { this.hasSharpShadow = hasSharpShadow; }
+
+    public boolean hasVoidHeart() { return hasVoidHeart; }
+    public void setHasVoidHeart(boolean hasVoidHeart) { this.hasVoidHeart = hasVoidHeart; }
+
+    // ---------- Other Existing Setters/Getters ----------
+
+    public float getDashCooldownTime() { return dashCooldownTime; }
+    public void setDashCooldownTime(float dashCooldownTime) { this.dashCooldownTime = dashCooldownTime; }
+    public boolean isInvincible() { return isInvincible; }
+    public void setInvincible(boolean invincible) { isInvincible = invincible; }
+    public boolean isDashing() { return isDashing; }
+    public void setDashing(boolean dashing) { isDashing = dashing; }
+    public float getFocusTimer() { return focusTimer; }
+    public void setFocusTimer(float focusTimer) { this.focusTimer = focusTimer; }
+    public float getDashTimer() { return dashTimer; }
+    public void setDashTimer(float dashTimer) { this.dashTimer = dashTimer; }
+    public float getWallJumpTimer() {
+        return wallJumpTimer;
+    }
+    public int getCurrentSoul() { return currentSoul; }
+    public void setCurrentSoul(int currentSoul) { this.currentSoul = currentSoul; }
+    public int getCurrentMasks() { return currentMasks; }
+    public void setCurrentMasks(int currentMasks) { this.currentMasks = currentMasks; }
+    public PlayerCondition getPlayerCondition() { return playerCondition; }
+    public void setPlayerCondition(PlayerCondition playerCondition) { this.playerCondition = playerCondition; }
+    public Nail getNail() { return nail; }
+    public AttackDirection getCurrentAttackDirection() { return currentAttackDirection; }
+    public SpellManager getSpellManager() { return spellManager; }
+
+    public CharmManager getCharmManager() {
+        return charmManager;
     }
 
-    public void setDashCooldownTime(float dashCooldownTime) {
-        this.dashCooldownTime = dashCooldownTime;
+    public int getCurrentSpellDamage() {
+        return currentSpellDamage;
     }
 
-    public boolean isInvincible() {
-        return isInvincible;
-    }
+    public void setCurrentDashCooldown(float currentDashCooldown) { this.currentDashCooldown = currentDashCooldown; }
+    public void setCurrentNailDamage(int currentNailDamage) { this.currentNailDamage = currentNailDamage; }
+    public void setCurrentSoulPerHit(int currentSoulPerHit) { this.currentSoulPerHit = currentSoulPerHit; }
+    public void setCurrentKnockBack(float currentKnockBack) { this.currentKnockBack = currentKnockBack; }
+    public void setCurrentAttackCooldown(float currentAttackCooldown) { this.currentAttackCooldown = currentAttackCooldown; }
+    public void setCurrentFocusDuration(float currentFocusDuration) { this.currentFocusDuration = currentFocusDuration; }
+    public void setCurrentSpellDamage(int currentSpellDamage) {this.currentSpellDamage = currentSpellDamage;}
 
-    public void setInvincible(boolean invincible) {
-        isInvincible = invincible;
-    }
+    public float getINVINCIBILITY_DURATION() { return INVINCIBILITY_DURATION; }
+    public float getJUMP_VELOCITY() { return JUMP_VELOCITY; }
+    public float getATTACK_DURATION() { return ATTACK_DURATION; }
+    public float getATTACK_COOLDOWN() { return ATTACK_COOLDOWN; }
+    public float getNAIL_LENGTH() { return NAIL_LENGTH; }
+    public float getNAIL_THICKNESS() { return NAIL_THICKNESS; }
+    public int getMAX_SOUL() { return MAX_SOUL; }
+    public int getSOUL_PER_HIT() { return SOUL_PER_HIT; }
+    public float getPOGO_BOUNCE_SPEED() { return POGO_BOUNCE_SPEED; }
+    public float getDASH_SPEED() { return DASH_SPEED; }
+    public float getMAX_VELOCITY() { return MAX_VELOCITY; }
+    public float getDASH_DURATION() { return DASH_DURATION; }
+    public float getDASH_COOLDOWN() { return DASH_COOLDOWN; }
+    public float getFOCUS_DURATION() { return FOCUS_DURATION; }
+    public int getFOCUS_COST() { return FOCUS_COST; }
+    public float getSPAWN_DELAY() { return SPAWN_DELAY; }
+    public float getCAST_DELAY() { return CAST_DELAY; }
+    public float getDAMAGE_KNOCKBACK_SPEED() { return DAMAGE_KNOCKBACK_SPEED; }
+    public int getNAIL_DAMAGE() { return NAIL_DAMAGE; }
+    public int getDAMAGE_MULTIPLIER() { return DAMAGE_MULTIPLIER; }
+    public float getDASH_COOLDOWN_MULTIPLIER() { return DASH_COOLDOWN_MULTIPLIER; }
+    public float getSPELL_DAMAGE_MULTIPLIER() { return SPELL_DAMAGE_MULTIPLIER; }
+    public float getKNOCKBACK_DAMAGE_MULTIPLIER() { return KNOCKBACK_DAMAGE_MULTIPLIER; }
+    public int getSOUL_PER_HIT_MULTIPLIER() { return SOUL_PER_HIT_MULTIPLIER; }
+    public float getDASH_SPEED_MULTIPLIER() { return DASH_SPEED_MULTIPLIER; }
+    public float getATTACK_COOLDOWN_MULTIPLIER() { return ATTACK_COOLDOWN_MULTIPLIER; }
+    public float getFOCUS_DURATION_MULTIPLIER() { return FOCUS_DURATION_MULTIPLIER; }
+    public int getBASE_SPELL_DAMAGE() {return BASE_SPELL_DAMAGE;}
 
-    public boolean isDashing() {
-        return isDashing;
-    }
-
-    public void setDashing(boolean dashing) {
-        isDashing = dashing;
-    }
-
-    public float getFocusTimer() {
-        return focusTimer;
-    }
-
-    public void setFocusTimer(float focusTimer) {
-        this.focusTimer = focusTimer;
-    }
-
-    public float getDashTimer() {
-        return dashTimer;
-    }
-
-    public void setDashTimer(float dashTimer) {
-        this.dashTimer = dashTimer;
-    }
-
-    public int getCurrentSoul() {
-        return currentSoul;
-    }
-
-    public void setCurrentSoul(int currentSoul) {
-        this.currentSoul = currentSoul;
-    }
-
-    public int getCurrentMasks() {
-        return currentMasks;
-    }
-
-    public void setCurrentMasks(int currentMasks) {
-        this.currentMasks = currentMasks;
-    }
-
-    public PlayerCondition getPlayerCondition() {
-        return playerCondition;
-    }
-
-    public void setPlayerCondition(PlayerCondition playerCondition) {
-        this.playerCondition = playerCondition;
-    }
-
-    public Nail getNail() {
-        return nail;
-    }
-
-    public AttackDirection getCurrentAttackDirection() {
-        return currentAttackDirection;
-    }
-
-    public SpellManager getSpellManager() {
-        return spellManager;
-    }
 }

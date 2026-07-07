@@ -3,6 +3,13 @@ package com.Ap.HollowKnight.view.screen;
 import com.Ap.HollowKnight.HollowKnight;
 import com.Ap.HollowKnight.controller.GameFlowController;
 import com.Ap.HollowKnight.controller.GameProcessor;
+import com.Ap.HollowKnight.controller.SettingsController;
+import com.Ap.HollowKnight.controller.events.AchievementListener;
+import com.Ap.HollowKnight.controller.events.GameEvent;
+import com.Ap.HollowKnight.controller.events.GameEventMessenger;
+import com.Ap.HollowKnight.model.boss.FalseKnight;
+import com.Ap.HollowKnight.model.boss.FalseKnightPhase;
+import com.Ap.HollowKnight.model.boss.ShockWave;
 import com.Ap.HollowKnight.model.enemy.*;
 import com.Ap.HollowKnight.model.game.FacingDirection;
 import com.Ap.HollowKnight.model.game.GameCamera;
@@ -16,6 +23,8 @@ import com.Ap.HollowKnight.model.zote.Zote;
 import com.Ap.HollowKnight.model.zote.ZoteState;
 import com.Ap.HollowKnight.view.*;
 import com.Ap.HollowKnight.view.animations.*;
+import com.Ap.HollowKnight.view.screen.modals.InventoryModal;
+import com.Ap.HollowKnight.view.screen.modals.PauseModal;
 import com.Ap.HollowKnight.view.sounds.MusicType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -42,7 +51,6 @@ public class GameScreen extends BaseScreen {
 
     private ScreenViewport viewport;
     private GameCamera camera;
-    private SpriteBatch batch;
     private OrthographicCamera hudCamera;
     private ShapeRenderer shapeRenderer;
     private PlayerHUD hud;
@@ -50,6 +58,14 @@ public class GameScreen extends BaseScreen {
     private Texture background;
     private ParticleEffect glowingDots;
     private BitmapFont font;
+    private PauseModal pauseModal;
+    private InventoryModal inventoryModal;
+    private GameEventMessenger messenger;
+    private AchievementListener achievementListener;
+    private boolean isInventoryOpen = false;
+    private boolean isinBossArena = false;
+    private boolean secretRevealed = false;
+
 
     private ArrayList<Block> blocks;
     private float stateTime = 0f;
@@ -67,10 +83,16 @@ public class GameScreen extends BaseScreen {
     private float howlingSpellTime = 0f;
     private boolean wasHowlingActive = false;
 
-    private final int[] backGrounds = {0};
-    private final int[] foreGrounds = {1, 2};
-    private final float KNIGHT_SPRITE_WIDTH = 90f;
-    private final float KNIGHT_SPRITE_HEIGHT = 128f;
+    private FalseKnightPhase previousBossPhase = FalseKnightPhase.IDLE;
+    private float bossStateTime = 0f;
+
+    private boolean wasPaused = false;
+    private final int[] backGrounds = {0,1};
+    private final int[] foreGrounds = {2, 3};
+    private final int[] secretForeGrounds ={5};
+    private final int[] bossDecor = {6,7};
+    private final float KNIGHT_SPRITE_WIDTH = 120;
+    private final float KNIGHT_SPRITE_HEIGHT = 150;
     private final float EFFECT_SPRITE_SIZE = 150.0f;
     private static final float PARALLAX_FACTOR = 0.5f;
 
@@ -112,6 +134,35 @@ public class GameScreen extends BaseScreen {
         this.glowingDots = new ParticleEffect();
         glowingDots.load(Gdx.files.internal("particle/glowParticle.p"), Gdx.files.internal("particle"));
         glowingDots.start();
+
+        pauseModal = new PauseModal(this) {
+            @Override
+            public void onResume() {
+                gameFlowController.setPaused(false);
+                inputController.setPaused(false);
+            }
+        };
+
+        if(SettingsController.getInstance().isReturnToPauseMenu()) {
+            gameFlowController.setPaused(true);
+            inputController.setPaused(true);
+            wasPaused = true;
+            pauseModal.show();
+            SettingsController.getInstance().setReturnToPauseMenu(false);
+        }
+        inventoryModal = new InventoryModal(this) {
+            @Override
+            public void onHide() {
+                isInventoryOpen = false;
+                inputController.setInventory(false);
+            }
+        };
+        messenger =GameEventMessenger.getInstance();
+        achievementListener = new  AchievementListener(this);
+        messenger.addListener(GameEvent.BOSS_DEFEATED,achievementListener);
+        messenger.addListener(GameEvent.ENEMY_KILLED,achievementListener);
+        messenger.addListener(GameEvent.GAME_COMPLETED,achievementListener);
+        messenger.addListener(GameEvent.SECRET_DISCOVERED,achievementListener);
     }
 
     @Override
@@ -119,10 +170,33 @@ public class GameScreen extends BaseScreen {
         delta = Math.min(delta, 0.05f);
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        if (inputController.isInventoryTriggered()) {
+            inputController.setInventoryTriggered(false);
 
-        updateTimers(delta);
-        gameFlowController.update(delta);
-        camera.updatePosition(knight, null, delta);
+            isInventoryOpen = !isInventoryOpen;
+
+            inputController.setInventory(isInventoryOpen);
+
+            if (isInventoryOpen) {
+                inventoryModal.show();
+            } else {
+                inventoryModal.hide();
+            }
+        }
+
+        pauseModal.setVisible(gameFlowController.isPaused());
+        boolean currentPaused = gameFlowController.isPaused();
+        if (currentPaused && !wasPaused) {
+            pauseModal.show();
+        } else if (!currentPaused && wasPaused) {
+            pauseModal.hide();
+        }
+        wasPaused = currentPaused;
+        if(!currentPaused){
+            updateTimers(delta);
+            gameFlowController.update(delta);
+            camera.updatePosition(knight, null, delta);
+        }
 
         renderer.setView(camera);
         batch.setProjectionMatrix(camera.combined);
@@ -151,14 +225,22 @@ public class GameScreen extends BaseScreen {
         }
 
         renderer.render(foreGrounds);
+        secretRevealed=inputController.isWallDestroyed();
+        if(!secretRevealed){
+            renderer.render(secretForeGrounds);
+        }
+        isinBossArena=gameFlowController.isReachedTheBoss();
+        if(isinBossArena){
+            renderer.render(bossDecor);
+        }
+
         if(zote.isPlayerNearby()&&(zote.getStatus()== ZoteState.IDLE||zote.getStatus()== ZoteState.TALKING)){
             drawZotePrompt();
         }
         hud.render(knight, hudCamera,delta);
 
         drawDebugHitboxes();
-        stage.act(delta);
-        stage.draw();
+        super.render(delta);
     }
 
     private void updateTimers(float delta) {
@@ -191,6 +273,17 @@ public class GameScreen extends BaseScreen {
         if (howlingActive && !wasHowlingActive) howlingSpellTime = 0f;
         else if (howlingActive) howlingSpellTime += delta;
         wasHowlingActive = howlingActive;
+
+        for (EnemyModel enemy : enemies) {
+            if (enemy instanceof FalseKnight boss) {
+                FalseKnightPhase currentPhase = boss.getCurrentPhase();
+                if (currentPhase != previousBossPhase) {
+                    bossStateTime = 0f;
+                    previousBossPhase = currentPhase;
+                }
+                bossStateTime += delta;
+            }
+        }
     }
 
     private void drawKnightAndEffects() {
@@ -199,8 +292,29 @@ public class GameScreen extends BaseScreen {
         KnightAnimationType drawKnight = getDrawKnight();
         Animation<TextureRegion> knightAnim = loader.getAnimation(drawKnight);
         knightAnim.setPlayMode(drawKnight.getPlayMode());
-        TextureRegion currentKnightFrame = knightAnim.getKeyFrame(stateTime);
+        TextureRegion currentKnightFrame;
 
+        if (drawKnight == KnightAnimationType.KNIGHT_RUN) {
+            float frameDuration = knightAnim.getFrameDuration();
+            int totalFrames = 13;
+            int loopStartFrame = 5;
+            int loopLength = 8;
+
+            int frameNumber = (int) (stateTime / frameDuration);
+            int frameIndex;
+
+            if (frameNumber < totalFrames) {
+                frameIndex = frameNumber;
+            } else {
+                int loopFrames = frameNumber - totalFrames;
+                frameIndex = loopStartFrame + (loopFrames % loopLength);
+            }
+
+            currentKnightFrame = knightAnim.getKeyFrame(frameIndex * frameDuration);
+
+        } else {
+            currentKnightFrame = knightAnim.getKeyFrame(stateTime);
+        }
         float offsetX = (knight.getHitBox().width - KNIGHT_SPRITE_WIDTH) / 2f;
         float offsetY = 0f;
 
@@ -246,7 +360,8 @@ public class GameScreen extends BaseScreen {
             Animation<TextureRegion> animation = loader.getAnimation(animType);
             animation.setPlayMode(animType.getPlayMode());
 
-            TextureRegion currentFrame = animation.getKeyFrame(stateTime);
+            float timerToUse = (enemy instanceof FalseKnight) ? bossStateTime : stateTime;
+            TextureRegion currentFrame = animation.getKeyFrame(timerToUse);
             boolean isFacingRight = enemy.getFacingDirection() == FacingDirection.RIGHT;
 
             float drawWidth = enemy.getHitBox().width * 1.5f;
@@ -256,10 +371,8 @@ public class GameScreen extends BaseScreen {
 
             float offsetY = 0f;
 
-            boolean flipX = !isFacingRight;
-            if (enemy instanceof HuskHornHead || enemy instanceof CrystalGuardian) {
-                flipX = isFacingRight;
-            }
+            boolean flipX = isFacingRight;
+
 
             batch.draw(
                 currentFrame.getTexture(),
@@ -340,6 +453,7 @@ public class GameScreen extends BaseScreen {
         if (effectFrame == null) return;
 
         float effectX, effectY;
+        int multiplier = 1;
 
         if (type == EffectAnimationType.SOUL_BALL) {
             VengefulSprit vs = knight.getSpellManager().getVengefulSprit();
@@ -356,9 +470,10 @@ public class GameScreen extends BaseScreen {
             effectX += isFacingRight ? -30f : 30f;
             effectY = knight.getHitBox().y + knight.getHitBox().height / 2f - EFFECT_SPRITE_SIZE / 2f;
         } else {
+
             Rectangle nailHitBox = knight.getNail().getHitBox();
             effectX = nailHitBox.x + nailHitBox.width / 2f - EFFECT_SPRITE_SIZE / 2f;
-            effectY = nailHitBox.y + nailHitBox.height / 2f - EFFECT_SPRITE_SIZE / 2f;
+            effectY = nailHitBox.y + nailHitBox.height*0.75f - EFFECT_SPRITE_SIZE / 2f;
         }
 
         boolean flipEffectX = (type == EffectAnimationType.DASH_EFFECT || type == EffectAnimationType.SOUL_BALL) != isFacingRight;
@@ -461,6 +576,10 @@ public class GameScreen extends BaseScreen {
                 return KnightAnimationType.KNIGHT_FIREBALL_CAST;
             case HOWLING_WRATH:
                 return KnightAnimationType.KNIGHT_UP_SLASH;
+            case WALL_SLIDING:
+                return KnightAnimationType.KNIGHT_WALL_SLIDE;
+            case WALL_JUMPING:
+                return KnightAnimationType.KNIGHT_WALL_JUMP;
             default:
                 return KnightAnimationType.KNIGHT_IDLE;
         }
@@ -535,6 +654,21 @@ public class GameScreen extends BaseScreen {
                 default -> CrystalGuardianAnimationType.IDLE;
             };
         }
+        else if (enemy instanceof FalseKnight boss) {
+            return switch (boss.getCurrentPhase()) {
+                case IDLE -> FalseKnightAnimationType.IDLE;
+                case WINDUP -> FalseKnightAnimationType.CHARGING_THE_MACE;
+                case SLAMMING -> FalseKnightAnimationType.MACE_SLAM;
+                case RECOVERING -> FalseKnightAnimationType.RETURN_FROM_ATTACK_TO_IDLE;
+                case RUNNING -> FalseKnightAnimationType.RUN;
+                case JUMPING_ATTACK -> FalseKnightAnimationType.JUMP_ATTACK;
+                case JUMPING_DEFENSE -> FalseKnightAnimationType.JUMP_DEFENSE;
+                case LANDING -> FalseKnightAnimationType.LAND;
+                case GETTING_STUNNED -> FalseKnightAnimationType.GETTING_STUNNED;
+                case STUNNED -> FalseKnightAnimationType.STUNNED_BODY;
+                case WAKING_UP -> FalseKnightAnimationType.STUN_TO_IDLE;
+            };
+        }
 
         return null;
     }
@@ -604,6 +738,27 @@ public class GameScreen extends BaseScreen {
         if (hw.isActive()) {
             shapeRenderer.rect(hw.getHitBox().x, hw.getHitBox().y, hw.getHitBox().width, hw.getHitBox().height);
         }
+        shapeRenderer.setColor(Color.MAGENTA);
+        for (EnemyModel enemy : enemies) {
+            if (enemy instanceof FalseKnight) {
+                FalseKnight boss = (FalseKnight) enemy;
+                shapeRenderer.rect(
+                    boss.getMaceHitBox().x,
+                    boss.getMaceHitBox().y,
+                    boss.getMaceHitBox().width,
+                    boss.getMaceHitBox().height
+                );
+            }
+        }
+        shapeRenderer.setColor(Color.ORANGE);
+        for (EnemyModel enemy : enemies) {
+            if (enemy instanceof FalseKnight) {
+                FalseKnight boss = (FalseKnight) enemy;
+                for (ShockWave wave : boss.getShockWaves()) {
+                    shapeRenderer.rect(wave.getHitBox().x, wave.getHitBox().y, wave.getHitBox().width, wave.getHitBox().height);
+                }
+            }
+        }
         shapeRenderer.end();
     }
 
@@ -612,5 +767,21 @@ public class GameScreen extends BaseScreen {
         super.resize(width, height);
         camera.setToOrtho(false, width, height);
         hudCamera.setToOrtho(false, width, height);
+    }
+
+    public boolean isSecretRevealed() {
+        return secretRevealed;
+    }
+
+    public void setSecretRevealed(boolean secretRevealed) {
+        this.secretRevealed = secretRevealed;
+    }
+
+    public boolean isIsinBossArena() {
+        return isinBossArena;
+    }
+
+    public void setIsinBossArena(boolean isinBossArena) {
+        this.isinBossArena = isinBossArena;
     }
 }

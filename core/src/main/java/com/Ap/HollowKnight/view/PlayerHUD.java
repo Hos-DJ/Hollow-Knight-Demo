@@ -32,10 +32,11 @@ public class PlayerHUD {
     private static final float MASK_SIZE = 90f;
     private static final float MASK_GAP = -5f;
 
+    private static final int MAX_MASKS = 5;
     private static final float MAX_SOUL = 99f;
     private static final float SOUL_LERP_SPEED = 5f;
 
-    private final MaskData[] maskData = new MaskData[Knight.MAX_MASKS];
+    private final MaskData[] maskData = new MaskData[MAX_MASKS];
     private float displayedSoul = 0f;
     private final SpriteBatch batch;
     private final TextureRegion fillSoul = new TextureRegion();
@@ -96,7 +97,7 @@ public class PlayerHUD {
         float startX = HUD_X_OFFSET +MASK_START_X_OFFSET;
         float startY = Gdx.graphics.getHeight() - HUD_Y_TOP_OFFSET -MASK_START_Y_OFFSET -MASK_SIZE;
 
-        for (int i = 0; i < Knight.MAX_MASKS; i++) {
+        for (int i = 0; i < MAX_MASKS; i++) {
             MaskData md = maskData[i];
             md.timer += delta;
 
@@ -153,7 +154,6 @@ public class PlayerHUD {
 
     }
 
-    // ── lifecycle ─────────────────────────────────────────────────────────────
 
     public void dispose() {
         batch.dispose();

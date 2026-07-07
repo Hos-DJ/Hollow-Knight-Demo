@@ -1,5 +1,6 @@
 package com.Ap.HollowKnight.model.map;
 
+import com.Ap.HollowKnight.model.boss.FalseKnight;
 import com.Ap.HollowKnight.model.enemy.*;
 import com.Ap.HollowKnight.model.zote.Zote;
 import com.badlogic.gdx.maps.MapLayer;
@@ -31,11 +32,32 @@ public class TiledMapHelper {
                 Rectangle rect = ((RectangleMapObject) object).getRectangle();
                 String type = object.getProperties().get("type", String.class);
                 BlockType blockType = BlockType.fromName(type);
-
-                blocks.add(new Block(rect, blockType));
+                if(blockType == BlockType.DESTRUCTIBLE_WALL){
+                    continue;
+                }else{
+                    blocks.add(new Block(rect, blockType));
+                }
             }
         }
         return blocks;
+    }
+
+    public DestructibleWall getDestructibleWall() {
+        MapLayer layer = tiledMap.getLayers().get("collision objects");
+        for (MapObject object : layer.getObjects()) {
+
+            if (object instanceof RectangleMapObject) {
+
+                Rectangle rect = ((RectangleMapObject) object).getRectangle();
+                String type = object.getProperties().get("type", String.class);
+                BlockType blockType = BlockType.fromName(type);
+                if(blockType == BlockType.DESTRUCTIBLE_WALL){
+                    DestructibleWall wall = new DestructibleWall(rect, blockType);
+                    return new DestructibleWall(rect, blockType);
+                }
+            }
+        }
+        return null;
     }
 
     public ArrayList<Vector2> getSafeSpots() {
@@ -87,6 +109,10 @@ public class TiledMapHelper {
                         break;
                     case "CrystalGuardian":
                         enemies.add(new CrystalGuardian(new Vector2(x, y), new Rectangle(x, y, 60f, 110f), new Vector2(x, y), 60));
+                        break;
+                    case "FalseKnight":
+                        enemies.add(new FalseKnight(new Vector2 (x,y) , new Rectangle(x,y , 320,350),  new Vector2(x, y)));
+                        break;
                 }
             }
         }

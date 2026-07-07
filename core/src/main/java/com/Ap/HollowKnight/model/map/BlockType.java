@@ -4,7 +4,10 @@ public enum BlockType {
     SPIKE("spike"),
     CEIL("ceil"),
     GROUND("ground"),
-    WALL("wall");
+    WALL("wall"),
+    DESTRUCTIBLE_WALL("destructible wall"),
+    DESTROYED_WALL("destroyed wall"),
+    DOOR("door");
 
     private final String name;
 
@@ -30,7 +33,7 @@ public enum BlockType {
     }
 
     public boolean blocksHorizontal() {
-        return this == WALL;
+        return this == WALL||this == DESTRUCTIBLE_WALL;
     }
 
     public boolean isHazard() {

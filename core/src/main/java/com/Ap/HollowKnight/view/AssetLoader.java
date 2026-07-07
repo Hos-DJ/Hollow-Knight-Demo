@@ -1,5 +1,6 @@
 package com.Ap.HollowKnight.view;
 
+import com.Ap.HollowKnight.model.player.Charm;
 import com.Ap.HollowKnight.view.animations.*;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
@@ -54,12 +55,16 @@ public class AssetLoader {
         queueTextures(CrystalGuardianAnimationType.values());
         queueTextures(ZoteAnimationType.values());
         queueTextures(HudAnimationType.values());
+        queueTextures(FalseKnightAnimationType.values());
         internalManager.load("Ui/Hollow-Knight-Logo-PNG-Pic.png", Texture.class);
         internalManager.load("Ui/Audio/button-click.wav", Sound.class);
         internalManager.load("Ui/Audio/button-hover.wav", Sound.class);
         internalManager.load("Ui/Slider/slider.atlas", TextureAtlas.class);
         internalManager.load("Ui/TableBottom.png", Texture.class);
         internalManager.load("Ui/TableTop.png",Texture.class);
+        for(Charm charm : Charm.values()){
+            internalManager.load("Ui/Charms/"+charm.name()+".png",Texture.class);
+        }
 
         internalManager.finishLoading();
         fontMap.put("font_24",internalManager.get("font_24.ttf", BitmapFont.class));
@@ -73,6 +78,7 @@ public class AssetLoader {
         loadAnimations(CrystalGuardianAnimationType.values());
         loadAnimations(ZoteAnimationType.values());
         loadAnimations(HudAnimationType.values());
+        loadAnimations(FalseKnightAnimationType.values());
     }
 
     public static AssetLoader getInstance() {

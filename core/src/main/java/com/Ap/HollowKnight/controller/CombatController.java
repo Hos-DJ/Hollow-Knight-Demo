@@ -1,7 +1,9 @@
 package com.Ap.HollowKnight.controller;
 
 import com.Ap.HollowKnight.model.AttackDirection;
+import com.Ap.HollowKnight.model.boss.FalseKnight;
 import com.Ap.HollowKnight.model.enemy.EnemyModel;
+import com.Ap.HollowKnight.model.map.DestructibleWall;
 import com.Ap.HollowKnight.model.player.Knight;
 import com.Ap.HollowKnight.model.player.PlayerCondition;
 import com.badlogic.gdx.math.Vector2;
@@ -25,17 +27,19 @@ public class CombatController {
         return instance;
     }
 
-    private static final float DAMAGE_KNOCKBACK_SPEED = 500.0f;
-    private static final int NAIL_DAMAGE = 11;
 
-    public void checkCombat(Knight knight, List<EnemyModel> enemies) {
+
+    public void checkCombat(Knight knight, List<EnemyModel> enemies, DestructibleWall wall) {
+         float damageKnockBack= knight.getCurrentKnockBack();
+         int currentNailDamage = knight.getCurrentNailDamage();
         Set<EnemyModel> hittedEnemies = new HashSet<>();
+        boolean isWallDamaged = false;
         if (enemies == null || enemies.isEmpty()) {
             return;
         }
         for (EnemyModel enemy : enemies) {
             if (!enemy.isDead() && !hittedEnemies.contains(enemy) && knight.getNail().getHitBox().overlaps(enemy.getHitBox())) {
-                enemy.takeDamage(NAIL_DAMAGE);
+                enemy.takeDamage(currentNailDamage);
                 hittedEnemies.add(enemy);
                 knight.gainSoul();
                 float knockBackDirection = (knight.getPosition().x < enemy.getPosition().x) ? 1f : -1f;
@@ -45,17 +49,26 @@ public class CombatController {
                     knight.pogoBounce();
                     knockBackVerticalSpeed = 0f;
                 }
-                enemy.setKnockBackVelocity(new Vector2(knockBackDirection * DAMAGE_KNOCKBACK_SPEED, knockBackVerticalSpeed));
+                if(enemy instanceof FalseKnight){
+                    enemy.setKnockBackVelocity(new Vector2(knockBackDirection * damageKnockBack, 0));
+                }else
+                    enemy.setKnockBackVelocity(new Vector2(knockBackDirection * damageKnockBack, knockBackVerticalSpeed));
             }
+        }
+
+        if(!isWallDamaged&&wall.getBound().overlaps(knight.getNail().getHitBox())) {
+            wall.takeDamage();
         }
     }
 
     public void checkKnightDamage(Knight knight, ArrayList<EnemyModel> enemies) {
+        float damageKnockBack= knight.getCurrentKnockBack();
+        int currentNailDamage = knight.getCurrentNailDamage();
         for (EnemyModel enemy : enemies) {
             if (enemy.getHitBox().overlaps(knight.getHitBox()) && !enemy.isDead()) {
                 if (!knight.isInvincible()) {
                     float knockBackDirection = (knight.getPosition().x > enemy.getPosition().x) ? 1f : -1f;
-                    knight.setKnockBackVelocity(new Vector2(knockBackDirection * DAMAGE_KNOCKBACK_SPEED, 400.0f));
+                    knight.setKnockBackVelocity(new Vector2(knockBackDirection * damageKnockBack, 400.0f));
                 }
                 knight.takeDamage(1);
             }

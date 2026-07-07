@@ -1,11 +1,13 @@
 package com.Ap.HollowKnight.view.screen;
 
 import com.Ap.HollowKnight.HollowKnight;
+import com.Ap.HollowKnight.controller.GameKeypad;
 import com.Ap.HollowKnight.controller.ScreenManager;
 import com.Ap.HollowKnight.controller.SettingsController;
 import com.Ap.HollowKnight.view.AssetLoader;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -16,6 +18,11 @@ public class SettingsScreen extends BaseScreen {
     private static int DEFAULT = 8 ;
     private final SettingsController controller = SettingsController.getInstance();
     private Table keyTable ;
+    private Image topImage;
+    private Image bottomImage;
+    private GameKeypad waitingForKeypad = null;
+    private TextButton waitingButton = null;
+    private InputAdapter keyRebinder;
     public SettingsScreen(HollowKnight game) {
         super(game);
         keyTable = createKeypadTable();
@@ -24,20 +31,40 @@ public class SettingsScreen extends BaseScreen {
 
     @Override
     public void show() {
-        controller.resetSounds();
         super.show();
+        keyRebinder = new InputAdapter() {
+            @Override
+            public boolean keyDown(int keycode) {
+                if (waitingForKeypad != null && waitingButton != null) {
+                    if (keycode != Input.Keys.ESCAPE) {
+                        waitingForKeypad.setKeyNumber(keycode);
+                        waitingButton.setText(Input.Keys.toString(keycode));
+                    } else {
+                        waitingButton.setText(Input.Keys.toString(waitingForKeypad.getKeyNumber()));
+                    }
+                    waitingForKeypad = null;
+                    waitingButton = null;
+                    return true;
+                }
+                return false;
+            }
+        };
+        inputMultiplexer.addProcessor(0,keyRebinder);
+        topImage = new Image(AssetLoader.getInstance().getTexture("Ui/TableTop.png"));
+        bottomImage = new Image(AssetLoader.getInstance().getTexture("Ui/TableBottom.png"));
+        keyTable = createKeypadTable();
+        keyTable.setVisible(false);
         batch = new SpriteBatch();
         rootTable.center();
         rootTable.setFillParent(true);
         stage.addActor(keyTable);
-        Image topImage = new Image(AssetLoader.getInstance().getTexture("Ui/TableTop.png"));
         rootTable.add(topImage).colspan(3).center().padBottom(20).row();
 
-
-        TextButton musicButton = new TextButton("MUSIC VOLUME:", buttonStyle);
-        TextButton musicValue = new TextButton("8", buttonStyle);
+        int currentMusic = controller.getMusicLevel();
+        TextButton musicButton = new TextButton(currentMusic == 0 ? "MUSIC OFF" : "MUSIC VOLUME:", buttonStyle);
+        TextButton musicValue = new TextButton(String.valueOf(currentMusic), buttonStyle);
         Slider musicSlider = new Slider(0, 10, 1, false, sliderStyle);
-        musicSlider.setValue(8);
+        musicSlider.setValue(currentMusic);
         musicSlider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event , Actor actor){
@@ -67,10 +94,11 @@ public class SettingsScreen extends BaseScreen {
         });
 
 
-        TextButton sfxButton = new TextButton("SFX VOLUME:", buttonStyle);
+        int currentSfx = controller.getSfxLevel();
+        TextButton sfxButton = new TextButton(currentSfx == 0 ? "SFX OFF" : "SFX VOLUME:", buttonStyle);
         Slider sfxSlider = new Slider(0, 10, 1, false, sliderStyle);
-        sfxSlider.setValue(8);
-        TextButton sfxValue = new TextButton(String.valueOf((int) sfxSlider.getValue()), buttonStyle);
+        sfxSlider.setValue(currentSfx);
+        TextButton sfxValue = new TextButton(String.valueOf(currentSfx), buttonStyle);
 
         sfxSlider.addListener(new ChangeListener() {
             @Override
@@ -94,10 +122,11 @@ public class SettingsScreen extends BaseScreen {
             }
         });
 
+        int currentBrightness = controller.getBrightnessLevel();
         TextButton brightnessButton = new TextButton("BRIGHTNESS:", buttonStyle);
-        TextButton brightnessValue = new TextButton("8", buttonStyle);
+        TextButton brightnessValue = new TextButton(String.valueOf(currentBrightness), buttonStyle);
         Slider brightnessSlider = new Slider(0, 10, 1, false, sliderStyle);
-        brightnessSlider.setValue(8);
+        brightnessSlider.setValue(currentBrightness);
         brightnessSlider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event , Actor actor){
@@ -112,18 +141,21 @@ public class SettingsScreen extends BaseScreen {
             controller.resetSounds();
             musicSlider.setValue(8);
             sfxSlider.setValue(8);
+            musicValue.setText("8");
+            sfxValue.setText("8");
             musicButton.setText("MUSIC VOLUME:");
+            sfxButton.setText("SFX VOLUME:");
         });
 
         TextButton changeGamePlayButton = new TextButton("CHANGE GAME KEYPAD", buttonStyle);
         setupButton(changeGamePlayButton,()->{
             rootTable.setVisible(false);
-            keyTable = createKeypadTable();
             keyTable.setVisible(true);
         });
         TextButton backButton = new TextButton("BACK", buttonStyle);
         setupButton(backButton,()->{
-            ScreenManager.getInstance().setScreen("MainMenuScreen");
+            String returnScreen = controller.getPreviousScreen();
+            ScreenManager.getInstance().setScreen(returnScreen);
         });
 
 
@@ -145,11 +177,6 @@ public class SettingsScreen extends BaseScreen {
         rootTable.add(backButton).center().colspan(3).padTop(40).row();
 
 
-
-
-
-        // ۴. ردیف سوم: ایمیج پایینی (مثل فوتر یا خط تزیینی پایین منو)
-        Image bottomImage = new Image(AssetLoader.getInstance().getTexture("Ui/TableBottom.png"));
         rootTable.add(bottomImage).colspan(3).center().padTop(20).row();
     }
 
@@ -166,17 +193,53 @@ public class SettingsScreen extends BaseScreen {
         super.render(delta);
     }
 
+    @Override
+    public void resize(int width, int height) {
+        super.resize(width, height);
+    }
+
     private Table createKeypadTable() {
         Table table = new Table();
+        table.setFillParent(true);
         Label title = new Label("GAME KEYPAD", labelStyle);
         TextButton backButton = new TextButton("BACK", buttonStyle);
         setupButton(backButton,()->{
             table.setVisible(false);
             rootTable.setVisible(true);
         });
-        title.setScale(2);
-        table.center();
-        table.add(title).align(Align.left).padRight(20).padTop(20).expandY().row();
+        title.setFontScale(1.25f);
+        table.center().top();
+        Image topDecor = new Image(AssetLoader.getInstance().getTexture("Ui/TableTop.png"));
+        table.add(topDecor).colspan(2).center().padTop(20).padBottom(10).row();
+        table.add(title).colspan(2).padTop(10).expandY().row();
+        for(GameKeypad key : GameKeypad.values()) {
+            Label nameLabel = new Label(key.name() + ":", labelStyle);
+            TextButton keyButton = new TextButton(Input.Keys.toString(key.getKeyNumber()), buttonStyle);
+            setupButton(keyButton, () -> {
+                if (waitingButton != null && waitingForKeypad != null) {
+                    waitingButton.setText(Input.Keys.toString(waitingForKeypad.getKeyNumber()));
+                }
+                waitingForKeypad = key;
+                waitingButton = keyButton;
+                keyButton.setText("[ PRESS KEY ]");
+            });
+            table.add(nameLabel).align(Align.left).padRight(40).padBottom(10);
+            table.add(keyButton).align(Align.right).padBottom(10).row();
+        }
+        TextButton backBtn = new TextButton("BACK", buttonStyle);
+        setupButton(backBtn, () -> {
+            if (waitingButton != null && waitingForKeypad != null) {
+                waitingButton.setText(Input.Keys.toString(waitingForKeypad.getKeyNumber()));
+                waitingForKeypad = null;
+                waitingButton = null;
+            }
+            table.setVisible(false);
+            rootTable.setVisible(true);
+        });
+        table.add(backButton).colspan(2).center().padTop(30).row();
+
+        Image bottomDecor = new Image(AssetLoader.getInstance().getTexture("Ui/TableBottom.png"));
+        table.add(bottomDecor).colspan(2).center().padTop(10).row();
         return table;
     }
 }

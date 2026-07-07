@@ -35,10 +35,7 @@ public class ScreenManager {
             case "MainMenuScreen" -> screens.put(name, new MainMenuScreen(game));
             case "SettingsScreen" -> screens.put(name, new SettingsScreen(game));
             case "AchievementsScreen" -> screens.put(name, new AchievementsScreen(game));
-            case "InventoryScreen" -> screens.put(name, new InventoryScreen(game));
-            case "PauseScreen" -> screens.put(name, new PauseScreen(game));
             case "GameScreen" -> makeGameScreen(name);
-
             case "VictoryScreen" -> screens.put(name, new VictoryScreen(game));
         }
     }
@@ -49,7 +46,7 @@ public class ScreenManager {
         TiledMapTileLayer mainLayer = (TiledMapTileLayer) map.getLayers().get(0);
         float mapWidth = mainLayer.getWidth() * mainLayer.getTileWidth();
         float mapHeight = mainLayer.getHeight() * mainLayer.getTileHeight();
-        LevelModel.getInstance(mapHelper.getRectangles(), mapHelper.getEnemies(), mapWidth, mapHeight, mapHelper.getSafeSpots(), mapHelper.spawnPoint(),mapHelper.getZote());
+        LevelModel.getInstance(mapHelper.getRectangles(), mapHelper.getEnemies(), mapWidth, mapHeight, mapHelper.getSafeSpots(), mapHelper.spawnPoint(),mapHelper.getZote(),mapHelper.getDestructibleWall());
         screens.put(name, new GameScreen(game, map));
     }
 

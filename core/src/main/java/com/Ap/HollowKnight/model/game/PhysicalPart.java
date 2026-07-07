@@ -28,6 +28,10 @@ public abstract class PhysicalPart {
     private static final float GROUND_SNAP_EPSILON = 0.05f;
     protected static final float GRAVITY = -700.0f;
 
+    //just for knight
+    private boolean isTouchingWall = false;
+    private int wallDirection = 0;
+
     public PhysicalPart(Vector2 position, Rectangle hitBox, Vector2 spawnPoint) {
         this.position = position;
         this.hitBox = hitBox;
@@ -85,13 +89,19 @@ public abstract class PhysicalPart {
 
     private void resolveHorizontalCollisions(List<Block> blocks) {
         float moveX = velocity.x + knockBackVelocity.x;
+        isTouchingWall = false;
+        wallDirection = 0;
         for (Block block : blocks) {
             if (!block.getType().blocksHorizontal()) continue;
             if (!hitBox.overlaps(block.getBound())) continue;
             if (moveX > 0) {
                 position.x = block.getBound().x - hitBox.width;
+                isTouchingWall = true;
+                wallDirection = 1;
             } else if (moveX < 0) {
                 position.x = block.getBound().x + block.getBound().width;
+                isTouchingWall = true;
+                wallDirection = -1;
             }
             velocity.x = 0;
             updateHitBox();
@@ -172,10 +182,13 @@ public abstract class PhysicalPart {
         return gravityIncluded;
     }
 
-
     public Vector2 getSpawnPoint() {
         return spawnPoint;
     }
+
+    public boolean isTouchingWall() { return isTouchingWall; }
+
+    public int getWallDirection() { return wallDirection; }
 
     //setters
 

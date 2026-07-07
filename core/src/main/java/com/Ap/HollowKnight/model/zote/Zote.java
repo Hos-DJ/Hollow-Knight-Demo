@@ -82,7 +82,7 @@ public class Zote extends PhysicalPart {
             }
         }
 
-        System.out.println(this.status);
+//        System.out.println(this.status);
 
 
 
