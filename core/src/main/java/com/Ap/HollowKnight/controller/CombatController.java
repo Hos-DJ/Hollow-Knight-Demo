@@ -1,30 +1,76 @@
 package com.Ap.HollowKnight.controller;
 
 import com.Ap.HollowKnight.model.AttackDirection;
+import com.Ap.HollowKnight.model.boss.FalseKnight;
 import com.Ap.HollowKnight.model.enemy.EnemyModel;
+import com.Ap.HollowKnight.model.map.DestructibleWall;
 import com.Ap.HollowKnight.model.player.Knight;
 import com.Ap.HollowKnight.model.player.PlayerCondition;
+import com.badlogic.gdx.math.Vector2;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class CombatController {
-    private Set<EnemyModel> hittedEnemies = new HashSet<>();
-    private final int NAIL_DAMAGE =11;
-    public void checkCombat(Knight knight, List<EnemyModel> enemies){
-        if(enemies == null || enemies.isEmpty()){
+    private static CombatController instance;
+
+    private CombatController() {
+
+    }
+
+    public static CombatController getInstance() {
+        if (instance == null) {
+            instance = new CombatController();
+        }
+        return instance;
+    }
+
+
+
+    public void checkCombat(Knight knight, List<EnemyModel> enemies, DestructibleWall wall) {
+         float damageKnockBack= knight.getCurrentKnockBack();
+         int currentNailDamage = knight.getCurrentNailDamage();
+        Set<EnemyModel> hittedEnemies = new HashSet<>();
+        boolean isWallDamaged = false;
+        if (enemies == null || enemies.isEmpty()) {
             return;
         }
-        for (EnemyModel enemy : enemies){
-            if(!hittedEnemies.contains(enemy)&&knight.getNail().getHitBox().overlaps(enemy.getHitBox())){
-                enemy.takeDamage(NAIL_DAMAGE);
+        for (EnemyModel enemy : enemies) {
+            if (!enemy.isDead() && !hittedEnemies.contains(enemy) && knight.getNail().getHitBox().overlaps(enemy.getHitBox())) {
+                enemy.takeDamage(currentNailDamage);
                 hittedEnemies.add(enemy);
                 knight.gainSoul();
+                float knockBackDirection = (knight.getPosition().x < enemy.getPosition().x) ? 1f : -1f;
+                float knockBackVerticalSpeed = 600.0f;
                 knight.setPlayerCondition(PlayerCondition.IDLE);
-                if(knight.getCurrentAttackDirection()== AttackDirection.DOWN){
+                if (knight.getCurrentAttackDirection() == AttackDirection.DOWN) {
                     knight.pogoBounce();
+                    knockBackVerticalSpeed = 0f;
                 }
+                if(enemy instanceof FalseKnight){
+                    enemy.setKnockBackVelocity(new Vector2(knockBackDirection * damageKnockBack, 0));
+                }else
+                    enemy.setKnockBackVelocity(new Vector2(knockBackDirection * damageKnockBack, knockBackVerticalSpeed));
+            }
+        }
+
+        if(!isWallDamaged&&wall.getBound().overlaps(knight.getNail().getHitBox())) {
+            wall.takeDamage();
+        }
+    }
+
+    public void checkKnightDamage(Knight knight, ArrayList<EnemyModel> enemies) {
+        float damageKnockBack= knight.getCurrentKnockBack();
+        int currentNailDamage = knight.getCurrentNailDamage();
+        for (EnemyModel enemy : enemies) {
+            if (enemy.getHitBox().overlaps(knight.getHitBox()) && !enemy.isDead()) {
+                if (!knight.isInvincible()) {
+                    float knockBackDirection = (knight.getPosition().x > enemy.getPosition().x) ? 1f : -1f;
+                    knight.setKnockBackVelocity(new Vector2(knockBackDirection * damageKnockBack, 400.0f));
+                }
+                knight.takeDamage(1);
             }
         }
     }

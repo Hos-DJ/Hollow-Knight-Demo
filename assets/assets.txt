@@ -6,7 +6,321 @@ ForgottonCrossRoads.tiled-session
 GreenPath.tiled-project
 GreenPath.tiled-session
 Grimm_town_signs_0000_2.tsx
+HUD/BreakHealth.png
+HUD/BreakHealth_000.png
+HUD/BreakHealth_001.png
+HUD/BreakHealth_002.png
+HUD/BreakHealth_003.png
+HUD/BreakHealth_004.png
+HUD/BreakHealth_005.png
+HUD/EmptyHealth.png
+HUD/FilledHealth.png
+HUD/FilledHealthShine.png
+HUD/FilledHealthShine_000.png
+HUD/FilledHealthShine_001.png
+HUD/FilledHealthShine_002.png
+HUD/FilledHealthShine_003.png
+HUD/FilledHealthShine_004.png
+HUD/HUD Cln_000.png
+HUD/HUD Cln_001.png
+HUD/HUD Cln_002.png
+HUD/HUD Cln_003.png
+HUD/HUD Cln_004.png
+HUD/HUD Cln_005.png
+HUD/HUD Cln_006.png
+HUD/HUD Cln_007.png
+HUD/HUD Cln_008.png
+HUD/HUD Cln_009.png
+HUD/HUD Cln_010.png
+HUD/HUD Cln_011.png
+HUD/HUD Cln_012.png
+HUD/HUD Cln_013.png
+HUD/HUD Cln_014.png
+HUD/HUD Cln_015.png
+HUD/HUD Cln_016.png
+HUD/HUD Cln_017.png
+HUD/HUD Cln_018.png
+HUD/HUD Cln_019.png
+HUD/HUD Cln_020.png
+HUD/HUD Cln_021.png
+HUD/HUD Cln_022.png
+HUD/HUD Cln_023.png
+HUD/HUD Cln_024.png
+HUD/HUD Cln_025.png
+HUD/HUD Cln_026.png
+HUD/HUD Cln_027.png
+HUD/HUD Cln_028.png
+HUD/HUD Cln_029.png
+HUD/HUD Cln_030.png
+HUD/HUD Cln_031.png
+HUD/HUD Cln_032.png
+HUD/HUD Cln_033.png
+HUD/HUD Cln_034.png
+HUD/HUD Cln_035.png
+HUD/HUD Cln_036.png
+HUD/HUD Cln_037.png
+HUD/HUD Cln_038.png
+HUD/HUD Cln_039.png
+HUD/HUD Cln_040.png
+HUD/HUD Cln_041.png
+HUD/HUD Cln_042.png
+HUD/HUD Cln_043.png
+HUD/HUD Cln_044.png
+HUD/HUD Cln_045.png
+HUD/HUD Cln_046.png
+HUD/HUD Cln_047.png
+HUD/HUD Cln_048.png
+HUD/HUD Cln_049.png
+HUD/HUD Cln_050.png
+HUD/HUD Cln_051.png
+HUD/HUD Cln_052.png
+HUD/HUD Cln_053.png
+HUD/HUD Cln_054.png
+HUD/HUD Cln_055.png
+HUD/HUD Cln_056.png
+HUD/HUD Cln_057.png
+HUD/HUD Cln_058.png
+HUD/HUD Cln_065.png
+HUD/HUD Cln_066.png
+HUD/HUD Cln_067.png
+HUD/HUD Cln_068.png
+HUD/HUD Cln_069.png
+HUD/HUD Cln_070.png
+HUD/HUD Cln_071.png
+HUD/HUD Cln_072.png
+HUD/HUD Cln_073.png
+HUD/HUD Cln_074.png
+HUD/HUD Cln_075.png
+HUD/HUD Cln_076.png
+HUD/HUD Cln_077.png
+HUD/HUD Cln_078.png
+HUD/HUD Cln_079.png
+HUD/HUD Cln_080.png
+HUD/HUD Cln_081.png
+HUD/HUD Cln_082.png
+HUD/HUD Cln_083.png
+HUD/HUD Cln_084.png
+HUD/HUD Cln_085.png
+HUD/HUD Cln_086.png
+HUD/HUD Cln_087.png
+HUD/HUD Cln_088.png
+HUD/HUD Cln_089.png
+HUD/HUD Cln_090.png
+HUD/HUD Cln_091.png
+HUD/HUD Cln_092.png
+HUD/HUD Cln_093.png
+HUD/HUD Cln_094.png
+HUD/HUD Cln_095.png
+HUD/HUD Cln_096.png
+HUD/HUD Cln_097.png
+HUD/HUD Cln_098.png
+HUD/HUD Cln_099.png
+HUD/HUD Cln_100.png
+HUD/HUD Cln_101.png
+HUD/HUD Cln_102.png
+HUD/HUD Cln_103.png
+HUD/HUD Cln_104.png
+HUD/HUD Cln_105.png
+HUD/HUD Cln_106.png
+HUD/HUD Cln_107.png
+HUD/HUD Cln_108.png
+HUD/HUD Cln_109.png
+HUD/HUD Cln_110.png
+HUD/HUD Cln_111.png
+HUD/HUD Cln_112.png
+HUD/HUD Cln_113.png
+HUD/HUD Cln_114.png
+HUD/HUD Cln_115.png
+HUD/HUD Cln_116.png
+HUD/HUD Cln_117.png
+HUD/HUD Cln_118.png
+HUD/HUD Cln_119.png
+HUD/HUD Cln_120.png
+HUD/HUD Cln_121.png
+HUD/HUD Cln_122.png
+HUD/HUD Cln_123.png
+HUD/HUD Cln_124.png
+HUD/HUD Cln_125.png
+HUD/HUD Cln_126.png
+HUD/HUD Cln_127.png
+HUD/HUD Cln_128.png
+HUD/HUD Cln_130.png
+HUD/HUD Cln_131.png
+HUD/HUD Cln_132.png
+HUD/HUD Cln_133.png
+HUD/HUD Cln_134.png
+HUD/HUD Cln_135.png
+HUD/HUD Cln_136.png
+HUD/HUD Cln_137.png
+HUD/HUD Cln_138.png
+HUD/HUD Cln_139.png
+HUD/HUD Cln_140.png
+HUD/HUD Cln_141.png
+HUD/HUD Cln_142.png
+HUD/HUD Cln_143.png
+HUD/HUD Cln_144.png
+HUD/HUD Cln_145.png
+HUD/HUD Cln_146.png
+HUD/HUD Cln_147.png
+HUD/HUD Cln_148.png
+HUD/HUD Cln_149.png
+HUD/HUD Cln_150.png
+HUD/HUD Cln_151.png
+HUD/HUD Cln_152.png
+HUD/HUD Cln_153.png
+HUD/HUD Cln_154.png
+HUD/HUD Cln_155.png
+HUD/HUD Cln_156.png
+HUD/HUD Cln_157.png
+HUD/HUD Cln_158.png
+HUD/HUD Cln_159.png
+HUD/HUD Cln_160.png
+HUD/HUD Cln_161.png
+HUD/HUD Cln_162.png
+HUD/HUD Cln_163.png
+HUD/HUD Cln_164.png
+HUD/HUD Cln_165.png
+HUD/HUD Cln_166.png
+HUD/HUD Cln_167.png
+HUD/HUD Cln_168.png
+HUD/HUD Cln_169.png
+HUD/HUD Cln_170.png
+HUD/HUD Cln_171.png
+HUD/HUD Cln_172.png
+HUD/HUD Cln_173.png
+HUD/HUD Cln_174.png
+HUD/HUD Cln_175.png
+HUD/HUD Cln_176.png
+HUD/HUD Cln_177.png
+HUD/HUD Cln_178.png
+HUD/HUD Cln_179.png
+HUD/HUD Cln_180.png
+HUD/HUD Cln_181.png
+HUD/HUD Cln_182.png
+HUD/HUD Cln_183.png
+HUD/HUD Cln_184.png
+HUD/HUD Cln_185.png
+HUD/HUD Cln_186.png
+HUD/HUD Cln_187.png
+HUD/HUD Cln_188.png
+HUD/HUD Cln_189.png
+HUD/HUD Cln_190.png
+HUD/HUD Cln_191.png
+HUD/HUD Cln_192.png
+HUD/HUD Cln_193.png
+HUD/HUD Cln_194.png
+HUD/HUD Cln_195.png
+HUD/HUD Cln_196.png
+HUD/HUD Cln_197.png
+HUD/HUD Cln_198.png
+HUD/HUD Cln_199.png
+HUD/HUD Cln_200.png
+HUD/HUD Cln_201.png
+HUD/HUD Cln_202.png
+HUD/HUD Cln_203.png
+HUD/HUD Cln_210.png
+HUD/HUD Cln_211.png
+HUD/HUD Cln_212.png
+HUD/HUD Cln_213.png
+HUD/HUD Cln_214.png
+HUD/HUD Cln_215.png
+HUD/HUD Cln_216.png
+HUD/HUD Cln_217.png
+HUD/HUD Cln_218.png
+HUD/HUD Cln_219.png
+HUD/HUD Cln_220.png
+HUD/HUD Cln_221.png
+HUD/HUD Cln_222.png
+HUD/HUD Cln_223.png
+HUD/HUD Cln_224.png
+HUD/HUD Cln_225.png
+HUD/HUD Cln_226.png
+HUD/HUD Cln_227.png
+HUD/HUD Cln_228.png
+HUD/HUD Cln_229.png
+HUD/HUD Cln_230.png
+HUD/HUD Cln_231.png
+HUD/HUD Cln_232.png
+HUD/HUD Cln_233.png
+HUD/HUD Cln_234.png
+HUD/HUD Cln_235.png
+HUD/HUD Cln_236.png
+HUD/HUD Cln_237.png
+HUD/HUD Cln_238.png
+HUD/HUD Cln_239.png
+HUD/HUD Cln_240.png
+HUD/HUD Cln_241.png
+HUD/HUD Cln_242.png
+HUD/HUD Cln_243.png
+HUD/HUD Cln_244.png
+HUD/HUD Cln_245.png
+HUD/HUD Cln_246.png
+HUD/HUD Cln_247.png
+HUD/HUD Cln_248.png
+HUD/HUD Cln_249.png
+HUD/HUD Cln_250.png
+HUD/HUD Cln_251.png
+HUD/HUD Cln_252.png
+HUD/HUD Cln_253.png
+HUD/HUD Cln_254.png
+HUD/HUD Cln_261.png
+HUD/HUD Cln_265.png
+HUD/HUD Cln_266.png
+HUD/HUD Cln_267.png
+HUD/HUD Cln_268.png
+HUD/HealthBar.png
+HUD/HealthBar_000.png
+HUD/HealthBar_001.png
+HUD/HealthBar_002.png
+HUD/HealthBar_003.png
+HUD/HealthBar_004.png
+HUD/HealthBar_005.png
+HUD/HealthRefill.png
+HUD/HealthRefill_000.png
+HUD/HealthRefill_001.png
+HUD/HealthRefill_002.png
+HUD/HealthRefill_003.png
+HUD/HealthRefill_004.png
+HUD/SoulOrb.jpg
+HUD/SoulOrb_Empty.png
+HUD/SoulOrb_Eye.png
+HUD/SoulOrb_Full.png
+HUD/SoulOrb_Full2.png
+HUD/SoulOrb_Half.png
 Main_tent_chain.tsx
+Mighty_Zote.tsx
+Mighty_Zote_0021_2.tsx
+Ui/Achievements/Defeat Boss.png
+Ui/Achievements/Game Completion.png
+Ui/Achievements/LD-MidTerm2-Sol.pdf
+Ui/Achievements/Secret Discovered.png
+Ui/Achievements/Speedrun.png
+Ui/Achievements/True Hunter.png
+Ui/Audio/backgroundMusic/City of Tears.mp3
+Ui/Audio/backgroundMusic/Greenpath.mp3
+Ui/Audio/backgroundMusic/Main Theme.mp3
+Ui/Audio/backgroundMusic/Manitis Lords.mp3
+Ui/Audio/button-click.wav
+Ui/Audio/button-hover.wav
+Ui/Charms/DASH_MASTER.png
+Ui/Charms/HEAVY_BLOW.png
+Ui/Charms/QUICK_FOCUS.png
+Ui/Charms/QUICK_SLASH.png
+Ui/Charms/SHARP_SHADOW.png
+Ui/Charms/SOUL_CATCHER.png
+Ui/Charms/UNBREAKABLE_STRENGTH.png
+Ui/Charms/VOID_HEART.png
+Ui/Hollow-Knight-Logo-PNG-Pic.png
+Ui/MainMenuParticle.p
+Ui/Menu_Theme_Surface.png
+Ui/Slider/slider.atlas
+Ui/Slider/slider.png
+Ui/Slider/slider_arrow.png
+Ui/Slider/slider_white.png
+Ui/TableBottom.png
+Ui/TableTop.png
+Ui/cursor.png
+Ui/glow.png
 animation/Airborne.png
 animation/Airborne_000.png
 animation/Airborne_001.png
@@ -5526,6 +5840,8 @@ animation/Architecture & Environment/Grass & Vines/break_rag_anim0010.png
 animation/Architecture & Environment/Grass & Vines/break_rag_anim0011.png
 animation/Architecture & Environment/Grass & Vines/break_rag_anim0012.png
 animation/Architecture & Environment/Grass & Vines/break_rag_anim0013.png
+animation/Architecture & Environment/Grass & Vines/forgotton grass.png
+animation/Architecture & Environment/Grass & Vines/forgtton grass_2.png
 animation/Architecture & Environment/Grass & Vines/fung_vine_cut000.png
 animation/Architecture & Environment/Grass & Vines/fung_vine_cut001.png
 animation/Architecture & Environment/Grass & Vines/fung_vine_cut002.png
@@ -6631,88 +6947,6 @@ animation/Architecture & Environment/window_sill.png
 animation/Architecture & Environment/window_sill_02.png
 animation/Architecture & Environment/wood_plank_01.png
 animation/Architecture & Environment/wood_plank_02.png
-animation/Buzzer/Buzzer_aaaaa_info.txt
-animation/Buzzer/Buzzer_full_0.png
-animation/Buzzer/Chase_000.png
-animation/Buzzer/Chase_001.png
-animation/Buzzer/Chase_002.png
-animation/Buzzer/Chase_003.png
-animation/Buzzer/Death Air_000.png
-animation/Buzzer/Death Air_001.png
-animation/Buzzer/Death Air_002.png
-animation/Buzzer/Fly_000.png
-animation/Buzzer/Fly_001.png
-animation/Buzzer/Fly_002.png
-animation/Buzzer/Fly_003.png
-animation/Buzzer/Idle_000.png
-animation/Buzzer/Idle_001.png
-animation/Buzzer/Idle_002.png
-animation/Buzzer/Idle_003.png
-animation/Buzzer/Idle_004.png
-animation/Buzzer/Startle_000.png
-animation/Buzzer/Startle_001.png
-animation/Buzzer/Startle_002.png
-animation/Buzzer/Startle_003.png
-animation/Buzzer/TurnToFly_000.png
-animation/Buzzer/TurnToFly_001.png
-animation/Buzzer/TurnToFly_002.png
-animation/Buzzer/TurnToFly_003.png
-animation/Buzzer/TurnToFly_004.png
-animation/Buzzer/TurnToFly_005.png
-animation/Cockroach/Attack Anticipate.png
-animation/Cockroach/Attack Anticipate_000.png
-animation/Cockroach/Attack Anticipate_001.png
-animation/Cockroach/Attack Anticipate_002.png
-animation/Cockroach/Attack Anticipate_003.png
-animation/Cockroach/Attack Anticipate_004.png
-animation/Cockroach/Attack Cooldown.png
-animation/Cockroach/Attack Lunge.png
-animation/Cockroach/Attack Lunge_000.png
-animation/Cockroach/Attack Lunge_001.png
-animation/Cockroach/Attack Lunge_002.png
-animation/Cockroach/Attack Lunge_003.png
-animation/Cockroach/Attack Lunge_004.png
-animation/Cockroach/Attack Lunge_005.png
-animation/Cockroach/Attack Lunge_006.png
-animation/Cockroach/Attack Lunge_007.png
-animation/Cockroach/Death Air.png
-animation/Cockroach/Death Land.png
-animation/Cockroach/Death Land_000.png
-animation/Cockroach/Death Land_001.png
-animation/Cockroach/Death Land_002.png
-animation/Cockroach/Death Land_003.png
-animation/Cockroach/Death Land_004.png
-animation/Cockroach/Death Land_005.png
-animation/Cockroach/Death Land_006.png
-animation/Cockroach/Death Land_007.png
-animation/Cockroach/Fall.png
-animation/Cockroach/Fall_000.png
-animation/Cockroach/Fall_001.png
-animation/Cockroach/Fall_002.png
-animation/Cockroach/Fall_003.png
-animation/Cockroach/Fall_004.png
-animation/Cockroach/HW3-403105939.circ
-animation/Cockroach/Idle.png
-animation/Cockroach/Idle_000.png
-animation/Cockroach/Idle_001.png
-animation/Cockroach/Idle_002.png
-animation/Cockroach/Idle_003.png
-animation/Cockroach/Idle_004.png
-animation/Cockroach/Idle_005.png
-animation/Cockroach/Idle_006.png
-animation/Cockroach/Turn.png
-animation/Cockroach/Turn_000.png
-animation/Cockroach/Turn_001.png
-animation/Cockroach/Walk.png
-animation/Cockroach/Walk_000.png
-animation/Cockroach/Walk_001.png
-animation/Cockroach/Walk_002.png
-animation/Cockroach/Walk_003.png
-animation/Cockroach/Walk_004.png
-animation/Cockroach/Walk_005.png
-animation/Cockroach/Walk_006.png
-animation/Cockroach/Zombie Basic 1_aaaaa_info.txt
-animation/Cockroach/Zombie Basic 1_full_0.png
 animation/Crawlid/Crawler_aaaaa_info.txt
 animation/Crawlid/Crawler_full_0.png
 animation/Crawlid/Death Air.png
@@ -6731,21 +6965,6 @@ animation/Crawlid/Walk_002.png
 animation/Crawlid/Walk_003.png
 animation/Crawlid/turn_000.png
 animation/Crawlid/turn_001.png
-animation/Crystal_Crawler/Death Air.png
-animation/Crystal_Crawler/Death Air_000.png
-animation/Crystal_Crawler/Death Air_001.png
-animation/Crystal_Crawler/Death Air_002.png
-animation/Crystal_Crawler/Death Land.png
-animation/Crystal_Crawler/Death Land_000.png
-animation/Crystal_Crawler/Death Land_001.png
-animation/Crystal_Crawler/Turn.png
-animation/Crystal_Crawler/Turn_000.png
-animation/Crystal_Crawler/Turn_001.png
-animation/Crystal_Crawler/Walk.png
-animation/Crystal_Crawler/Walk_000.png
-animation/Crystal_Crawler/Walk_001.png
-animation/Crystal_Crawler/Walk_002.png
-animation/Crystal_Crawler/Walk_003.png
 animation/Crystal_Hunter/Attack Recover.png
 animation/Crystal_Hunter/Attack.png
 animation/Crystal_Hunter/Attack_000.png
@@ -6867,6 +7086,7 @@ animation/Effects/Blast_005.png
 animation/Effects/Blast_006.png
 animation/Effects/Blast_007.png
 animation/Effects/CrystalLaser.png
+animation/Effects/Crystal_extended.png
 animation/Effects/Dash Effect.png
 animation/Effects/Dash Effect_000.png
 animation/Effects/Dash Effect_001.png
@@ -7641,286 +7861,6 @@ animation/Forgotten Crossroads/well_bricks_r.png
 animation/Forgotten Crossroads/well_extension_0000_2.png
 animation/Forgotten Crossroads/well_extension_0001_1.png
 animation/Forgotten Crossroads/well_extension_02.png
-animation/HUD/BreakHealth.png
-animation/HUD/BreakHealth_000.png
-animation/HUD/BreakHealth_001.png
-animation/HUD/BreakHealth_002.png
-animation/HUD/BreakHealth_003.png
-animation/HUD/BreakHealth_004.png
-animation/HUD/BreakHealth_005.png
-animation/HUD/EmptyHealth.png
-animation/HUD/FilledHealth.png
-animation/HUD/FilledHealthShine.png
-animation/HUD/FilledHealthShine_000.png
-animation/HUD/FilledHealthShine_001.png
-animation/HUD/FilledHealthShine_002.png
-animation/HUD/FilledHealthShine_003.png
-animation/HUD/FilledHealthShine_004.png
-animation/HUD/HUD Cln_000.png
-animation/HUD/HUD Cln_001.png
-animation/HUD/HUD Cln_002.png
-animation/HUD/HUD Cln_003.png
-animation/HUD/HUD Cln_004.png
-animation/HUD/HUD Cln_005.png
-animation/HUD/HUD Cln_006.png
-animation/HUD/HUD Cln_007.png
-animation/HUD/HUD Cln_008.png
-animation/HUD/HUD Cln_009.png
-animation/HUD/HUD Cln_010.png
-animation/HUD/HUD Cln_011.png
-animation/HUD/HUD Cln_012.png
-animation/HUD/HUD Cln_013.png
-animation/HUD/HUD Cln_014.png
-animation/HUD/HUD Cln_015.png
-animation/HUD/HUD Cln_016.png
-animation/HUD/HUD Cln_017.png
-animation/HUD/HUD Cln_018.png
-animation/HUD/HUD Cln_019.png
-animation/HUD/HUD Cln_020.png
-animation/HUD/HUD Cln_021.png
-animation/HUD/HUD Cln_022.png
-animation/HUD/HUD Cln_023.png
-animation/HUD/HUD Cln_024.png
-animation/HUD/HUD Cln_025.png
-animation/HUD/HUD Cln_026.png
-animation/HUD/HUD Cln_027.png
-animation/HUD/HUD Cln_028.png
-animation/HUD/HUD Cln_029.png
-animation/HUD/HUD Cln_030.png
-animation/HUD/HUD Cln_031.png
-animation/HUD/HUD Cln_032.png
-animation/HUD/HUD Cln_033.png
-animation/HUD/HUD Cln_034.png
-animation/HUD/HUD Cln_035.png
-animation/HUD/HUD Cln_036.png
-animation/HUD/HUD Cln_037.png
-animation/HUD/HUD Cln_038.png
-animation/HUD/HUD Cln_039.png
-animation/HUD/HUD Cln_040.png
-animation/HUD/HUD Cln_041.png
-animation/HUD/HUD Cln_042.png
-animation/HUD/HUD Cln_043.png
-animation/HUD/HUD Cln_044.png
-animation/HUD/HUD Cln_045.png
-animation/HUD/HUD Cln_046.png
-animation/HUD/HUD Cln_047.png
-animation/HUD/HUD Cln_048.png
-animation/HUD/HUD Cln_049.png
-animation/HUD/HUD Cln_050.png
-animation/HUD/HUD Cln_051.png
-animation/HUD/HUD Cln_052.png
-animation/HUD/HUD Cln_053.png
-animation/HUD/HUD Cln_054.png
-animation/HUD/HUD Cln_055.png
-animation/HUD/HUD Cln_056.png
-animation/HUD/HUD Cln_057.png
-animation/HUD/HUD Cln_058.png
-animation/HUD/HUD Cln_065.png
-animation/HUD/HUD Cln_066.png
-animation/HUD/HUD Cln_067.png
-animation/HUD/HUD Cln_068.png
-animation/HUD/HUD Cln_069.png
-animation/HUD/HUD Cln_070.png
-animation/HUD/HUD Cln_071.png
-animation/HUD/HUD Cln_072.png
-animation/HUD/HUD Cln_073.png
-animation/HUD/HUD Cln_074.png
-animation/HUD/HUD Cln_075.png
-animation/HUD/HUD Cln_076.png
-animation/HUD/HUD Cln_077.png
-animation/HUD/HUD Cln_078.png
-animation/HUD/HUD Cln_079.png
-animation/HUD/HUD Cln_080.png
-animation/HUD/HUD Cln_081.png
-animation/HUD/HUD Cln_082.png
-animation/HUD/HUD Cln_083.png
-animation/HUD/HUD Cln_084.png
-animation/HUD/HUD Cln_085.png
-animation/HUD/HUD Cln_086.png
-animation/HUD/HUD Cln_087.png
-animation/HUD/HUD Cln_088.png
-animation/HUD/HUD Cln_089.png
-animation/HUD/HUD Cln_090.png
-animation/HUD/HUD Cln_091.png
-animation/HUD/HUD Cln_092.png
-animation/HUD/HUD Cln_093.png
-animation/HUD/HUD Cln_094.png
-animation/HUD/HUD Cln_095.png
-animation/HUD/HUD Cln_096.png
-animation/HUD/HUD Cln_097.png
-animation/HUD/HUD Cln_098.png
-animation/HUD/HUD Cln_099.png
-animation/HUD/HUD Cln_100.png
-animation/HUD/HUD Cln_101.png
-animation/HUD/HUD Cln_102.png
-animation/HUD/HUD Cln_103.png
-animation/HUD/HUD Cln_104.png
-animation/HUD/HUD Cln_105.png
-animation/HUD/HUD Cln_106.png
-animation/HUD/HUD Cln_107.png
-animation/HUD/HUD Cln_108.png
-animation/HUD/HUD Cln_109.png
-animation/HUD/HUD Cln_110.png
-animation/HUD/HUD Cln_111.png
-animation/HUD/HUD Cln_112.png
-animation/HUD/HUD Cln_113.png
-animation/HUD/HUD Cln_114.png
-animation/HUD/HUD Cln_115.png
-animation/HUD/HUD Cln_116.png
-animation/HUD/HUD Cln_117.png
-animation/HUD/HUD Cln_118.png
-animation/HUD/HUD Cln_119.png
-animation/HUD/HUD Cln_120.png
-animation/HUD/HUD Cln_121.png
-animation/HUD/HUD Cln_122.png
-animation/HUD/HUD Cln_123.png
-animation/HUD/HUD Cln_124.png
-animation/HUD/HUD Cln_125.png
-animation/HUD/HUD Cln_126.png
-animation/HUD/HUD Cln_127.png
-animation/HUD/HUD Cln_128.png
-animation/HUD/HUD Cln_130.png
-animation/HUD/HUD Cln_131.png
-animation/HUD/HUD Cln_132.png
-animation/HUD/HUD Cln_133.png
-animation/HUD/HUD Cln_134.png
-animation/HUD/HUD Cln_135.png
-animation/HUD/HUD Cln_136.png
-animation/HUD/HUD Cln_137.png
-animation/HUD/HUD Cln_138.png
-animation/HUD/HUD Cln_139.png
-animation/HUD/HUD Cln_140.png
-animation/HUD/HUD Cln_141.png
-animation/HUD/HUD Cln_142.png
-animation/HUD/HUD Cln_143.png
-animation/HUD/HUD Cln_144.png
-animation/HUD/HUD Cln_145.png
-animation/HUD/HUD Cln_146.png
-animation/HUD/HUD Cln_147.png
-animation/HUD/HUD Cln_148.png
-animation/HUD/HUD Cln_149.png
-animation/HUD/HUD Cln_150.png
-animation/HUD/HUD Cln_151.png
-animation/HUD/HUD Cln_152.png
-animation/HUD/HUD Cln_153.png
-animation/HUD/HUD Cln_154.png
-animation/HUD/HUD Cln_155.png
-animation/HUD/HUD Cln_156.png
-animation/HUD/HUD Cln_157.png
-animation/HUD/HUD Cln_158.png
-animation/HUD/HUD Cln_159.png
-animation/HUD/HUD Cln_160.png
-animation/HUD/HUD Cln_161.png
-animation/HUD/HUD Cln_162.png
-animation/HUD/HUD Cln_163.png
-animation/HUD/HUD Cln_164.png
-animation/HUD/HUD Cln_165.png
-animation/HUD/HUD Cln_166.png
-animation/HUD/HUD Cln_167.png
-animation/HUD/HUD Cln_168.png
-animation/HUD/HUD Cln_169.png
-animation/HUD/HUD Cln_170.png
-animation/HUD/HUD Cln_171.png
-animation/HUD/HUD Cln_172.png
-animation/HUD/HUD Cln_173.png
-animation/HUD/HUD Cln_174.png
-animation/HUD/HUD Cln_175.png
-animation/HUD/HUD Cln_176.png
-animation/HUD/HUD Cln_177.png
-animation/HUD/HUD Cln_178.png
-animation/HUD/HUD Cln_179.png
-animation/HUD/HUD Cln_180.png
-animation/HUD/HUD Cln_181.png
-animation/HUD/HUD Cln_182.png
-animation/HUD/HUD Cln_183.png
-animation/HUD/HUD Cln_184.png
-animation/HUD/HUD Cln_185.png
-animation/HUD/HUD Cln_186.png
-animation/HUD/HUD Cln_187.png
-animation/HUD/HUD Cln_188.png
-animation/HUD/HUD Cln_189.png
-animation/HUD/HUD Cln_190.png
-animation/HUD/HUD Cln_191.png
-animation/HUD/HUD Cln_192.png
-animation/HUD/HUD Cln_193.png
-animation/HUD/HUD Cln_194.png
-animation/HUD/HUD Cln_195.png
-animation/HUD/HUD Cln_196.png
-animation/HUD/HUD Cln_197.png
-animation/HUD/HUD Cln_198.png
-animation/HUD/HUD Cln_199.png
-animation/HUD/HUD Cln_200.png
-animation/HUD/HUD Cln_201.png
-animation/HUD/HUD Cln_202.png
-animation/HUD/HUD Cln_203.png
-animation/HUD/HUD Cln_210.png
-animation/HUD/HUD Cln_211.png
-animation/HUD/HUD Cln_212.png
-animation/HUD/HUD Cln_213.png
-animation/HUD/HUD Cln_214.png
-animation/HUD/HUD Cln_215.png
-animation/HUD/HUD Cln_216.png
-animation/HUD/HUD Cln_217.png
-animation/HUD/HUD Cln_218.png
-animation/HUD/HUD Cln_219.png
-animation/HUD/HUD Cln_220.png
-animation/HUD/HUD Cln_221.png
-animation/HUD/HUD Cln_222.png
-animation/HUD/HUD Cln_223.png
-animation/HUD/HUD Cln_224.png
-animation/HUD/HUD Cln_225.png
-animation/HUD/HUD Cln_226.png
-animation/HUD/HUD Cln_227.png
-animation/HUD/HUD Cln_228.png
-animation/HUD/HUD Cln_229.png
-animation/HUD/HUD Cln_230.png
-animation/HUD/HUD Cln_231.png
-animation/HUD/HUD Cln_232.png
-animation/HUD/HUD Cln_233.png
-animation/HUD/HUD Cln_234.png
-animation/HUD/HUD Cln_235.png
-animation/HUD/HUD Cln_236.png
-animation/HUD/HUD Cln_237.png
-animation/HUD/HUD Cln_238.png
-animation/HUD/HUD Cln_239.png
-animation/HUD/HUD Cln_240.png
-animation/HUD/HUD Cln_241.png
-animation/HUD/HUD Cln_242.png
-animation/HUD/HUD Cln_243.png
-animation/HUD/HUD Cln_244.png
-animation/HUD/HUD Cln_245.png
-animation/HUD/HUD Cln_246.png
-animation/HUD/HUD Cln_247.png
-animation/HUD/HUD Cln_248.png
-animation/HUD/HUD Cln_249.png
-animation/HUD/HUD Cln_250.png
-animation/HUD/HUD Cln_251.png
-animation/HUD/HUD Cln_252.png
-animation/HUD/HUD Cln_253.png
-animation/HUD/HUD Cln_254.png
-animation/HUD/HUD Cln_261.png
-animation/HUD/HUD Cln_265.png
-animation/HUD/HUD Cln_266.png
-animation/HUD/HUD Cln_267.png
-animation/HUD/HUD Cln_268.png
-animation/HUD/HealthBar.png
-animation/HUD/HealthBar_000.png
-animation/HUD/HealthBar_001.png
-animation/HUD/HealthBar_002.png
-animation/HUD/HealthBar_003.png
-animation/HUD/HealthBar_004.png
-animation/HUD/HealthBar_005.png
-animation/HUD/HealthRefill.png
-animation/HUD/HealthRefill_000.png
-animation/HUD/HealthRefill_001.png
-animation/HUD/HealthRefill_002.png
-animation/HUD/HealthRefill_003.png
-animation/HUD/HealthRefill_004.png
-animation/HUD/SoulOrb_Empty.png
-animation/HUD/SoulOrb_Eye.png
-animation/HUD/SoulOrb_Full.png
-animation/HUD/SoulOrb_Full2.png
-animation/HUD/SoulOrb_Half.png
 animation/Husk_Hornhead/Attack Anticipate.png
 animation/Husk_Hornhead/Attack Anticipate_000.png
 animation/Husk_Hornhead/Attack Anticipate_001.png
@@ -8016,55 +7956,6 @@ animation/LookUp_002.png
 animation/LookUp_003.png
 animation/LookUp_004.png
 animation/LookUp_005.png
-animation/Mosquito/Attack Anticipate.png
-animation/Mosquito/Attack Anticipate_000.png
-animation/Mosquito/Attack Anticipate_001.png
-animation/Mosquito/Attack Anticipate_002.png
-animation/Mosquito/Attack Anticipate_003.png
-animation/Mosquito/Attack Anticipate_004.png
-animation/Mosquito/Attack Anticipate_005.png
-animation/Mosquito/Attack.png
-animation/Mosquito/Attack_000.png
-animation/Mosquito/Attack_001.png
-animation/Mosquito/Attack_002.png
-animation/Mosquito/Death Air.png
-animation/Mosquito/Death Air_000.png
-animation/Mosquito/Death Air_001.png
-animation/Mosquito/Death Air_002.png
-animation/Mosquito/Death Land.png
-animation/Mosquito/Death Land_000.png
-animation/Mosquito/Death Land_001.png
-animation/Mosquito/Idle.png
-animation/Mosquito/Idle_000.png
-animation/Mosquito/Idle_001.png
-animation/Mosquito/Idle_002.png
-animation/Mosquito/Idle_003.png
-animation/Mosquito/Idle_004.png
-animation/Mosquito/Idle_005.png
-animation/Mosquito/Idle_006.png
-animation/Mosquito/Idle_007.png
-animation/Mosquito/Turn.png
-animation/Mosquito/Turn2.png
-animation/Mosquito/Turn2_000.png
-animation/Mosquito/Turn2_001.png
-animation/Mosquito/Turn_000.png
-animation/Mosquito/Turn_001.png
-animation/Mosscreep/Death Air.png
-animation/Mosscreep/Death Air_000.png
-animation/Mosscreep/Death Air_001.png
-animation/Mosscreep/Death Air_002.png
-animation/Mosscreep/Death Air_003.png
-animation/Mosscreep/Death Land.png
-animation/Mosscreep/Death Land_000.png
-animation/Mosscreep/Death Land_001.png
-animation/Mosscreep/Turn.png
-animation/Mosscreep/Turn_000.png
-animation/Mosscreep/Turn_001.png
-animation/Mosscreep/Turn_002.png
-animation/Mosscreep/Walk.png
-animation/Mosscreep/Walk_000.png
-animation/Mosscreep/Walk_001.png
-animation/Mosscreep/Walk_002.png
 animation/Mossfly/Appear.png
 animation/Mossfly/Appear_000.png
 animation/Mossfly/Appear_001.png
@@ -8981,7 +8872,6 @@ animation/Particles & Effects/dung_particle.png
 animation/Particles & Effects/dust_stream.png
 animation/Particles & Effects/elev_lamp_glow.png
 animation/Particles & Effects/explode_particle.png
-animation/Particles & Effects/ezgif.com-animated-gif-maker.gif
 animation/Particles & Effects/falling_leaf_particles.png
 animation/Particles & Effects/fg_centipede_particle.png
 animation/Particles & Effects/final_boss_glow_particle.png
@@ -9122,6 +9012,7 @@ animation/Particles & Effects/np_scenery_splats_0002_3.png
 animation/Particles & Effects/np_scenery_splats_0003_2.png
 animation/Particles & Effects/np_scenery_splats_0004_1.png
 animation/Particles & Effects/overcharm_shatter_particle.png
+animation/Particles & Effects/particle.png
 animation/Particles & Effects/particle_01.png
 animation/Particles & Effects/particle_centipede.png
 animation/Particles & Effects/particle_drip.png
@@ -9301,25 +9192,6 @@ animation/Run_009.png
 animation/Run_010.png
 animation/Run_011.png
 animation/Run_012.png
-animation/Running_Lance/Charge Antic_002.png
-animation/Running_Lance/Charge Antic_003.png
-animation/Running_Lance/Charge Antic_004.png
-animation/Running_Lance/Charge Antic_005.png
-animation/Running_Lance/Charge Antic_006.png
-animation/Running_Lance/Charge Antic_007.png
-animation/Running_Lance/Charge_000.png
-animation/Running_Lance/Charge_001.png
-animation/Running_Lance/Charge_002.png
-animation/Running_Lance/Charge_003.png
-animation/Running_Lance/Charge_004.png
-animation/Running_Lance/Charge_005.png
-animation/Running_Lance/Death Air_000.png
-animation/Running_Lance/Death Air_001.png
-animation/Running_Lance/Death Land_000.png
-animation/Running_Lance/Death Land_001.png
-animation/Running_Lance/Death Land_002.png
-animation/Running_Lance/Turn_000.png
-animation/Running_Lance/Turn_001.png
 animation/Scream.png
 animation/Scream_000.png
 animation/Scream_001.png
@@ -9340,25 +9212,6 @@ animation/Slash_001.png
 animation/Slash_002.png
 animation/Slash_003.png
 animation/Slash_004.png
-animation/Tiktik/Climber_aaaaa_info.txt
-animation/Tiktik/Climber_full_0.png
-animation/Tiktik/Death Air.png
-animation/Tiktik/Death Air_000.png
-animation/Tiktik/Death Air_001.png
-animation/Tiktik/Death Air_002.png
-animation/Tiktik/Death Air_003.png
-animation/Tiktik/Death Land.png
-animation/Tiktik/Death Land_000.png
-animation/Tiktik/Death Land_001.png
-animation/Tiktik/Death Land_002.png
-animation/Tiktik/Turn.png
-animation/Tiktik/Turn_000.png
-animation/Tiktik/Turn_001.png
-animation/Tiktik/Walk.png
-animation/Tiktik/Walk_000.png
-animation/Tiktik/Walk_001.png
-animation/Tiktik/Walk_002.png
-animation/Tiktik/Walk_003.png
 animation/UpSlash.png
 animation/UpSlash_000.png
 animation/UpSlash_001.png
@@ -9383,35 +9236,6 @@ animation/Walljump_005.png
 animation/Walljump_006.png
 animation/Walljump_007.png
 animation/Walljump_008.png
-animation/Winged_Sentry/Charge Antic.png
-animation/Winged_Sentry/Charge Antic_000.png
-animation/Winged_Sentry/Charge Antic_001.png
-animation/Winged_Sentry/Charge Antic_002.png
-animation/Winged_Sentry/Charge Antic_003.png
-animation/Winged_Sentry/Charge.png
-animation/Winged_Sentry/Charge_000.png
-animation/Winged_Sentry/Charge_001.png
-animation/Winged_Sentry/Charge_002.png
-animation/Winged_Sentry/Death Air.png
-animation/Winged_Sentry/Death Air_000.png
-animation/Winged_Sentry/Death Air_001.png
-animation/Winged_Sentry/Death Land.png
-animation/Winged_Sentry/Death Land_000.png
-animation/Winged_Sentry/Death Land_001.png
-animation/Winged_Sentry/Death Land_002.png
-animation/Winged_Sentry/Death Land_003.png
-animation/Winged_Sentry/Idle.png
-animation/Winged_Sentry/Idle_000.png
-animation/Winged_Sentry/Idle_001.png
-animation/Winged_Sentry/Idle_002.png
-animation/Winged_Sentry/Idle_003.png
-animation/Winged_Sentry/Idle_004.png
-animation/Winged_Sentry/Idle_005.png
-animation/Winged_Sentry/Idle_006.png
-animation/Winged_Sentry/Turn To Fly.png
-animation/Winged_Sentry/Turn To Fly_000.png
-animation/Winged_Sentry/Turn To Fly_001.png
-animation/Winged_Sentry/Turn To Fly_002.png
 animation/Zote/Attack.png
 animation/Zote/Attack_000.png
 animation/Zote/Attack_001.png
@@ -9447,31 +9271,7 @@ animation/Zote/Talk_004.png
 animation/Zote/Turn.png
 animation/Zote/Turn_000.png
 animation/Zote/Turn_001.png
-animations/Effects/BlastSoul.png
-animations/Effects/CrystalLaser.png
-animations/Effects/Dash Effect.png
-animations/Effects/DownSlashEffect.png
-animations/Effects/LaserCircle.png
-animations/Effects/ShadowScream.png
-animations/Effects/SlashEffect.png
-animations/Effects/SlashEffectAlt.png
-animations/Effects/SoulScream.png
-animations/Effects/UpSlashEffect.png
-animations/Knight/Airborne.png
-animations/Knight/Dash.png
-animations/Knight/Death.png
-animations/Knight/Double Jump.png
-animations/Knight/DownSlash.png
-animations/Knight/Fireball Cast.png
-animations/Knight/Focus End.png
-animations/Knight/Focus Get.png
-animations/Knight/Focus.png
-animations/Knight/Idle Hurt.png
-animations/Knight/Idle.png
-animations/Knight/Landing.png
-animations/Knight/Run.png
-animations/Knight/Wall Slide.png
-animations/Knight/Walljump.png
+background.png
 cd_floor_02.tsx
 cd_floor_highway_06.tsx
 cd_wall_01.tsx
@@ -9479,31 +9279,66 @@ cd_wall_04.tsx
 final_boss_chain.tsx
 flames.tsx
 floor_layered_0000_04_green.tsx
+font/TrajanPro-Bold.otf
+font/primary_font.ttf
+forgotton grass.tsx
+forgtton grass_2.tsx
+fung_Ground.tsx
+fung_big_roof_0002_a.tsx
+fung_big_roof_0004_a.tsx
+fung_floor1_0001_Layer-2.tsx
+fung_floor1_0002_Layer-0.tsx
+fung_new_0069_Layer-279 #624037.tsx
+fung_new_0080_Layer-273.tsx
 fung_new_0094_Layer-263.tsx
+fung_new_0116_Layer-266.tsx
 fung_new_0118_Layer-248.tsx
+fung_new_0119_Layer-247.tsx
+fung_new_0120_Layer-246.tsx
+fung_new_0126_03.tsx
 fung_new_0127_02.tsx
 fung_new_0128_01.tsx
 fung_new_0129_Layer-240.tsx
+fung_new_0131_Layer-238.tsx
 fung_new_0133_Layer-236.tsx
 fung_new_0136_Layer-233.tsx
 fung_pillar_wall_0000_3.tsx
 fung_pillar_wall_0001_2.tsx
+fungd_rock_01_0002_a.tsx
+fungd_rock_03_0001_Layer-1.tsx
+fungd_spikes_01.tsx
+fungd_spikes_04.tsx
+fungd_spikes_05.tsx
+fungd_spikes_06.tsx
+fungd_spikes_08.tsx
+fungd_spikes_0_0003_b.tsx
+grass_break_wall.tsx
 highway_01_layered_0004_Layer-5.tsx
 highway_FG_0007_Layer-78.tsx
 hunter_scenery_0001_a.tsx
 hunter_scenery_0002_a.tsx
 libgdx.png
 mine_globe_02.tsx
+particle.png
+particle/glow.png
+particle/glowParticle.p
+particle/particle.png
+roof_FG_rock_08_0000_06.tsx
+roof_FG_rock_08_0002_04.tsx
 ruin_layered_0057_l.tsx
 ruin_village_thing_0000_a.tsx
 shelf_short.tsx
 shelf_tall.tsx
 shop_0000_a.tsx
+sign_post.tsx
+sign_post_broken.tsx
 spikes0002.tsx
 spikes_still.tsx
 statue_07.tsx
 statue_07_base.tsx
+thorn_plinth.tsx
 vil_floor_01.tsx
+vine_platform_01.tsx
 wallpaper_small.tsx
 well_extension_0000_2.tsx
 wp_additions_01_0006_a.tsx

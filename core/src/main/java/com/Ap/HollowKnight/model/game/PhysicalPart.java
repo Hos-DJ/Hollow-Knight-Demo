@@ -1,17 +1,14 @@
 package com.Ap.HollowKnight.model.game;
 
-import com.Ap.HollowKnight.model.level.LevelModel;
 import com.Ap.HollowKnight.model.map.Block;
 import com.Ap.HollowKnight.model.map.BlockType;
-import com.Ap.HollowKnight.model.player.Knight;
-import com.Ap.HollowKnight.model.player.PlayerCondition;
-import com.badlogic.gdx.maps.MapLayer;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.lang.Math.min;
 
 //todo: need to implement the collision with enemies and spikes
 public abstract class PhysicalPart {
@@ -25,38 +22,45 @@ public abstract class PhysicalPart {
     // positioning
     private boolean isOnGround;
     private boolean isCooldown;
-    private boolean isAttacking ;
+    private boolean isAttacking;
     private boolean gravityIncluded;
     private FacingDirection facingDirection;
-    private float maxVelocity;
     private static final float GROUND_SNAP_EPSILON = 0.05f;
-    protected static final float GRAVITY = -500f;
+    protected static final float GRAVITY = -700.0f;
 
-    public PhysicalPart(Vector2 position, float maxVelocity, Rectangle hitBox,Vector2 spawnPoint) {
-        this.position         = position;
-        this.maxVelocity      = maxVelocity;
-        this.hitBox           = hitBox;
-        this.spawnPoint        = spawnPoint;
-        this.velocity         = new Vector2(0f, 0f);
-        this.knockBackVelocity= new Vector2(0f, 0f);
-        this.acceleration     = new Vector2(0f, 0f);
-        this.facingDirection  = FacingDirection.RIGHT;
-        this.isOnGround       = false;
-        this.isCooldown       = false;
-        this.isAttacking      = false;
-        this.gravityIncluded  = true;
+    //just for knight
+    private boolean isTouchingWall = false;
+    private int wallDirection = 0;
+
+    public PhysicalPart(Vector2 position, Rectangle hitBox, Vector2 spawnPoint) {
+        this.position = position;
+        this.hitBox = hitBox;
+        this.spawnPoint = spawnPoint;
+        this.velocity = new Vector2(0f, 0f);
+        this.knockBackVelocity = new Vector2(0f, 0f);
+        this.acceleration = new Vector2(0f, 0f);
+        this.facingDirection = FacingDirection.RIGHT;
+        this.isOnGround = false;
+        this.isCooldown = false;
+        this.isAttacking = false;
+        this.gravityIncluded = true;
         updateHitBox();
     }
-    public void updateHitBox(){
+
+    public void updateHitBox() {
         hitBox.setPosition(position.x, position.y);
     }
-    public abstract void update(float delta, MapLayer layer, ArrayList<Block> blocks);
+
+    public abstract void update(float delta, ArrayList<Block> blocks);
+
     public abstract void takeDamage(int amount);
 
-    public void applyPhysics(float delta,ArrayList<Block> blocks) {
+    public abstract void hazardReact();
+
+    public void applyPhysics(float delta, ArrayList<Block> blocks) {
 
         if (!isOnGround && gravityIncluded) {
-            velocity.y += GRAVITY * delta;
+            velocity.y += min(GRAVITY * delta, 300.0f);
         } else if (isOnGround) {
             velocity.y = 0.0f;
         }
@@ -66,6 +70,7 @@ public abstract class PhysicalPart {
         if (knockBackVelocity.len() < 0.05f) {
             knockBackVelocity.setZero();
         }
+        resolveHazardCollisions(blocks);
         updateHitBox();
     }
 
@@ -84,13 +89,19 @@ public abstract class PhysicalPart {
 
     private void resolveHorizontalCollisions(List<Block> blocks) {
         float moveX = velocity.x + knockBackVelocity.x;
+        isTouchingWall = false;
+        wallDirection = 0;
         for (Block block : blocks) {
             if (!block.getType().blocksHorizontal()) continue;
             if (!hitBox.overlaps(block.getBound())) continue;
             if (moveX > 0) {
                 position.x = block.getBound().x - hitBox.width;
+                isTouchingWall = true;
+                wallDirection = 1;
             } else if (moveX < 0) {
                 position.x = block.getBound().x + block.getBound().width;
+                isTouchingWall = true;
+                wallDirection = -1;
             }
             velocity.x = 0;
             updateHitBox();
@@ -102,27 +113,33 @@ public abstract class PhysicalPart {
         for (Block block : blocks) {
             if (!block.getType().blocksVertical()) continue;
             if (!hitBox.overlaps(block.getBound())) continue;
-            if(block.getType()== BlockType.GROUND)
-            {
+            if (block.getType() == BlockType.GROUND) {
                 if (moveY <= 0) {
-                    position.y = block.getBound().y + block.getBound().height-GROUND_SNAP_EPSILON;
+                    position.y = block.getBound().y + block.getBound().height - GROUND_SNAP_EPSILON;
                     velocity.y = 0;
                     setOnGround(true);
-                } else if (moveY > 0) {
+                } else if (moveY > 0 && block.getType() != BlockType.GROUND) {
                     position.y = block.getBound().y - hitBox.height;
                     velocity.y = 0;
                 }
-            }
-            else if (block.getType() == BlockType.CEIL){
-                if(moveY > 0){
-                    velocity.y= 0 ;
+            } else if (block.getType() == BlockType.CEIL) {
+                if (moveY > 0) {
+                    velocity.y = 0;
                 }
             }
             updateHitBox();
         }
     }
-    //getters
 
+    public void resolveHazardCollisions(ArrayList<Block> blocks) {
+        for (Block block : blocks) {
+            if (this.hitBox.overlaps(block.getBound()) && block.getType() == BlockType.SPIKE) {
+                this.hazardReact();
+                break;
+            }
+        }
+    }
+    //getters
 
 
     public Vector2 getPosition() {
@@ -165,17 +182,15 @@ public abstract class PhysicalPart {
         return gravityIncluded;
     }
 
-    public float getMaxVelocity() {
-        return maxVelocity;
-    }
-
-
     public Vector2 getSpawnPoint() {
         return spawnPoint;
     }
 
-    //setters
+    public boolean isTouchingWall() { return isTouchingWall; }
 
+    public int getWallDirection() { return wallDirection; }
+
+    //setters
 
 
     public void setPosition(Vector2 position) {
@@ -217,10 +232,6 @@ public abstract class PhysicalPart {
 
     public void setGravityIncluded(boolean gravityIncluded) {
         this.gravityIncluded = gravityIncluded;
-    }
-
-    public void setMaxVelocity(float maxVelocity) {
-        this.maxVelocity = maxVelocity;
     }
 
     public void setSpawnPoint(Vector2 spawnPoint) {

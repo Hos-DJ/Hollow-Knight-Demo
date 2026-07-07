@@ -4,11 +4,14 @@ public enum BlockType {
     SPIKE("spike"),
     CEIL("ceil"),
     GROUND("ground"),
-    WALL("wall");
+    WALL("wall"),
+    DESTRUCTIBLE_WALL("destructible wall"),
+    DESTROYED_WALL("destroyed wall"),
+    DOOR("door");
 
     private final String name;
 
-    BlockType(String name){
+    BlockType(String name) {
         this.name = name;
     }
 
@@ -16,20 +19,21 @@ public enum BlockType {
         return name;
     }
 
-    public static BlockType fromName(String name){
-        for (BlockType blockType : BlockType.values()){
-            if (blockType.getName().equals(name)){
+    public static BlockType fromName(String name) {
+        for (BlockType blockType : BlockType.values()) {
+            if (blockType.getName().equals(name)) {
                 return blockType;
             }
         }
         return null;
     }
+
     public boolean blocksVertical() {
         return this == GROUND || this == CEIL;
     }
 
     public boolean blocksHorizontal() {
-        return this == WALL;
+        return this == WALL||this == DESTRUCTIBLE_WALL;
     }
 
     public boolean isHazard() {

@@ -1,63 +1,115 @@
 package com.Ap.HollowKnight.controller;
 
 import com.Ap.HollowKnight.model.AttackDirection;
+import com.Ap.HollowKnight.model.enemy.EnemyModel;
 import com.Ap.HollowKnight.model.game.FacingDirection;
 import com.Ap.HollowKnight.model.game.GameCamera;
+import com.Ap.HollowKnight.model.level.LevelModel;
+import com.Ap.HollowKnight.model.map.DestructibleWall;
 import com.Ap.HollowKnight.model.player.Knight;
 import com.Ap.HollowKnight.model.player.PlayerCondition;
+import com.Ap.HollowKnight.model.zote.Zote;
+import com.Ap.HollowKnight.model.zote.ZoteState;
+import com.Ap.HollowKnight.view.animations.EffectAnimationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.math.Vector2;
+
+import java.util.ArrayList;
 
 public class GameProcessor extends InputAdapter {
 
     private final Knight knight;
     private final GameCamera camera;
+    private ArrayList<EnemyModel> enemies;
+    private final Zote zote;
+    private boolean paused =false;
+    private boolean isInventory = false ;
+    private boolean inventoryTriggered = false;
+    private boolean isWallDestroyed = false;
 
-    public GameProcessor(Knight knight, GameCamera camera) {
+    public GameProcessor(Knight knight, GameCamera camera, ArrayList<EnemyModel> enemies,Zote zote) {
         this.knight = knight;
         this.camera = camera;
+        this.enemies = enemies;
+        this.zote = zote;
+
     }
 
     @Override
     public boolean keyDown(int keycode) {
+        if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            paused = true;
+        }
         GameKeypad key = GameKeypad.fromKeycode(keycode);
-        if (key == null)
-            return false;
-        switch (key) {
-            case RIGHT -> {
-                knight.setFacingDirection(FacingDirection.RIGHT);
-                knight.move();
+        if (key == GameKeypad.INVENTORY) {
+            if (!paused) {
+                inventoryTriggered = true;
             }
-            case LEFT -> {
-                knight.setFacingDirection(FacingDirection.LEFT);
-                knight.move();
+            return true;
+        }
+        if (isInventory) {
+            return true;
+        }
+        if(zote.getStatus()== ZoteState.TALKING){
+            if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)){
+                boolean success =zote.nextDialogue();
+                if(!success){
+                    zote.stopTalking();
+                }
             }
-            case UP -> {
-                if(knight.getPlayerCondition() == PlayerCondition.IDLE){
-                    knight.setPlayerCondition(PlayerCondition.LOOKING_UP);
-                    camera.setLookingUp(true);
+            return true;
+        }
+        else{
+            if (key == null)
+                return false;
+            switch (key) {
+                case RIGHT -> {
+                    knight.setFacingDirection(FacingDirection.RIGHT);
+                    knight.move();
+                }
+                case LEFT -> {
+                    knight.setFacingDirection(FacingDirection.LEFT);
+                    knight.move();
+                }
+                case UP -> {
+                    if (knight.getPlayerCondition() == PlayerCondition.IDLE) {
+                        knight.setPlayerCondition(PlayerCondition.LOOKING_UP);
+                        camera.setLookingUp(true);
 
+                    }
                 }
-            }
-            case DOWN -> {
-                if(knight.getPlayerCondition() == PlayerCondition.IDLE){
-                    knight.setPlayerCondition(PlayerCondition.LOOKING_DOWN);
-                    camera.setLookingDown(true);
+                case DOWN -> {
+                    if (knight.getPlayerCondition() == PlayerCondition.IDLE) {
+                        knight.setPlayerCondition(PlayerCondition.LOOKING_DOWN);
+                        camera.setLookingDown(true);
+                    }
                 }
-            }
-            case JUMP -> knight.jump();
-            case DASH -> knight.dash();
-            case ATTACK -> {
-                handleAttacking();
-            }
-            case FOCUS -> {
-                if(knight.getPlayerCondition() == PlayerCondition.IDLE&&knight.getPlayerCondition()!= PlayerCondition.FOCUSING){
-                    knight.focus();
+                case JUMP -> knight.jump();
+                case DASH -> knight.dash();
+                case ATTACK -> {
+                    handleAttacking();
                 }
-            }
-            case VENGEFUL_SPIRIT -> {
-                //something will happen here
+                case FOCUS -> {
+                    if (zote.isPlayerNearby() && Gdx.input.isKeyJustPressed(GameKeypad.FOCUS.getKeyNumber())) {
+                        zote.startTalking(knight.getPosition());
+                        knight.setVelocity(Vector2.Zero);
+                    }
+                    else if (knight.getPlayerCondition() == PlayerCondition.IDLE && knight.getPlayerCondition() != PlayerCondition.FOCUSING) {
+                        knight.focus();
+                    }
+                }
+                case VENGEFUL_SPIRIT -> {
+                    if (Gdx.input.isKeyJustPressed(GameKeypad.VENGEFUL_SPIRIT.getKeyNumber())) {
+                        knight.castVengeful();
+                    }
+                }
+                case HOWLING_WRATH -> {
+                    if (Gdx.input.isKeyJustPressed(GameKeypad.HOWLING_WRATH.getKeyNumber())) {
+                        knight.castHowling();
+                    }
+                }
             }
         }
         return true;
@@ -66,20 +118,29 @@ public class GameProcessor extends InputAdapter {
     @Override
     public boolean keyUp(int keycode) {
         GameKeypad key = GameKeypad.fromKeycode(keycode);
-        if (key == null)
+        if(isInventory){
+            return true;
+        }
+        if (key == null) {
             return false;
+        }
+        if(zote.getStatus()== ZoteState.TALKING){
+            return false;
+        }
         switch (key) {
             case JUMP -> knight.cutJump();
             case DOWN -> {
 
-                if (knight.getPlayerCondition() == PlayerCondition.LOOKING_DOWN){
-                    camera.setLookingDown(false);
+                camera.setLookingDown(false);
+
+                if (knight.getPlayerCondition() == PlayerCondition.LOOKING_DOWN) {
                     knight.setPlayerCondition(PlayerCondition.IDLE);
                 }
             }
             case UP -> {
-                if(knight.getPlayerCondition() == PlayerCondition.LOOKING_UP){
-                    camera.setLookingUp(false);
+                camera.setLookingUp(false);
+
+                if (knight.getPlayerCondition() == PlayerCondition.LOOKING_UP) {
                     knight.setPlayerCondition(PlayerCondition.IDLE);
                 }
             }
@@ -99,13 +160,39 @@ public class GameProcessor extends InputAdapter {
                     knight.stop();
                 }
             }
-            case FOCUS ->  {
-                if(knight.getPlayerCondition() == PlayerCondition.FOCUSING){
+            case FOCUS -> {
+                if (knight.getPlayerCondition() == PlayerCondition.FOCUSING) {
                     knight.cancelFocus();
                 }
             }
         }
         return true;
+    }
+
+    public void pollMovement() {
+        if(isInventory){
+            knight.stop();
+            return;
+        }
+        if (knight.getWallJumpTimer() > 0) {
+            return;
+        }
+        boolean rightHeld = Gdx.input.isKeyPressed(GameKeypad.RIGHT.getKeyNumber());
+        boolean leftHeld = Gdx.input.isKeyPressed(GameKeypad.LEFT.getKeyNumber());
+
+        if (rightHeld == leftHeld) {
+            knight.stop();
+        } else if (rightHeld) {
+            camera.setLookingDown(false);
+            camera.setLookingUp(false);
+            knight.setFacingDirection(FacingDirection.RIGHT);
+            knight.move();
+        } else {
+            camera.setLookingDown(false);
+            camera.setLookingUp(false);
+            knight.setFacingDirection(FacingDirection.LEFT);
+            knight.move();
+        }
     }
 
     public void handleAttacking() {
@@ -121,11 +208,51 @@ public class GameProcessor extends InputAdapter {
         } else {
             direction = (knight.getFacingDirection() == FacingDirection.RIGHT) ? AttackDirection.RIGHT : AttackDirection.LEFT;
         }
-        if(Gdx.input.isKeyJustPressed(GameKeypad.ATTACK.getKeyNumber())){
-            knight.attack(direction);
-            new CombatController().checkCombat(knight,null);
+        if (Gdx.input.isKeyJustPressed(GameKeypad.ATTACK.getKeyNumber())) {
+            boolean attacked = knight.attack(direction);
+            if(attacked)
+            {
+                EffectAnimationType nailAnimation = direction.toAnimationType();
+                knight.getNail().setNailSlashType(nailAnimation);
+                DestructibleWall wall = LevelModel.getInstance().getDestructibleWall();
+                CombatController.getInstance().checkCombat(knight, enemies, wall);
+                if(wall.isDestroyed())
+                    isWallDestroyed = true;
+
+            }
+
         }
+    }
 
+    public boolean isPaused() {
+        return paused;
+    }
 
+    public void setPaused(boolean paused) {
+        this.paused = paused;
+    }
+
+    public boolean isInventory() {
+        return isInventory;
+    }
+
+    public void setInventory(boolean inventory) {
+        isInventory = inventory;
+    }
+
+    public boolean isInventoryTriggered() {
+        return inventoryTriggered;
+    }
+
+    public void setInventoryTriggered(boolean inventoryTriggered) {
+        this.inventoryTriggered = inventoryTriggered;
+    }
+
+    public boolean isWallDestroyed() {
+        return isWallDestroyed;
+    }
+
+    public void setWallDestroyed(boolean wallDestroyed) {
+        isWallDestroyed = wallDestroyed;
     }
 }
