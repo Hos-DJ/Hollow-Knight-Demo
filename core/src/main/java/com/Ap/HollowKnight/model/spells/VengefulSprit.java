@@ -9,10 +9,10 @@ import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 
 public class VengefulSprit extends BaseSpell {
-    private static final float SPEED = 600f;
+    private static final float SPEED = 1000f;
     private static final float WIDTH = 40f;
     private static final float HEIGHT = 25f;
-    private static final float DURATION = 3.0f;
+    private static final float DURATION = 1.2f;
 
     private float direction;
 

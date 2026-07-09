@@ -2,6 +2,7 @@ package com.Ap.HollowKnight.model.game;
 
 import com.Ap.HollowKnight.model.map.Block;
 import com.Ap.HollowKnight.model.map.BlockType;
+import com.Ap.HollowKnight.model.player.Knight;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
@@ -10,7 +11,6 @@ import java.util.List;
 
 import static java.lang.Math.min;
 
-//todo: need to implement the collision with enemies and spikes
 public abstract class PhysicalPart {
     private Vector2 position;
     private Vector2 velocity;
@@ -77,6 +77,10 @@ public abstract class PhysicalPart {
     public void movingX(float delta, List<Block> blocks) {
         position.x += (velocity.x + knockBackVelocity.x) * delta;
         updateHitBox();
+        if(this instanceof Knight){
+            if(((Knight) this).isSpectator())
+                return;
+        }
         resolveHorizontalCollisions(blocks);
     }
 
@@ -84,6 +88,10 @@ public abstract class PhysicalPart {
         setOnGround(false);
         position.y += (velocity.y + knockBackVelocity.y) * delta;
         updateHitBox();
+        if(this instanceof Knight){
+            if(((Knight) this).isSpectator())
+                return;
+        }
         resolveVerticalCollisions(blocks);
     }
 

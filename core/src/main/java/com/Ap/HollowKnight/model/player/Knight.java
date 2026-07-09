@@ -1,5 +1,7 @@
 package com.Ap.HollowKnight.model.player;
 
+import com.Ap.HollowKnight.controller.events.GameEvent;
+import com.Ap.HollowKnight.controller.events.GameEventMessenger;
 import com.Ap.HollowKnight.model.AttackDirection;
 import com.Ap.HollowKnight.model.Nail;
 import com.Ap.HollowKnight.model.game.FacingDirection;
@@ -19,7 +21,7 @@ import static com.Ap.HollowKnight.model.game.FacingDirection.RIGHT;
 
 public class Knight extends PhysicalPart {
     public final int MAX_MASKS = 5;
-    private final float INVINCIBILITY_DURATION = 4.0f;
+    private final float INVINCIBILITY_DURATION = 1.2f;
     private final float JUMP_VELOCITY = 450.0f;
     private final float ATTACK_DURATION = 0.15f;
     private final float ATTACK_COOLDOWN = 0.3f;
@@ -40,7 +42,7 @@ public class Knight extends PhysicalPart {
     private final float CAST_DELAY = 0.5f;
     private final float DAMAGE_KNOCKBACK_SPEED = 500.0f;
     private final int BASE_SPELL_DAMAGE = 15;
-    private final int NAIL_DAMAGE = 11;
+    private  final int  NAIL_DAMAGE = 11;
     private final int DAMAGE_MULTIPLIER = 2;
     private final float DASH_COOLDOWN_MULTIPLIER = 0.5f;
     private final float SPELL_DAMAGE_MULTIPLIER = 1.5f;
@@ -53,6 +55,7 @@ public class Knight extends PhysicalPart {
     private int currentMasks = 5;
     private int currentSoul = 99;
 
+    GameEventMessenger messenger = GameEventMessenger.getInstance();
     // Current
     private float currentDashCooldown = DASH_COOLDOWN;
     private int currentNailDamage = NAIL_DAMAGE;
@@ -88,6 +91,11 @@ public class Knight extends PhysicalPart {
     private PlayerHUD hud;
     private final SpellManager spellManager = new SpellManager();
     private final CharmManager charmManager = new CharmManager();
+
+    //cheats
+    private boolean immortal = false;
+    private boolean spectator = false;
+    private boolean deadlyNail =false;
 
     public Knight(Vector2 position, Rectangle hitBox, Vector2 spawnPoint, ArrayList<Vector2> safeSpots , PlayerHUD hud) {
         super(position, hitBox, spawnPoint);
@@ -130,7 +138,6 @@ public class Knight extends PhysicalPart {
 
         if (playerCondition == PlayerCondition.FOCUSING) {
             focusTimer += delta;
-            // تغییر به Current
             if (focusTimer >= currentFocusDuration) {
                 focusTimer = 0;
                 if (currentSoul >= FOCUS_COST) {
@@ -138,6 +145,7 @@ public class Knight extends PhysicalPart {
                     hud.refillMask();
                     currentMasks = Math.min(currentMasks + 1, MAX_MASKS);
                 }
+                messenger.dispatch(GameEvent.PLAYER_FOCUS_END,null);
                 playerCondition = PlayerCondition.IDLE;
             }
         } else {
@@ -174,12 +182,13 @@ public class Knight extends PhysicalPart {
         updateLastSafeSpot();
         updateNailHitBox();
         spellManager.update(delta, blocks);
+        if(isOnGround()&&Math.abs(getVelocity().x)>0.02f){
+            messenger.dispatch(GameEvent.PLAYER_STARTED_WALKING,null);
 
-//        if (!isOnGround() && getVelocity().y < 0
-//            && playerCondition != PlayerCondition.DASHING
-//            && playerCondition != PlayerCondition.ATTACKING) {
-//            playerCondition = PlayerCondition.FALLING;
-//        }
+        }else{
+            messenger.dispatch(GameEvent.PLAYER_ENDED_WALKING,null);
+
+        }
 
         if (isOnGround()) {
             canMonarch = true;
@@ -198,9 +207,11 @@ public class Knight extends PhysicalPart {
         }
 
         applyPhysics(delta, blocks);
+//        System.out.println(getPosition().x + " , "+ getPosition().y);
 
         if (!isOnGround() && isTouchingWall() && getVelocity().y < 0) {
             playerCondition = PlayerCondition.WALL_SLIDING;
+            messenger.dispatch(GameEvent.PLAYER_STARTED_WALL_SLIDING,null);
 
             if (getVelocity().y < -150.0f) {
                 getVelocity().y = -150.0f;
@@ -211,11 +222,14 @@ public class Knight extends PhysicalPart {
         if (wallJumpTimer > 0) {
             wallJumpTimer -= delta;
         }
+        if(!isTouchingWall()) {
+            messenger.dispatch(GameEvent.PLAYER_ENDED_WALL_SLIDING,null);
+        }
     }
 
     @Override
     public void takeDamage(int amount) {
-        if (isInvincible()) return;
+        if (isInvincible()||immortal) return;
         currentMasks = Math.max(0, currentMasks - amount);
         if (playerCondition == PlayerCondition.FOCUSING) {
             cancelFocus();
@@ -224,14 +238,20 @@ public class Knight extends PhysicalPart {
             die();
             return;
         }
-        hud.breakMask(1);
+        hud.breakMask(amount);
         setInvincible(true);
+        if(amount == 1 ){
+            messenger.dispatch(GameEvent.PLAYER_HURT,null);
+        }else if(amount == 2){
+            messenger.dispatch(GameEvent.PLAYER_DOUBLE_HURT,null);
+        }
         invincibleTimer = INVINCIBILITY_DURATION;
         playerCondition = PlayerCondition.TAKING_DAMAGE;
     }
 
     @Override
     public void hazardReact() {
+        if(immortal||isInvincible)return;
         currentMasks = Math.max(0, currentMasks - 1);
         if (currentMasks == 0) {
             die();
@@ -239,6 +259,7 @@ public class Knight extends PhysicalPart {
         }
         setPlayerCondition(PlayerCondition.TAKING_DAMAGE);
         hud.breakMask(1);
+        messenger.dispatch(GameEvent.PLAYER_HURT,null);
         respawn();
     }
 
@@ -251,6 +272,7 @@ public class Knight extends PhysicalPart {
             if (canCast) {
                 currentSoul = Math.max(currentSoul - FOCUS_COST, 0);
                 playerCondition = PlayerCondition.VENGEFUL_SPIRIT;
+                messenger.dispatch(GameEvent.PLAYER_VENGEFUL,null);
                 setVelocity(Vector2.Zero);
                 setGravityIncluded(false);
                 castDurationTimer = CAST_DELAY;
@@ -266,6 +288,7 @@ public class Knight extends PhysicalPart {
             if (canCast) {
                 currentSoul = Math.max(currentSoul - FOCUS_COST, 0);
                 setPlayerCondition(PlayerCondition.HOWLING_WRATH);
+                messenger.dispatch(GameEvent.PLAYER_HOWLING,null);
                 setVelocity(Vector2.Zero);
                 setGravityIncluded(false);
                 castDurationTimer = CAST_DELAY;
@@ -275,7 +298,7 @@ public class Knight extends PhysicalPart {
 
     private void updateLastSafeSpot(){
         for (Vector2 sp : safeSpots){
-            if (sp.dst(getPosition())<50f){
+            if (sp.dst(getPosition())<200){
                 lastCheckpoint.set(sp);
                 return;
             }
@@ -300,6 +323,7 @@ public class Knight extends PhysicalPart {
         else if (canMonarch) {
             playerCondition = PlayerCondition.MONARCHING;
             getVelocity().y = JUMP_VELOCITY;
+            messenger.dispatch(GameEvent.PLAYER_MONARCH_WINGS,null);
             canMonarch = false;
         }
     }
@@ -314,6 +338,7 @@ public class Knight extends PhysicalPart {
         if (!isCooldown() && !isDashing && playerCondition != PlayerCondition.FOCUSING) {
             float direction = (getFacingDirection() == RIGHT) ? 1.0f : -1.0f;
             playerCondition = PlayerCondition.DASHING;
+            messenger.dispatch(GameEvent.PLAYER_DASH,null);
             getVelocity().x = direction * currentDashSpeed;
             getVelocity().y = 0.0f;
             setGravityIncluded(false);
@@ -345,6 +370,7 @@ public class Knight extends PhysicalPart {
         if (isOnGround()) {
             getVelocity().x = 0.0f;
             playerCondition = PlayerCondition.FOCUSING;
+            messenger.dispatch(GameEvent.PLAYER_FOCUS_START,null);
             focusTimer = 0;
         }
     }
@@ -357,12 +383,15 @@ public class Knight extends PhysicalPart {
         setAttacking(true);
         attackTimer = ATTACK_DURATION;
         playerCondition = PlayerCondition.ATTACKING;
+        messenger.dispatch(GameEvent.PLAYER_ATTACKING,null);
         return true;
     }
 
     public void die() {
         lastCheckpoint.set(getSpawnPoint());
+        messenger.dispatch(GameEvent.PLAYER_DEATH,null);
         setPosition(new Vector2(getSpawnPoint().x, getSpawnPoint().y));
+        updateHitBox();
         setCurrentMasks(MAX_MASKS);
         setCurrentSoul(0);
         getVelocity().setZero();
@@ -370,6 +399,7 @@ public class Knight extends PhysicalPart {
         playerCondition = PlayerCondition.IDLE;
         setInvincible(false);
         hud.resetMasks();
+        stop();
         dashTimer = 0;
         focusTimer = 0;
         attackTimer = 0;
@@ -416,17 +446,38 @@ public class Knight extends PhysicalPart {
         getVelocity().y = POGO_BOUNCE_SPEED;
         setCooldown(false);
         setPlayerCondition(PlayerCondition.JUMPING);
+        messenger.dispatch(GameEvent.POGO_SPIKE,null);
         dashCooldownTime = 0.0f;
         canMonarch = true;
     }
 
     public void gainSoul() {
         currentSoul = Math.min(currentSoul + currentSoulPerHit, MAX_SOUL);
+        messenger.dispatch(GameEvent.PLAYER_SOUL_GAIN,null);
+    }
+
+    public void gainFullSoul(){
+        currentSoul = MAX_SOUL;
+        messenger.dispatch(GameEvent.PLAYER_SOUL_GAIN,null);
+    }
+
+    public void gainMask(){
+        if(currentMasks != MAX_MASKS){
+            currentMasks = currentMasks + 1;
+            hud.refillMask();
+        }
+    }
+
+    public void goToBoss(){
+        getPosition().x = 17750;
+        getPosition().y =6690;
     }
 
     public void cancelFocus() {
         if (playerCondition == PlayerCondition.FOCUSING) {
             focusTimer = 0f;
+            GameEventMessenger.getInstance().dispatch(GameEvent.PLAYER_FOCUS_END,null);
+
             playerCondition = isOnGround() ? PlayerCondition.IDLE : PlayerCondition.FALLING;
         }
     }
@@ -437,6 +488,24 @@ public class Knight extends PhysicalPart {
         getKnockBackVelocity().setZero();
         updateHitBox();
         setInvincible(true);
+    }
+
+    public void changeToSpectator(boolean toggle) {
+        spectator = toggle;
+        if(spectator){
+            setGravityIncluded(false);
+        }else{
+            setGravityIncluded(true);
+        }
+    }
+
+    public void oneShotNail(boolean toggle){
+        deadlyNail = toggle;
+        if(deadlyNail){
+            currentNailDamage = 500;
+        }else{
+            currentNailDamage = 11;
+        }
     }
 
     // ---------- Getters for CombatController and SpellManager ----------
@@ -458,16 +527,9 @@ public class Knight extends PhysicalPart {
 
     // ---------- Other Existing Setters/Getters ----------
 
-    public float getDashCooldownTime() { return dashCooldownTime; }
-    public void setDashCooldownTime(float dashCooldownTime) { this.dashCooldownTime = dashCooldownTime; }
     public boolean isInvincible() { return isInvincible; }
     public void setInvincible(boolean invincible) { isInvincible = invincible; }
     public boolean isDashing() { return isDashing; }
-    public void setDashing(boolean dashing) { isDashing = dashing; }
-    public float getFocusTimer() { return focusTimer; }
-    public void setFocusTimer(float focusTimer) { this.focusTimer = focusTimer; }
-    public float getDashTimer() { return dashTimer; }
-    public void setDashTimer(float dashTimer) { this.dashTimer = dashTimer; }
     public float getWallJumpTimer() {
         return wallJumpTimer;
     }
@@ -489,6 +551,10 @@ public class Knight extends PhysicalPart {
         return currentSpellDamage;
     }
 
+    public boolean isImmortal() {
+        return immortal;
+    }
+
     public void setCurrentDashCooldown(float currentDashCooldown) { this.currentDashCooldown = currentDashCooldown; }
     public void setCurrentNailDamage(int currentNailDamage) { this.currentNailDamage = currentNailDamage; }
     public void setCurrentSoulPerHit(int currentSoulPerHit) { this.currentSoulPerHit = currentSoulPerHit; }
@@ -497,23 +563,15 @@ public class Knight extends PhysicalPart {
     public void setCurrentFocusDuration(float currentFocusDuration) { this.currentFocusDuration = currentFocusDuration; }
     public void setCurrentSpellDamage(int currentSpellDamage) {this.currentSpellDamage = currentSpellDamage;}
 
-    public float getINVINCIBILITY_DURATION() { return INVINCIBILITY_DURATION; }
-    public float getJUMP_VELOCITY() { return JUMP_VELOCITY; }
-    public float getATTACK_DURATION() { return ATTACK_DURATION; }
+    public void setImmortal(boolean immortal) {
+        this.immortal = immortal;
+    }
+
     public float getATTACK_COOLDOWN() { return ATTACK_COOLDOWN; }
-    public float getNAIL_LENGTH() { return NAIL_LENGTH; }
-    public float getNAIL_THICKNESS() { return NAIL_THICKNESS; }
-    public int getMAX_SOUL() { return MAX_SOUL; }
     public int getSOUL_PER_HIT() { return SOUL_PER_HIT; }
-    public float getPOGO_BOUNCE_SPEED() { return POGO_BOUNCE_SPEED; }
     public float getDASH_SPEED() { return DASH_SPEED; }
-    public float getMAX_VELOCITY() { return MAX_VELOCITY; }
-    public float getDASH_DURATION() { return DASH_DURATION; }
     public float getDASH_COOLDOWN() { return DASH_COOLDOWN; }
     public float getFOCUS_DURATION() { return FOCUS_DURATION; }
-    public int getFOCUS_COST() { return FOCUS_COST; }
-    public float getSPAWN_DELAY() { return SPAWN_DELAY; }
-    public float getCAST_DELAY() { return CAST_DELAY; }
     public float getDAMAGE_KNOCKBACK_SPEED() { return DAMAGE_KNOCKBACK_SPEED; }
     public int getNAIL_DAMAGE() { return NAIL_DAMAGE; }
     public int getDAMAGE_MULTIPLIER() { return DAMAGE_MULTIPLIER; }
@@ -526,4 +584,20 @@ public class Knight extends PhysicalPart {
     public float getFOCUS_DURATION_MULTIPLIER() { return FOCUS_DURATION_MULTIPLIER; }
     public int getBASE_SPELL_DAMAGE() {return BASE_SPELL_DAMAGE;}
 
+
+    public boolean isDeadlyNail() {
+        return deadlyNail;
+    }
+
+    public void setDeadlyNail(boolean deadlyNail) {
+        this.deadlyNail = deadlyNail;
+    }
+
+    public boolean isSpectator() {
+        return spectator;
+    }
+
+    public void setSpectator(boolean spectator) {
+        this.spectator = spectator;
+    }
 }

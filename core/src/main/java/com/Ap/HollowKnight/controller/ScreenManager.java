@@ -36,7 +36,6 @@ public class ScreenManager {
             case "SettingsScreen" -> screens.put(name, new SettingsScreen(game));
             case "AchievementsScreen" -> screens.put(name, new AchievementsScreen(game));
             case "GameScreen" -> makeGameScreen(name);
-            case "VictoryScreen" -> screens.put(name, new VictoryScreen(game));
         }
     }
 
@@ -46,7 +45,9 @@ public class ScreenManager {
         TiledMapTileLayer mainLayer = (TiledMapTileLayer) map.getLayers().get(0);
         float mapWidth = mainLayer.getWidth() * mainLayer.getTileWidth();
         float mapHeight = mainLayer.getHeight() * mainLayer.getTileHeight();
-        LevelModel.getInstance(mapHelper.getRectangles(), mapHelper.getEnemies(), mapWidth, mapHeight, mapHelper.getSafeSpots(), mapHelper.spawnPoint(),mapHelper.getZote(),mapHelper.getDestructibleWall());
+        LevelModel.getInstance(mapHelper.getRectangles(), mapHelper.getEnemies(), mapWidth,
+            mapHeight, mapHelper.getSafeSpots(), mapHelper.spawnPoint(),
+            mapHelper.getZote(),mapHelper.getDestructibleWall(),mapHelper.getTheGate());
         screens.put(name, new GameScreen(game, map));
     }
 
@@ -61,5 +62,7 @@ public class ScreenManager {
         screens.remove(name);
     }
 
-
+    public HollowKnight getGame() {
+        return game;
+    }
 }

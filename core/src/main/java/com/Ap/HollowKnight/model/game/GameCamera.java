@@ -41,16 +41,19 @@ public class GameCamera extends OrthographicCamera {
     }
 
     public void shaker(float delta) {
-        if (shake > 0) {
-            this.position.x += (Math.random() - 0.5) * shake;
-            this.position.y += (Math.random() - 0.5) * shake;
-            shake -= delta;
+        if (shakeDuration > 0) {
+
+            this.position.x += (Math.random() - 0.5f) * shake;
+            this.position.y += (Math.random() - 0.5f) * shake;
+
             shakeDuration -= delta;
+
+            if (shakeDuration <= 0) {
+                shakeDuration = 0;
+                shake = 0;
+            }
         }
-
-
     }
-
     public void updatePosition(Knight knight, Rectangle bounds, float delta) {
         float speed = 5.0f;
         float lerp = speed * Gdx.graphics.getDeltaTime();

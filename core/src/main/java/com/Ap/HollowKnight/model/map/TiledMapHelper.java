@@ -32,7 +32,7 @@ public class TiledMapHelper {
                 Rectangle rect = ((RectangleMapObject) object).getRectangle();
                 String type = object.getProperties().get("type", String.class);
                 BlockType blockType = BlockType.fromName(type);
-                if(blockType == BlockType.DESTRUCTIBLE_WALL){
+                if(blockType == BlockType.DESTRUCTIBLE_WALL||blockType == BlockType.GATE){
                     continue;
                 }else{
                     blocks.add(new Block(rect, blockType));
@@ -54,6 +54,23 @@ public class TiledMapHelper {
                 if(blockType == BlockType.DESTRUCTIBLE_WALL){
                     DestructibleWall wall = new DestructibleWall(rect, blockType);
                     return new DestructibleWall(rect, blockType);
+                }
+            }
+        }
+        return null;
+    }
+
+    public GateBlock getTheGate(){
+        MapLayer layer = tiledMap.getLayers().get("collision objects");
+        for (MapObject object : layer.getObjects()) {
+
+            if (object instanceof RectangleMapObject) {
+
+                Rectangle rect = ((RectangleMapObject) object).getRectangle();
+                String type = object.getProperties().get("type", String.class);
+                BlockType blockType = BlockType.fromName(type);
+                if(blockType == BlockType.GATE){
+                    return new GateBlock(rect, blockType);
                 }
             }
         }

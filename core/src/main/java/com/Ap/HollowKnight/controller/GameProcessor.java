@@ -28,7 +28,7 @@ public class GameProcessor extends InputAdapter {
     private boolean isInventory = false ;
     private boolean inventoryTriggered = false;
     private boolean isWallDestroyed = false;
-
+    private boolean isActivatorPressed = false;
     public GameProcessor(Knight knight, GameCamera camera, ArrayList<EnemyModel> enemies,Zote zote) {
         this.knight = knight;
         this.camera = camera;
@@ -64,6 +64,39 @@ public class GameProcessor extends InputAdapter {
         else{
             if (key == null)
                 return false;
+            if (keycode == GameKeypad.CHEAT_ACTIVATOR.getKeyNumber()) {
+                isActivatorPressed = true;
+                return true;
+            }
+            if (isActivatorPressed) {
+                if (keycode == GameKeypad.CHEAT_GOD.getKeyNumber()) {
+                    boolean toggle = knight.isImmortal();
+                    knight.setImmortal(!toggle);
+                    return true;
+                }
+                else if (keycode == GameKeypad.CHEAT_SOUL.getKeyNumber()) {
+                    knight.gainFullSoul();
+                    return true;
+                }
+                else if (keycode == GameKeypad.CHEAT_BOSS.getKeyNumber()) {
+                    knight.goToBoss();
+                    return true;
+                }
+                else if (keycode == GameKeypad.CHEAT_EMERGENCY_HEALTH.getKeyNumber()) {
+                    knight.gainMask();
+                    return true;
+                }
+                else if (keycode == GameKeypad.CHEAT_SPECTATOR.getKeyNumber()) {
+                    boolean toggle = knight.isSpectator();
+                    knight.changeToSpectator(!toggle);
+                    return true;
+                }
+                else if (keycode == GameKeypad.CHEAT_DEADLY_NAIL.getKeyNumber()) {
+                    boolean toggle =  knight.isDeadlyNail();
+                    knight.oneShotNail(!toggle);
+                    return true;
+                }
+            }
             switch (key) {
                 case RIGHT -> {
                     knight.setFacingDirection(FacingDirection.RIGHT);
@@ -170,7 +203,7 @@ public class GameProcessor extends InputAdapter {
     }
 
     public void pollMovement() {
-        if(isInventory){
+        if(isInventory||zote.getStatus()== ZoteState.TALKING){
             knight.stop();
             return;
         }

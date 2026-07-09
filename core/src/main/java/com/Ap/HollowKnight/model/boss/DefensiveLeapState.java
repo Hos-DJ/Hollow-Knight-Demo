@@ -1,5 +1,7 @@
 package com.Ap.HollowKnight.model.boss;
 
+import com.Ap.HollowKnight.controller.events.GameEvent;
+import com.Ap.HollowKnight.controller.events.GameEventMessenger;
 import com.Ap.HollowKnight.model.game.FacingDirection;
 import com.Ap.HollowKnight.model.map.Block;
 import com.Ap.HollowKnight.model.player.Knight;
@@ -20,6 +22,8 @@ public class DefensiveLeapState implements BossState {
 
         boss.setOnGround(false);
         jumped = true;
+        GameEventMessenger.getInstance().dispatch(GameEvent.BOSS_JUMP,null);
+
         boss.setCurrentPhase(FalseKnightPhase.JUMPING_DEFENSE);
         boss.getVelocity().x =HORIZONTAL_VELOCITY*direction;
         boss.getVelocity().y = VERTICAL_VELOCITY;
@@ -30,6 +34,8 @@ public class DefensiveLeapState implements BossState {
         boss.applyPhysics(delta, blocks);
         if (jumped && boss.isOnGround() && boss.getVelocity().y <= 0) {
             boss.setCurrentPhase(FalseKnightPhase.LANDING);
+            GameEventMessenger.getInstance().dispatch(GameEvent.BOSS_LAND,null);
+
             timer= LANDING_TIME;
             jumped = false;
         }

@@ -1,5 +1,7 @@
 package com.Ap.HollowKnight.model.boss;
 
+import com.Ap.HollowKnight.controller.events.GameEvent;
+import com.Ap.HollowKnight.controller.events.GameEventMessenger;
 import com.Ap.HollowKnight.model.game.FacingDirection;
 import com.Ap.HollowKnight.model.map.Block;
 import com.Ap.HollowKnight.model.player.Knight;
@@ -25,11 +27,11 @@ public class PowerMaceSlamState implements BossState {
     public void update(FalseKnight boss, Knight knight, ArrayList<Block> blocks,float delta) {
         timer += delta;
 
-        // Spawn the shockwave at the exact moment of impact
         if (timer >= IMPACT_TIME && !shockwaveSpawned) {
             boss.spawnShockwave();
-            // Optional: Trigger camera shake via the event listener here
             shockwaveSpawned = true;
+            GameEventMessenger.getInstance().dispatch(GameEvent.POWER_SLAM_MACE,null);
+
         }
 
         if (timer >= DURATION) {

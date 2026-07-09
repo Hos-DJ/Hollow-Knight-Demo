@@ -5,6 +5,7 @@ import com.Ap.HollowKnight.controller.events.GameEventMessenger;
 import com.badlogic.gdx.math.Rectangle;
 
 public class DestructibleWall extends Block{
+    private GameEventMessenger messenger=GameEventMessenger.getInstance();
     private final int DAMAGE = 3 ;
     private int damageTaken = 0;
     private boolean isDestroyed = false;
@@ -19,8 +20,10 @@ public class DestructibleWall extends Block{
             isDestroyed = true;
             GameEventMessenger.getInstance().dispatch(GameEvent.SECRET_DISCOVERED,this);
             setType(BlockType.DESTROYED_WALL);
-
+            messenger.dispatch(GameEvent.WALL_DESTROYED,null);
+            return;
         }
+        messenger.dispatch(GameEvent.ATTACKING_WALL,null);
     }
 
     public boolean isDestroyed() {

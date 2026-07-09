@@ -21,6 +21,7 @@ public class FalseKnight extends EnemyModel {
     private boolean isPhaseTwo = false;
     private int damageCounter= 0;
     private ArrayList<ShockWave> shockWaves = new ArrayList<>();
+    private boolean bossBegins = false;
 
     private Random random  = new Random();
     private static final int BASE_ARMOR_HP = 200;
@@ -41,15 +42,24 @@ public class FalseKnight extends EnemyModel {
     }
     @Override
     public void update(float delta, ArrayList<Block> blocks){
+        if(!bossBegins&&!(currentState instanceof IdleState)&&!isDead()){
+            bossBegins = true;
+            GameEventMessenger.getInstance().dispatch(GameEvent.ENTERED_BOSS_ROOM,null);
+        }
         if (currentState != null) {
             currentState.update(this, LevelModel.getInstance().getKnight(), blocks, delta);
         }
-        if(cnt<=30){
-            cnt++;
-        }
-        else{
-            System.out.println(currentState.toString());
-            cnt = 1;
+//        if(cnt<=30){
+//            cnt++;
+//        }
+//        else{
+////            System.out.println(currentState.toString());
+//            cnt = 1;
+//        }
+
+        Vector2 knightPos = LevelModel.getInstance().getKnight().getPosition();
+        if(Vector2.dst(knightPos.x , knightPos.y,getPosition().x, getPosition().y) >3000){
+            bossBegins = false;
         }
     }
 
@@ -59,6 +69,7 @@ public class FalseKnight extends EnemyModel {
             currentHp -= amount;
             if(currentHp <= 0){
                 GameEventMessenger.getInstance().dispatch(GameEvent.BOSS_DEFEATED,this);
+                currentPhase = FalseKnightPhase.DEAD;
                 die();
             }
         }else{
@@ -74,6 +85,7 @@ public class FalseKnight extends EnemyModel {
             changeState(new DefensiveLeapState());
             damageCounter = 0;
         }
+        GameEventMessenger.getInstance().dispatch(GameEvent.ENEMY_HURT, this);
     }
 
     public void changeState(BossState newState){
