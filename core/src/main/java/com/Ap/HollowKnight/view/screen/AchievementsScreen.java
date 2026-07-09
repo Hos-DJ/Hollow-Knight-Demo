@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.I18NBundle;
 
 public class AchievementsScreen extends BaseScreen {
     private Label.LabelStyle littleLabelStyle;
@@ -31,48 +32,46 @@ public class AchievementsScreen extends BaseScreen {
         batch = new SpriteBatch();
         rootTable.center();
         rootTable.setFillParent(true);
-        Label titleLabel = new Label("ACHIEVEMENTS", labelStyle);
+        I18NBundle bundle = game.getBundle();
+        Label titleLabel = new Label(bundle.get("achiev_title"), labelStyle);
         titleLabel.setFontScale(2.5f);
         Image topImage = new Image(AssetLoader.getInstance().getTexture("Ui/TableTop.png"));
         Image bottomImage = new Image(AssetLoader.getInstance().getTexture("Ui/TableBottom.png"));
         rootTable.add(topImage).colspan(2).center().padBottom(10).row();
         rootTable.add(titleLabel).colspan(2).center().padBottom(40).row();
-        //
+
         Image gameCompleted = new Image(AssetLoader.getInstance().getAchievement(AchievementsAssets.GAME_COMPLETION));
         Image bossKilled = new  Image(AssetLoader.getInstance().getAchievement(AchievementsAssets.DEFEAT_BOSS));
         Image secretDiscovered = new Image (AssetLoader.getInstance().getAchievement(AchievementsAssets.SECRET_DISCOVERED));
         Image trueHunter = new Image (AssetLoader.getInstance().getAchievement(AchievementsAssets.TRUE_HUNTER));
         Image speedrun = new Image (AssetLoader.getInstance().getAchievement(AchievementsAssets.SPEEDRUN));
-        //
 
         addAchievementToTable(gameCompleted,
-            "GAME COMPLETED:\n You need to finish the game to unlock this.",
+            bundle.get("achiev_game_completed"),
             AchievementsAssets.GAME_COMPLETION);
 
         addAchievementToTable(bossKilled,
-            "DEFEAT BOSS:\n kill the boss to unlock this.",
+            bundle.get("achiev_defeat_boss"),
             AchievementsAssets.DEFEAT_BOSS);
 
         addAchievementToTable(secretDiscovered,
-            "SECRET DISCOVERED:\n Find the hidden room to unlock this.",
+            bundle.get("achiev_secret_discovered"),
             AchievementsAssets.SECRET_DISCOVERED);
 
         addAchievementToTable(trueHunter,
-            "TRUE HUNTER:\n Defeat all types of enemies to unlock this.",
+            bundle.get("achiev_true_hunter"),
             AchievementsAssets.TRUE_HUNTER);
 
         addAchievementToTable(speedrun,
-            "SPEEDRUN:\n Complete the game in under 5 minutes.",
+            bundle.get("achiev_speedrun"),
             AchievementsAssets.SPEEDRUN);
         rootTable.add(bottomImage).colspan(2).center().padTop(10).row();
 
-        TextButton backButton = new TextButton("BACK", buttonStyle);
+        TextButton backButton = new TextButton(bundle.get("btn_back"), buttonStyle);
         setupButton(backButton,()->{
             ScreenManager.getInstance().setScreen("MainMenuScreen");
         });
         rootTable.add(backButton).colspan(2).center().padBottom(30).row();
-
-
     }
 
     private void addAchievementToTable(Image image, String text , AchievementsAssets as) {
@@ -96,6 +95,5 @@ public class AchievementsScreen extends BaseScreen {
 
         batch.end();
         super.render(delta);
-
     }
 }

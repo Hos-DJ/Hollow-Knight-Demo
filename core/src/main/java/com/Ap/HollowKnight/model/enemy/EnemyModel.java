@@ -14,6 +14,7 @@ import java.util.ArrayList;
 public abstract class EnemyModel extends PhysicalPart {
     private int hp;
     private boolean isDead = false;
+    private GameEventMessenger messenger=GameEventMessenger.getInstance();
     private EnemyState currentState = EnemyState.PATROLLING;
     private static final float CLIFF_PROBE_AHEAD = 5f;
     private static final float CLIFF_PROBE_DEPTH = 5f;
@@ -74,7 +75,9 @@ public abstract class EnemyModel extends PhysicalPart {
         this.hp = Math.max(this.hp - amount, 0);
         if (this.hp == 0) {
             this.die();
+
         }
+        messenger.dispatch(GameEvent.ENEMY_HURT,null);
 
     }
 
@@ -91,7 +94,7 @@ public abstract class EnemyModel extends PhysicalPart {
     protected void die() {
         isDead = true;
         setGravityIncluded(true);
-        GameEventMessenger.getInstance().dispatch(GameEvent.ENEMY_KILLED,this.getClass().getSimpleName());
+        messenger.dispatch(GameEvent.ENEMY_KILLED,this.getClass().getSimpleName());
     }
 
     public EnemyState getCurrentState() {

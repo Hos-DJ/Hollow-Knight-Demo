@@ -1,5 +1,6 @@
 package com.Ap.HollowKnight.view.screen.toasts;
 
+import com.Ap.HollowKnight.controller.ScreenManager;
 import com.Ap.HollowKnight.view.AchievementsAssets;
 import com.Ap.HollowKnight.view.AssetLoader;
 import com.badlogic.gdx.graphics.Color;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.I18NBundle;
 
 public class AchievementToast extends Table {
 
@@ -27,12 +29,21 @@ public class AchievementToast extends Table {
         Texture tex = AssetLoader.getInstance().getAchievement(achievement);
         Image icon = new Image(tex);
 
-        String name = achievement.name().replace("_", " ");
-        Label title = new Label("ACHIEVEMENT UNLOCKED", labelStyle);
+        I18NBundle bundle = ScreenManager.getInstance().getGame().getBundle();
+
+        Label title = new Label(bundle.get("toast_unlocked"), labelStyle);
         title.setFontScale(0.7f);
         title.setColor(Color.GOLD);
 
-        Label desc = new Label(name, labelStyle);
+        String translatedName;
+        try {
+            String achievementKey = "achiev_" + achievement.name().toLowerCase();
+            translatedName = bundle.get(achievementKey).split("\n")[0].replace(":", "");
+        } catch (Exception e) {
+            translatedName = achievement.name().replace("_", " ");
+        }
+
+        Label desc = new Label(translatedName, labelStyle);
         desc.setFontScale(0.9f);
 
         this.add(icon).size(80, 80).pad(15);
@@ -42,12 +53,5 @@ public class AchievementToast extends Table {
         textTable.add(desc).align(Align.left).padTop(5);
         this.add(textTable).padRight(20).align(Align.center);
 
-        this.getColor().a = 0f;
-        this.addAction(Actions.sequence(
-            Actions.fadeIn(0.5f, Interpolation.fade),
-            Actions.delay(3.0f),
-            Actions.fadeOut(0.5f, Interpolation.fade),
-            Actions.removeActor()
-        ));
     }
 }

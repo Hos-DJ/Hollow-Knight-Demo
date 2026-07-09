@@ -11,5 +11,6 @@ public enum FalseKnightPhase {
     LANDING,
     GETTING_STUNNED,
     STUNNED,
-    WAKING_UP
+    WAKING_UP,
+    DEAD;
 }

@@ -2,6 +2,7 @@ package com.Ap.HollowKnight.view.screen;
 
 import com.Ap.HollowKnight.HollowKnight;
 import com.Ap.HollowKnight.controller.GameKeypad;
+import com.Ap.HollowKnight.controller.SaveManager;
 import com.Ap.HollowKnight.controller.ScreenManager;
 import com.Ap.HollowKnight.view.AssetLoader;
 import com.Ap.HollowKnight.view.sounds.MusicType;
@@ -12,16 +13,17 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.I18NBundle;
 
 
 public class MainMenuScreen extends BaseScreen {
     private Table guideTable;
-
+    private Table loadTable;
     public MainMenuScreen(HollowKnight game) {
         super(game);
     }
-
 
     @Override
     public void show() {
@@ -32,33 +34,33 @@ public class MainMenuScreen extends BaseScreen {
         this.guideTable = guideMenuTable();
         guideTable.setVisible(false);
         stage.addActor(guideTable);
+        this.loadTable = loadGameTable();
+        loadTable.setVisible(false);
+        stage.addActor(loadTable);
         mainMenuGlowingDots.start();
-
-
-        TextButton startBtn = new TextButton("Start Game", buttonStyle);
+        I18NBundle bundle = game.getBundle();
+        TextButton startBtn = new TextButton(bundle.get("menu_start"), buttonStyle);
         setupButton(startBtn,()->{
-            System.out.println("game is starting...");
-            audioManager.stopMusic();
-            ScreenManager.getInstance().setScreen("GameScreen");
+            rootTable.setVisible(false);
+            loadTable.setVisible(true);
         });
-        TextButton achievementBtn = new TextButton("Achievement", buttonStyle);
+        TextButton achievementBtn = new TextButton(bundle.get("menu_achievements"), buttonStyle);
         setupButton(achievementBtn,()->{
             ScreenManager.getInstance().setScreen("AchievementsScreen");
         });
-        TextButton guideBtn = new TextButton("Guide", buttonStyle);
+        TextButton guideBtn = new TextButton(bundle.get("menu_guide"), buttonStyle);
         setupButton(guideBtn,()->{
             rootTable.setVisible(false);
             guideTable.setVisible(true);
         });
-        TextButton settingsBtn = new TextButton("Settings", buttonStyle);
+        TextButton settingsBtn = new TextButton(bundle.get("menu_settings"), buttonStyle);
         setupButton(settingsBtn,()->{
 
         });
-        TextButton exitBtn = new TextButton("Exit", buttonStyle);
+        TextButton exitBtn = new TextButton(bundle.get("menu_exit"), buttonStyle);
         setupButton(exitBtn,()->{
             Gdx.app.exit();
         });
-
         rootTable.center();
         rootTable.add(gameLogo).width(1000).height(300).padBottom(200).row();
         rootTable.add(startBtn).pad(15).row();
@@ -75,7 +77,6 @@ public class MainMenuScreen extends BaseScreen {
                 ScreenManager.getInstance().setScreen("SettingsScreen");
             }
         });
-
         exitBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -98,9 +99,10 @@ public class MainMenuScreen extends BaseScreen {
     }
 
     private Table guideMenuTable(){
+        I18NBundle bundle = game.getBundle();
         Table table = new Table();
         table.padTop(20);
-        Label controlTitle = new Label("---CONTROLS---",labelStyle);
+        Label controlTitle = new Label(bundle.get("guide_controls"),labelStyle);
         controlTitle.setColor(Color.WHITE);
         table.add(controlTitle).padTop(10).row();
         for(GameKeypad key : GameKeypad.values()) {
@@ -113,33 +115,28 @@ public class MainMenuScreen extends BaseScreen {
             table.add(nameLabel).align(Align.left).padRight(40).padBottom(5);
             table.add(keyLabel).align(Align.right).padBottom(5).row();
         }
-        Label abilityTitle = new Label("---ABILITIES---",labelStyle);
+        Label abilityTitle = new Label(bundle.get("guide_abilities"),labelStyle);
         abilityTitle.setColor(Color.WHITE);
         table.add(abilityTitle).padTop(20).row();
-        String text = "-MASKS OF HONOR (HEALTH):\n" +
-            "The path of the warrior is unforgiving. Your life is bound to your masks. Every blow you take shatters one. Let the last mask fall, and your soul shall wander the abyss forever.\n\n" +
-            "-WAY OF THE BLADE (SOUL SYSTEM):\n" +
-            "Your Nail thirsts for combat. With every precise strike upon your foes, you siphon their SOUL. This sacred energy fuels your ancient arts and spells.\n\n" +
-            "-MEDITATION IN CHAOS (FOCUS):\n" +
-            "A true samurai finds stillness in the storm. Hold the FOCUS button to channel the gathered SOUL, mending your flesh and restoring a shattered mask.\n\n" +
-            "-SHADOW STEP (DASH):\n" +
-            "Be as the wind and slip through enemy blades. Press the DASH button to move with lightning speed, evading fatal strikes or crossing great chasms.";
+        String text = bundle.get("ability_health") + "\n\n" + bundle.get("ability_soul") + "\n\n" + bundle.get("ability_focus") + "\n\n" + bundle.get("ability_dash");
         Label mechanicsLabel = new Label(text, labelStyle);
         mechanicsLabel.setWrap(true);
         mechanicsLabel.setAlignment(Align.left);
         table.add(mechanicsLabel).width(600f).align(Align.left).padBottom(20).row();
 
-        Label cheatsTitle = new Label("--- CHEAT CODES ---", labelStyle);
+        Label cheatsTitle = new Label(bundle.get("guide_cheats"), labelStyle);
         cheatsTitle.setColor(Color.GOLD);
         table.add(cheatsTitle).padTop(20).padBottom(15).row();
+        String actKey = Input.Keys.toString(GameKeypad.CHEAT_ACTIVATOR.getKeyNumber());
 
         String[][] cheatCodes = {
-            {"God Mode (Invincibility)", "F1"},
-            {"Infinite Soul", "F2"},
-            {"Instant Kill (One-hit Nail)", "F3"},
-            {"Unlock All Abilities", "F4"}
+            {bundle.get("cheat_god"),       actKey + " + " + Input.Keys.toString(GameKeypad.CHEAT_GOD.getKeyNumber())},
+            {bundle.get("cheat_soul"),      actKey + " + " + Input.Keys.toString(GameKeypad.CHEAT_SOUL.getKeyNumber())},
+            {bundle.get("cheat_boss"),      actKey + " + " + Input.Keys.toString(GameKeypad.CHEAT_BOSS.getKeyNumber())},
+            {bundle.get("cheat_health"),    actKey + " + " + Input.Keys.toString(GameKeypad.CHEAT_EMERGENCY_HEALTH.getKeyNumber())},
+            {bundle.get("cheat_spectator"), actKey + " + " + Input.Keys.toString(GameKeypad.CHEAT_SPECTATOR.getKeyNumber())},
+            {bundle.get("cheat_one_hit"),   actKey + " + " + Input.Keys.toString(GameKeypad.CHEAT_DEADLY_NAIL.getKeyNumber())}
         };
-
         for (String[] cheat : cheatCodes) {
             String cheatName = cheat[0];
             String cheatKey = cheat[1];
@@ -157,7 +154,6 @@ public class MainMenuScreen extends BaseScreen {
         scrollPane.setFadeScrollBars(false);
         scrollPane.setScrollBarPositions(false, true);
         scrollPane.setOverscroll(false, false);
-
         Table mainContainer = new Table();
         mainContainer.setFillParent(true);
 
@@ -167,8 +163,7 @@ public class MainMenuScreen extends BaseScreen {
             .padLeft(150)
             .padRight(150)
             .row();
-
-        TextButton backButton = new TextButton("BACK", buttonStyle);
+        TextButton backButton = new TextButton(bundle.get("btn_back"), buttonStyle);
         setupButton(backButton, () -> {
             mainContainer.setVisible(false);
             rootTable.setVisible(true);
@@ -176,5 +171,54 @@ public class MainMenuScreen extends BaseScreen {
         mainContainer.add(backButton).padTop(20).padBottom(20).row();
 
         return mainContainer;
+    }
+
+    private Table loadGameTable(){
+        I18NBundle bundle = game.getBundle();
+        Table saveMenuTable = new Table();
+        saveMenuTable.setFillParent(true);
+        saveMenuTable.center();
+        Image topDecor = new Image(AssetLoader.getInstance().getTexture("Ui/TableTop.png"));
+        Image bottomDecor = new Image(AssetLoader.getInstance().getTexture("Ui/TableBottom.png"));
+        saveMenuTable.add(topDecor).padTop(20).padBottom(20).row();
+        TextureRegionDrawable blackBackground =new TextureRegionDrawable(getBrightnessTexture());
+        for (int i = 1; i <= 4; i++) {
+            final int slotNum = i;
+
+            Table saveCard = new Table();
+            saveCard.setBackground(blackBackground);
+            saveCard.pad(10);
+
+            TextButton slotBtn = new TextButton("Save Slot Num " + slotNum, buttonStyle);
+            setupButton(slotBtn, () -> {
+                System.out.println("Loading game from slot " + slotNum + "...");
+                SaveManager.getInstance().setSlotInPending(slotNum);
+                audioManager.stopMusic();
+                ScreenManager.getInstance().removeScreen("GameScreen");
+
+                ScreenManager.getInstance().setScreen("GameScreen");
+
+            });
+
+            TextButton clearBtn = new TextButton("CLEAR", buttonStyle);
+            setupButton(clearBtn, () -> {
+                SaveManager.getInstance().clearSaveSlot(slotNum);
+                slotBtn.setText("Save Slot Num " + slotNum + " (Empty)");
+            });
+
+            saveCard.add(slotBtn).width(500).height(120).padRight(15).align(Align.left);
+            saveCard.add(clearBtn).width(150).height(120).align(Align.right);
+
+            saveMenuTable.add(saveCard).pad(15).center().row();
+        }
+        TextButton backBtn = new TextButton(bundle.get("btn_back"), buttonStyle);
+        setupButton(backBtn, () -> {
+            saveMenuTable.setVisible(false);
+            rootTable.setVisible(true);
+        });
+
+        saveMenuTable.add(backBtn).colspan(2).padTop(30).row();
+        saveMenuTable.add(bottomDecor).padBottom(20).row();
+        return saveMenuTable;
     }
 }

@@ -1,10 +1,13 @@
 package com.Ap.HollowKnight.model.zote;
 
+import com.Ap.HollowKnight.controller.events.GameEvent;
+import com.Ap.HollowKnight.controller.events.GameEventMessenger;
 import com.Ap.HollowKnight.model.game.FacingDirection;
 import com.Ap.HollowKnight.model.game.PhysicalPart;
 import com.Ap.HollowKnight.model.map.Block;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.I18NBundle;
 
 import java.util.ArrayList;
 
@@ -25,20 +28,19 @@ public class Zote extends PhysicalPart {
 
     private float chargeDirection = 1f;
 
-    private ZoteState status =ZoteState.IDLE ;
-    private Rectangle interactionZone ;
+    private GameEventMessenger messenger = GameEventMessenger.getInstance();
+
+    private ZoteState status = ZoteState.IDLE;
+    private Rectangle interactionZone;
     private boolean playerNearby = false;
 
     private static int dialogueCounter = 0;
-    private String[] dialogues = {"Salam.","Foolish beast... you dulled your mandibles by gnawing on my indestructible body.\n No wonder you were defeated by this weakling!",
-                                    "This dreary place... it reminds me of home. How ghastly...",
-                                    "Have you seen them? The guards who still patrol this city, even after dying?"};
     private static int preceptsCounter = 0;
     private boolean precpectsTurn = false;
-    private String[] precepts = {"Precept One: 'Always Win Your Battles'.",
-                                    "Precept Two: 'Never Let Them Laugh at You'.",
-                                    "Precept Three: 'Forget Your Past'.",
-                                    "Precept Four: 'Strength Beats Strength'."};
+
+    private final int totalDialogues = 4;
+    private final int totalPrecepts = 4;
+
     public Zote(Vector2 position, Rectangle hitBox, Vector2 spawnPoint) {
         super(position, hitBox, spawnPoint);
         interactionZone = new Rectangle(
@@ -64,6 +66,7 @@ public class Zote extends PhysicalPart {
             ragingTimer -= delta;
             getVelocity().x = chargeDirection * MAX_VELOCITY;
             if (ragingTimer <= 0){
+                messenger.dispatch(GameEvent.ZOTE_ENDED_ATTACKING,null);
                 rest();
             }
         }
@@ -82,10 +85,6 @@ public class Zote extends PhysicalPart {
             }
         }
 
-//        System.out.println(this.status);
-
-
-
         applyPhysics(delta, blocks);
     }
 
@@ -95,7 +94,6 @@ public class Zote extends PhysicalPart {
 
     @Override
     public void hazardReact() {
-        // No damage for zote.
     }
 
     private void applyFacing(float dir) {
@@ -114,11 +112,11 @@ public class Zote extends PhysicalPart {
         knockingTimer = KNOCK_DURATION;
         status = ZoteState.KNOCKING;
         applyFacing(chargeDirection);
-
     }
 
     public void enrage(){
         status = ZoteState.ENRAGED;
+        messenger.dispatch(GameEvent.ZOTE_STARTED_ATTACKING,null);
         ragingTimer = RAGE_DURATION;
     }
 
@@ -158,9 +156,9 @@ public class Zote extends PhysicalPart {
         getVelocity().x = 0;
     }
 
-    // talking methods:
     public void startTalking(Vector2 knightPosition) {
         if (status == ZoteState.IDLE) status = ZoteState.TALKING;
+        messenger.dispatch(GameEvent.ZOTE_IS_TALKING,null);
         float direction = (knightPosition.x > getPosition().x) ? 1f: -1f;
         applyFacing(direction);
     }
@@ -169,11 +167,11 @@ public class Zote extends PhysicalPart {
         if (status == ZoteState.TALKING) status = ZoteState.IDLE;
     }
 
-    public String showDialogue(){
+    public String showDialogue(I18NBundle bundle){
         if (!precpectsTurn) {
-            return dialogues[dialogueCounter];
+            return bundle.get("zote_dialogue_" + dialogueCounter);
         } else {
-            return precepts[preceptsCounter];
+            return bundle.get("zote_precept_" + (preceptsCounter + 1));
         }
     }
 
@@ -181,13 +179,13 @@ public class Zote extends PhysicalPart {
         boolean success;
         if(!precpectsTurn){
             dialogueCounter++;
-            success = dialogueCounter < dialogues.length;
+            success = dialogueCounter < totalDialogues;
             if (!success) {
                 precpectsTurn = true;
             }
         }else{
             preceptsCounter++;
-            if(preceptsCounter >= precepts.length){
+            if(preceptsCounter >= totalPrecepts){
                 preceptsCounter = 0;
             }
             success = false;
@@ -195,107 +193,26 @@ public class Zote extends PhysicalPart {
         return success;
     }
 
-    public float getKnockingTimer() {
-        return knockingTimer;
-    }
-
-    public void setKnockingTimer(float knockingTimer) {
-        this.knockingTimer = knockingTimer;
-    }
-
-    public float getRagingTimer() {
-        return ragingTimer;
-    }
-
-    public void setRagingTimer(float ragingTimer) {
-        this.ragingTimer = ragingTimer;
-    }
-
-    public float getRestTimer() {
-        return restTimer;
-    }
-
-    public void setRestTimer(float restTimer) {
-        this.restTimer = restTimer;
-    }
-
-    public float getWakingTimer() {
-        return wakingTimer;
-    }
-
-    public void setWakingTimer(float wakingTimer) {
-        this.wakingTimer = wakingTimer;
-    }
-
-    public boolean isToRight() {
-        return toRight;
-    }
-
-    public void setToRight(boolean toRight) {
-        this.toRight = toRight;
-    }
-
-    public float getChargeDirection() {
-        return chargeDirection;
-    }
-
-    public void setChargeDirection(float chargeDirection) {
-        this.chargeDirection = chargeDirection;
-    }
-
-    public ZoteState getStatus() {
-        return status;
-    }
-
-    public void setStatus(ZoteState status) {
-        this.status = status;
-    }
-
-    public Rectangle getInteractionZone() {
-        return interactionZone;
-    }
-
-    public void setInteractionZone(Rectangle interactionZone) {
-        this.interactionZone = interactionZone;
-    }
-
-    public boolean isPlayerNearby() {
-        return playerNearby;
-    }
-
-    public void setPlayerNearby(boolean playerNearby) {
-        this.playerNearby = playerNearby;
-    }
-
-    public static int getDialogueCounter() {
-        return dialogueCounter;
-    }
-
-    public static void setDialogueCounter(int dialogueCounter) {
-        Zote.dialogueCounter = dialogueCounter;
-    }
-
-    public String[] getDialogues() {
-        return dialogues;
-    }
-
-    public void setDialogues(String[] dialogues) {
-        this.dialogues = dialogues;
-    }
-
-    public static int getPreceptsCounter() {
-        return preceptsCounter;
-    }
-
-    public static void setPreceptsCounter(int preceptsCounter) {
-        Zote.preceptsCounter = preceptsCounter;
-    }
-
-    public String[] getPrecepts() {
-        return precepts;
-    }
-
-    public void setPrecepts(String[] precepts) {
-        this.precepts = precepts;
-    }
+    public float getKnockingTimer() { return knockingTimer; }
+    public void setKnockingTimer(float knockingTimer) { this.knockingTimer = knockingTimer; }
+    public float getRagingTimer() { return ragingTimer; }
+    public void setRagingTimer(float ragingTimer) { this.ragingTimer = ragingTimer; }
+    public float getRestTimer() { return restTimer; }
+    public void setRestTimer(float restTimer) { this.restTimer = restTimer; }
+    public float getWakingTimer() { return wakingTimer; }
+    public void setWakingTimer(float wakingTimer) { this.wakingTimer = wakingTimer; }
+    public boolean isToRight() { return toRight; }
+    public void setToRight(boolean toRight) { this.toRight = toRight; }
+    public float getChargeDirection() { return chargeDirection; }
+    public void setChargeDirection(float chargeDirection) { this.chargeDirection = chargeDirection; }
+    public ZoteState getStatus() { return status; }
+    public void setStatus(ZoteState status) { this.status = status; }
+    public Rectangle getInteractionZone() { return interactionZone; }
+    public void setInteractionZone(Rectangle interactionZone) { this.interactionZone = interactionZone; }
+    public boolean isPlayerNearby() { return playerNearby; }
+    public void setPlayerNearby(boolean playerNearby) { this.playerNearby = playerNearby; }
+    public static int getDialogueCounter() { return dialogueCounter; }
+    public static void setDialogueCounter(int dialogueCounter) { Zote.dialogueCounter = dialogueCounter; }
+    public static int getPreceptsCounter() { return preceptsCounter; }
+    public static void setPreceptsCounter(int preceptsCounter) { Zote.preceptsCounter = preceptsCounter; }
 }

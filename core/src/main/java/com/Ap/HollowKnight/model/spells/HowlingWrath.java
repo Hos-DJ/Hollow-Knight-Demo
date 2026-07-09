@@ -8,8 +8,8 @@ import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 
 public class HowlingWrath extends BaseSpell {
-    private static final float WIDTH = 80f;
-    private static final float HEIGHT = 120f;
+    private static final float WIDTH = 120;
+    private static final float HEIGHT = 140;
     private static final float DURATION = 1.5f;
     private static final int TOTAL_TICKS = 3;
     private static final float TICK_INTERVAL = DURATION / TOTAL_TICKS;

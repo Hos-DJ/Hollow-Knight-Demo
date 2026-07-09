@@ -13,7 +13,14 @@ public enum GameKeypad {
     FOCUS(Input.Keys.E, 'E'),
     INVENTORY(Input.Keys.I, 'I'),
     VENGEFUL_SPIRIT(Input.Keys.Z, 'Z'),
-    HOWLING_WRATH(Input.Keys.X, 'X');
+    HOWLING_WRATH(Input.Keys.X, 'X'),
+    CHEAT_GOD(Input.Keys.NUM_1,'1'),
+    CHEAT_SOUL(Input.Keys.NUM_2,'2'),
+    CHEAT_BOSS(Input.Keys.NUM_3,'3'),
+    CHEAT_EMERGENCY_HEALTH(Input.Keys.NUM_4,'4'),
+    CHEAT_SPECTATOR(Input.Keys.NUM_5,'5'),
+    CHEAT_DEADLY_NAIL(Input.Keys.NUM_6,'6'),
+    CHEAT_ACTIVATOR(Input.Keys.Y, 'Y');
 
     private int keyNumber;
     private char keyChar;

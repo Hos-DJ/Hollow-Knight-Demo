@@ -25,10 +25,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public abstract class BaseScreen implements Screen {
     protected final HollowKnight game;
+    protected I18NBundle bundle;
     private SettingsController settingsController;
     protected Stage stage;
     protected Table rootTable;
@@ -37,6 +39,8 @@ public abstract class BaseScreen implements Screen {
     protected Stack mainStack;
     protected Stack modalStack;
     protected Stack toastStack;
+    protected Texture[] backgrounds;
+    protected static int backgroundIndex = 0;
     protected Texture background;
     protected Image gameLogo;
     protected SpriteBatch batch;
@@ -56,7 +60,6 @@ public abstract class BaseScreen implements Screen {
         clickSound = loader.getSound("Ui/Audio/button-click.wav");
         this.mainMenuGlowingDots = new ParticleEffect();
         this.audioManager = AudioManager.getInstance();
-        this.background = new Texture("Ui/Menu_Theme_Surface.png");
         mainMenuGlowingDots.load(Gdx.files.internal("Ui/MainMenuParticle.p"), Gdx.files.internal("Ui"));
         buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = loader.getFont("font_24");
@@ -75,6 +78,7 @@ public abstract class BaseScreen implements Screen {
         sliderStyle = getSliderStyle();
         scrollPaneStyle = getScrollPaneStyle();
         settingsController = SettingsController.getInstance();
+        bundle =game.getBundle();
     }
 
     private Slider.SliderStyle getSliderStyle() {
@@ -136,6 +140,12 @@ public abstract class BaseScreen implements Screen {
 
     @Override
     public void show() {
+        backgrounds= new  Texture[4];
+        backgrounds[0] =  new Texture("Ui/Menu_Theme_Surface.png");
+        backgrounds[1] =  new Texture("Ui/Menu_Theme_The_Eternal_Ordeal.png");
+        backgrounds[2] =  new Texture ("Ui/Screenshot_HK_White_Defender_03.png");
+        backgrounds[3] = new Texture("Ui/Menu_Theme_Void.png");
+        this.background =backgrounds[backgroundIndex];
         stage = new Stage(new ScreenViewport());
 
         mainStack = new Stack();
@@ -170,6 +180,9 @@ public abstract class BaseScreen implements Screen {
         if (stage != null) {
             stage.act(delta);
             stage.draw();
+        }
+        if (audioManager != null) {
+            audioManager.update(delta);
         }
         float brightness = settingsController.getBrightness();
         if (brightness > 0.9f)

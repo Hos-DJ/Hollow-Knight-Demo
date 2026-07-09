@@ -1,5 +1,7 @@
 package com.Ap.HollowKnight.model.boss;
 
+import com.Ap.HollowKnight.controller.events.GameEvent;
+import com.Ap.HollowKnight.controller.events.GameEventMessenger;
 import com.Ap.HollowKnight.model.game.FacingDirection;
 import com.Ap.HollowKnight.model.map.Block;
 import com.Ap.HollowKnight.model.player.Knight;
@@ -10,8 +12,8 @@ import java.util.ArrayList;
 public class MaceSlamState implements BossState {
     private float timer = 0f;
     private boolean hasDealtDamage = false;
-    private static final float WINDUP_TIME = 0.5f;
-    private static final float ACTIVE_TIME = 0.3f;
+    private static final float WINDUP_TIME = 0.6f;
+    private static final float ACTIVE_TIME = 0.4f;
     private static final float RECOVERY_TIME = 0.4f;
     private static final float DURATION = WINDUP_TIME + ACTIVE_TIME + RECOVERY_TIME;
 
@@ -32,6 +34,7 @@ public class MaceSlamState implements BossState {
             boss.setCurrentPhase(FalseKnightPhase.WINDUP);
         } else if (timer < WINDUP_TIME + ACTIVE_TIME) {
             boss.setCurrentPhase(FalseKnightPhase.SLAMMING);
+            GameEventMessenger.getInstance().dispatch(GameEvent.SLAM_MACE,null);
             checkDamage(boss, knight);
             updateMaceHitBox(boss);
         } else {

@@ -296,10 +296,40 @@ Ui/Achievements/LD-MidTerm2-Sol.pdf
 Ui/Achievements/Secret Discovered.png
 Ui/Achievements/Speedrun.png
 Ui/Achievements/True Hunter.png
+Ui/Audio/SfxMusic/Zote_01.wav
+Ui/Audio/SfxMusic/Zote_02.wav
+Ui/Audio/SfxMusic/Zote_03.wav
+Ui/Audio/SfxMusic/Zote_04.wav
+Ui/Audio/SfxMusic/Zote_battle_attack_loop.wav
+Ui/Audio/SfxMusic/breakable_wall_death.wav
+Ui/Audio/SfxMusic/breakable_wall_hit_1.wav
+Ui/Audio/SfxMusic/enemy_damage.wav
+Ui/Audio/SfxMusic/enemy_death_sword.wav
+Ui/Audio/SfxMusic/focus_health_charging.wav
+Ui/Audio/SfxMusic/focus_health_heal.wav
+Ui/Audio/SfxMusic/hero_double_damage.wav
+Ui/Audio/SfxMusic/hero_evade.wav
+Ui/Audio/SfxMusic/hero_scream_spell.wav
+Ui/Audio/SfxMusic/knight_damage.wav
+Ui/Audio/SfxMusic/knight_dash.wav
+Ui/Audio/SfxMusic/knight_death.wav
+Ui/Audio/SfxMusic/knight_fireball.wav
+Ui/Audio/SfxMusic/knight_runStone.wav
+Ui/Audio/SfxMusic/knight_slidingWall.wav
+Ui/Audio/SfxMusic/knight_wings.wav
+Ui/Audio/SfxMusic/soul_pickup_1.wav
+Ui/Audio/SfxMusic/soul_pickup_2.wav
+Ui/Audio/SfxMusic/soul_pickup_3.wav
+Ui/Audio/SfxMusic/soul_pickup_4.wav
+Ui/Audio/SfxMusic/soul_pickup_5.wav
+Ui/Audio/SfxMusic/soul_pickup_6.wav
+Ui/Audio/SfxMusic/soul_pickup_7.wav
+Ui/Audio/SfxMusic/sword_hit_reject.wav
 Ui/Audio/backgroundMusic/City of Tears.mp3
 Ui/Audio/backgroundMusic/Greenpath.mp3
 Ui/Audio/backgroundMusic/Main Theme.mp3
 Ui/Audio/backgroundMusic/Manitis Lords.mp3
+Ui/Audio/backgroundMusic/final theme.mp3
 Ui/Audio/button-click.wav
 Ui/Audio/button-hover.wav
 Ui/Charms/DASH_MASTER.png
@@ -313,6 +343,9 @@ Ui/Charms/VOID_HEART.png
 Ui/Hollow-Knight-Logo-PNG-Pic.png
 Ui/MainMenuParticle.p
 Ui/Menu_Theme_Surface.png
+Ui/Menu_Theme_The_Eternal_Ordeal.png
+Ui/Menu_Theme_Void.png
+Ui/Screenshot_HK_White_Defender_03.png
 Ui/Slider/slider.atlas
 Ui/Slider/slider.png
 Ui/Slider/slider_arrow.png
@@ -9200,6 +9233,7 @@ animation/Scream_003.png
 animation/Scream_004.png
 animation/Scream_005.png
 animation/Scream_006.png
+animation/Shadow Dash.png
 animation/Slash.png
 animation/SlashAlt.png
 animation/SlashAlt_000.png
@@ -9317,6 +9351,8 @@ highway_01_layered_0004_Layer-5.tsx
 highway_FG_0007_Layer-78.tsx
 hunter_scenery_0001_a.tsx
 hunter_scenery_0002_a.tsx
+language/strings.properties
+language/strings_tr.properties
 libgdx.png
 mine_globe_02.tsx
 particle.png

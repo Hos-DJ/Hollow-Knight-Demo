@@ -8,11 +8,15 @@ import com.Ap.HollowKnight.view.AssetLoader;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.I18NBundle;
+
+import java.util.Locale;
 
 public class SettingsScreen extends BaseScreen {
     private static int DEFAULT = 8 ;
@@ -60,8 +64,10 @@ public class SettingsScreen extends BaseScreen {
         stage.addActor(keyTable);
         rootTable.add(topImage).colspan(3).center().padBottom(20).row();
 
+        I18NBundle bundle = game.getBundle();
+
         int currentMusic = controller.getMusicLevel();
-        TextButton musicButton = new TextButton(currentMusic == 0 ? "MUSIC OFF" : "MUSIC VOLUME:", buttonStyle);
+        TextButton musicButton = new TextButton(currentMusic == 0 ? bundle.get("settings_music_off") : bundle.get("settings_music_vol"), buttonStyle);
         TextButton musicValue = new TextButton(String.valueOf(currentMusic), buttonStyle);
         Slider musicSlider = new Slider(0, 10, 1, false, sliderStyle);
         musicSlider.setValue(currentMusic);
@@ -72,22 +78,22 @@ public class SettingsScreen extends BaseScreen {
                 controller.changeMusicVolume(amount);
                 musicValue.setText(String.valueOf(amount));
                 if(amount == 0){
-                    musicButton.setText("MUSIC OFF");
+                    musicButton.setText(bundle.get("settings_music_off"));
                 }
                 else {
-                    musicButton.setText("MUSIC VOLUME:");
+                    musicButton.setText(bundle.get("settings_music_vol"));
                 }
             }
 
         });
         setupButton(musicButton,()->{
-            if(musicButton.getText().toString().equals("MUSIC VOLUME:")) {
-                musicButton.setText("MUSIC OFF");
+            if(musicButton.getText().toString().equals(bundle.get("settings_music_vol"))) {
+                musicButton.setText(bundle.get("settings_music_off"));
                 controller.changeMusicVolume(0);
                 musicSlider.setValue(0);
             }
             else {
-                musicButton.setText("MUSIC VOLUME:");
+                musicButton.setText(bundle.get("settings_music_vol"));
                 controller.changeMusicVolume(1);
                 musicSlider.setValue(1);
             }
@@ -95,7 +101,7 @@ public class SettingsScreen extends BaseScreen {
 
 
         int currentSfx = controller.getSfxLevel();
-        TextButton sfxButton = new TextButton(currentSfx == 0 ? "SFX OFF" : "SFX VOLUME:", buttonStyle);
+        TextButton sfxButton = new TextButton(currentSfx == 0 ? bundle.get("settings_sfx_off") : bundle.get("settings_sfx_vol"), buttonStyle);
         Slider sfxSlider = new Slider(0, 10, 1, false, sliderStyle);
         sfxSlider.setValue(currentSfx);
         TextButton sfxValue = new TextButton(String.valueOf(currentSfx), buttonStyle);
@@ -108,14 +114,14 @@ public class SettingsScreen extends BaseScreen {
                 sfxValue.setText(String.valueOf(amount));
 
                 if (amount == 0) {
-                    sfxButton.setText("SFX OFF");
+                    sfxButton.setText(bundle.get("settings_sfx_off"));
                 } else {
-                    sfxButton.setText("SFX VOLUME:");
+                    sfxButton.setText(bundle.get("settings_sfx_vol"));
                 }
             }
         });
         setupButton(sfxButton, () -> {
-            if (sfxButton.getText().toString().equals("SFX VOLUME:")) {
+            if (sfxButton.getText().toString().equals(bundle.get("settings_sfx_vol"))) {
                 sfxSlider.setValue(0);
             } else {
                 sfxSlider.setValue(8);
@@ -123,7 +129,7 @@ public class SettingsScreen extends BaseScreen {
         });
 
         int currentBrightness = controller.getBrightnessLevel();
-        TextButton brightnessButton = new TextButton("BRIGHTNESS:", buttonStyle);
+        TextButton brightnessButton = new TextButton(bundle.get("settings_brightness"), buttonStyle);
         TextButton brightnessValue = new TextButton(String.valueOf(currentBrightness), buttonStyle);
         Slider brightnessSlider = new Slider(0, 10, 1, false, sliderStyle);
         brightnessSlider.setValue(currentBrightness);
@@ -136,23 +142,52 @@ public class SettingsScreen extends BaseScreen {
             }
         });
 
-        TextButton resetSounds = new TextButton("RESET SOUND", buttonStyle);
+        TextButton resetSounds = new TextButton(bundle.get("settings_reset_sound"), buttonStyle);
         setupButton(resetSounds,()->{
             controller.resetSounds();
             musicSlider.setValue(8);
             sfxSlider.setValue(8);
             musicValue.setText("8");
             sfxValue.setText("8");
-            musicButton.setText("MUSIC VOLUME:");
-            sfxButton.setText("SFX VOLUME:");
+            musicButton.setText(bundle.get("settings_music_vol"));
+            sfxButton.setText(bundle.get("settings_sfx_vol"));
         });
 
-        TextButton changeGamePlayButton = new TextButton("CHANGE GAME KEYPAD", buttonStyle);
+        TextButton changeGamePlayButton = new TextButton(bundle.get("settings_change_keypad"), buttonStyle);
         setupButton(changeGamePlayButton,()->{
+            keyTable.remove();
+
+            keyTable = createKeypadTable();
+            stage.addActor(keyTable);
+
             rootTable.setVisible(false);
             keyTable.setVisible(true);
         });
-        TextButton backButton = new TextButton("BACK", buttonStyle);
+        TextButton resetGamePlay =  new TextButton(bundle.get("settings_reset_keypad"), buttonStyle);
+        setupButton(resetGamePlay,()->{
+            GameKeypad.resetAll();
+
+        });
+        TextButton changeLanguageButton = new TextButton(bundle.get("settings_change_language"), buttonStyle);
+        setupButton(changeLanguageButton,()->{
+            FileHandle baseFileHandle = Gdx.files.internal("language/strings");
+            if (game.getBundle().getLocale().getLanguage().equals("tr")) {
+                game.setMyBundle(I18NBundle.createBundle(baseFileHandle, Locale.ENGLISH));
+            } else {
+                game.setMyBundle(I18NBundle.createBundle(baseFileHandle, new Locale("tr")));
+            }
+            ScreenManager.getInstance().setScreen("SettingsScreen");
+        });
+
+        TextButton changeThemeButton = new TextButton(bundle.get("settings_change_theme"), buttonStyle);
+        setupButton(changeThemeButton,()->{
+            backgroundIndex++;
+            if (backgroundIndex >= backgrounds.length) {
+                backgroundIndex = 0;
+            }
+            super.background = backgrounds[backgroundIndex];
+        });
+        TextButton backButton = new TextButton(bundle.get("btn_back"), buttonStyle);
         setupButton(backButton,()->{
             String returnScreen = controller.getPreviousScreen();
             ScreenManager.getInstance().setScreen(returnScreen);
@@ -174,6 +209,9 @@ public class SettingsScreen extends BaseScreen {
 
         rootTable.add(resetSounds).center().colspan(3).padBottom(20).padTop(20).expandY().row();
         rootTable.add(changeGamePlayButton).center().colspan(3).padBottom(20).padTop(20).row();
+        rootTable.add(resetGamePlay).center().colspan(3).padBottom(20).row();
+        rootTable.add(changeLanguageButton).center().colspan(3).padTop(40).row();
+        rootTable.add(changeThemeButton).center().colspan(3).padTop(20).row();
         rootTable.add(backButton).center().colspan(3).padTop(40).row();
 
 
@@ -199,10 +237,11 @@ public class SettingsScreen extends BaseScreen {
     }
 
     private Table createKeypadTable() {
+        I18NBundle bundle = game.getBundle();
         Table table = new Table();
         table.setFillParent(true);
-        Label title = new Label("GAME KEYPAD", labelStyle);
-        TextButton backButton = new TextButton("BACK", buttonStyle);
+        Label title = new Label(bundle.get("settings_game_keypad"), labelStyle);
+        TextButton backButton = new TextButton(bundle.get("btn_back"), buttonStyle);
         setupButton(backButton,()->{
             table.setVisible(false);
             rootTable.setVisible(true);
@@ -221,12 +260,12 @@ public class SettingsScreen extends BaseScreen {
                 }
                 waitingForKeypad = key;
                 waitingButton = keyButton;
-                keyButton.setText("[ PRESS KEY ]");
+                keyButton.setText(bundle.get("settings_press_key"));
             });
             table.add(nameLabel).align(Align.left).padRight(40).padBottom(10);
             table.add(keyButton).align(Align.right).padBottom(10).row();
         }
-        TextButton backBtn = new TextButton("BACK", buttonStyle);
+        TextButton backBtn = new TextButton(bundle.get("btn_back"), buttonStyle);
         setupButton(backBtn, () -> {
             if (waitingButton != null && waitingForKeypad != null) {
                 waitingButton.setText(Input.Keys.toString(waitingForKeypad.getKeyNumber()));
