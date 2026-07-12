@@ -5,6 +5,7 @@ ForgottonCrossRoads.tiled-project
 ForgottonCrossRoads.tiled-session
 GreenPath.tiled-project
 GreenPath.tiled-session
+Greenpath.png
 Grimm_town_signs_0000_2.tsx
 HUD/BreakHealth.png
 HUD/BreakHealth_000.png
@@ -301,10 +302,15 @@ Ui/Audio/SfxMusic/Zote_02.wav
 Ui/Audio/SfxMusic/Zote_03.wav
 Ui/Audio/SfxMusic/Zote_04.wav
 Ui/Audio/SfxMusic/Zote_battle_attack_loop.wav
+Ui/Audio/SfxMusic/boss_stun.wav
 Ui/Audio/SfxMusic/breakable_wall_death.wav
 Ui/Audio/SfxMusic/breakable_wall_hit_1.wav
 Ui/Audio/SfxMusic/enemy_damage.wav
 Ui/Audio/SfxMusic/enemy_death_sword.wav
+Ui/Audio/SfxMusic/false_knight_jump.wav
+Ui/Audio/SfxMusic/false_knight_land.wav
+Ui/Audio/SfxMusic/false_knight_roll.wav
+Ui/Audio/SfxMusic/false_knight_strike_ground.wav
 Ui/Audio/SfxMusic/focus_health_charging.wav
 Ui/Audio/SfxMusic/focus_health_heal.wav
 Ui/Audio/SfxMusic/hero_double_damage.wav

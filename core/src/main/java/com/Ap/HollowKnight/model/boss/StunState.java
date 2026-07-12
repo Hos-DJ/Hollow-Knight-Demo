@@ -38,4 +38,9 @@ public class StunState implements BossState {
     public void exit(FalseKnight boss) {
         boss.getVelocity().x = 0;
     }
+    public void forceWakeUp() {
+        if (timer < STUN_DURATION - WAKE_TIME) {
+            timer = STUN_DURATION - WAKE_TIME;
+        }
+    }
 }

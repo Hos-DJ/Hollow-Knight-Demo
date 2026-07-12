@@ -22,6 +22,9 @@ public class AudioListener implements GameEventListener {
     private long zoteAttackSoundId = -1;
     private boolean isZoteAttacking = false;
 
+    private long bossRunSoundId = -1;
+    private boolean isBossRunning = false;
+
     @Override
     public void onEvent(GameEvent event, Object payload) {
         switch (event) {
@@ -63,14 +66,28 @@ public class AudioListener implements GameEventListener {
                     isFocusing = true;
                 }
             }
-
-
+            case BOSS_BEGIN_RUNNING -> {
+                if(!isBossRunning) {
+                    bossRunSoundId = audioManager.loopSfx(SfxType.BOSS_RUN);
+                    isBossRunning = true;
+                }
+            }
+            case BOSS_JUMP -> audioManager.playSfx(SfxType.BOSS_JUMP);
+            case BOSS_LAND ->  audioManager.playSfx(SfxType.BOSS_LAND);
+            case POWER_SLAM_MACE, SLAM_MACE -> audioManager.playSfx(SfxType.BOSS_MACE_SLAM);
+            case BOSS_STUN ->  audioManager.playSfx(SfxType.BOSS_STUN);
             case PLAYER_FOCUS_END -> {
                 if (isFocusing) {
                     audioManager.stopSfx(SfxType.FOCUS_CHARGE_BEGIN, focusSoundId);
                     isFocusing = false;
                 }
                 audioManager.playSfx(SfxType.FOCUS_CHARGE_END);
+            }
+            case BOSS_ENDED_RUNNING -> {
+                if (isBossRunning) {
+                    audioManager.stopSfx(SfxType.BOSS_RUN, bossRunSoundId);
+                    isBossRunning = false;
+                }
             }
             case PLAYER_SOUL_GAIN -> {
                     int index = random.nextInt(7)+1;
@@ -104,10 +121,6 @@ public class AudioListener implements GameEventListener {
                 audioManager.playSfx(SfxType.KNIGHT_DEATH);
                 audioManager.playMusic(MusicType.CITY_OF_TEARS);
             }
-            case SLAM_MACE -> {
-
-            }
-
 
             case ZOTE_IS_TALKING -> {
                 int randomVoice = random.nextInt(4) + 1;

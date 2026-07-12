@@ -42,6 +42,9 @@ public enum GameEvent {
     BOSS_JUMP,
     BOSS_LAND,
     POWER_SLAM_MACE,
+    BOSS_STUN,
+    BOSS_BEGIN_RUNNING,
+    BOSS_ENDED_RUNNING,
 
     SAVE_GAME;
 }

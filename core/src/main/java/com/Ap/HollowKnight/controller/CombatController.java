@@ -1,11 +1,11 @@
 package com.Ap.HollowKnight.controller;
 
 import com.Ap.HollowKnight.model.AttackDirection;
+import com.Ap.HollowKnight.model.Knight.Knight;
+import com.Ap.HollowKnight.model.Knight.PlayerCondition;
 import com.Ap.HollowKnight.model.boss.FalseKnight;
 import com.Ap.HollowKnight.model.enemy.EnemyModel;
 import com.Ap.HollowKnight.model.map.DestructibleWall;
-import com.Ap.HollowKnight.model.Knight.Knight;
-import com.Ap.HollowKnight.model.Knight.PlayerCondition;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
@@ -51,10 +51,9 @@ public class CombatController {
                     knight.pogoBounce();
                     knockBackVerticalSpeed = 0f;
                 }
-                if (enemy instanceof FalseKnight) {
-                    enemy.setKnockBackVelocity(new Vector2(knockBackDirection * damageKnockBack, 0));
-                } else
+                if (!(enemy instanceof FalseKnight)) {
                     enemy.setKnockBackVelocity(new Vector2(knockBackDirection * damageKnockBack, knockBackVerticalSpeed));
+                }
             }
         }
 
@@ -73,13 +72,18 @@ public class CombatController {
             if (enemy.getHitBox().overlaps(knight.getHitBox()) && !enemy.isDead()) {
 
                 if (knight.hasSharpShadow() && knight.getPlayerCondition() == DASHING) {
-                    if(!dashedEnemies.contains(enemy)) {
+                    if (!dashedEnemies.contains(enemy)) {
                         enemy.takeDamage(currentNailDamage);
                         dashedEnemies.add(enemy);
                     }
                 } else if (!knight.isInvincible()) {
                     float knockBackDirection = (knight.getPosition().x > enemy.getPosition().x) ? 1f : -1f;
-                    knight.setKnockBackVelocity(new Vector2(knockBackDirection * damageKnockBack, 400.0f));
+                    if (enemy instanceof FalseKnight) {
+                        knight.setKnockBackVelocity(new Vector2(knockBackDirection * damageKnockBack * 2f, 400.0f * 2f));
+                    } else {
+
+                        knight.setKnockBackVelocity(new Vector2(knockBackDirection * damageKnockBack, 400.0f));
+                    }
                     knight.takeDamage(1);
                 }
 

@@ -1,5 +1,7 @@
 package com.Ap.HollowKnight.model.boss;
 
+import com.Ap.HollowKnight.controller.events.GameEvent;
+import com.Ap.HollowKnight.controller.events.GameEventMessenger;
 import com.Ap.HollowKnight.model.game.FacingDirection;
 import com.Ap.HollowKnight.model.map.Block;
 import com.Ap.HollowKnight.model.Knight.Knight;
@@ -19,6 +21,7 @@ public class ChargeRunState implements BossState {
         boss.setCurrentPhase(FalseKnightPhase.RUNNING);
         float speed = boss.isPhaseTwo() ? BASE_SPEED * 1.35f : BASE_SPEED;
         boss.getVelocity().x = direction * speed;
+        GameEventMessenger.getInstance().dispatch(GameEvent.BOSS_BEGIN_RUNNING,null);
     }
 
     @Override
@@ -35,5 +38,6 @@ public class ChargeRunState implements BossState {
     @Override
     public void exit(FalseKnight boss) {
         boss.getVelocity().x = 0;
+        GameEventMessenger.getInstance().dispatch(GameEvent.BOSS_ENDED_RUNNING,null);
     }
 }

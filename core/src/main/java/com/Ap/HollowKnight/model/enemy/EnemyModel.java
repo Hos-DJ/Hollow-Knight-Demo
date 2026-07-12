@@ -24,7 +24,7 @@ public abstract class EnemyModel extends PhysicalPart {
         super(position, hitBox, spawnPoint);
         this.hp = hp;
     }
-     protected void resetHp(){
+     public void resetHp(){
 
      }
     public boolean isHeadingForCliff(ArrayList<Block> blocks) {
@@ -55,7 +55,9 @@ public abstract class EnemyModel extends PhysicalPart {
         float checkYHigh = getHitBox().y + getHitBox().height - 4f;
 
         for (Block block : blocks) {
-            if (block.getType() != BlockType.WALL && block.getType() != BlockType.SPIKE) continue;
+            if (block.getType() != BlockType.WALL &&
+                block.getType() != BlockType.SPIKE&&
+                block.getType() != BlockType.DESTRUCTIBLE_WALL) continue;
             if (block.getBound().contains(checkX, checkYLow)
                 || block.getBound().contains(checkX, checkYHigh)) {
                 return true;

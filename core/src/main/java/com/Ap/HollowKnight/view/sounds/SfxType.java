@@ -29,7 +29,6 @@ public enum SfxType {
     ENEMY_DEATH("Ui/Audio/SfxMusic/enemy_death_sword.wav"),
     KNIGHT_HURT("Ui/Audio/SfxMusic/knight_damage.wav"),
     KNIGHT_HEAVY_HURT("Ui/Audio/SfxMusic/hero_double_damage.wav"),
-    MACE_SLAM("Ui/Audio/SfxMusic/breakable_wall_hit_1.wav"),
     KNIGHT_DEATH("Ui/Audio/SfxMusic/knight_death.wav"),
 
     ZOTE_ATTACK("Ui/Audio/SfxMusic/Zote_battle_attack_loop.wav"),
@@ -37,6 +36,12 @@ public enum SfxType {
     ZOTE_MUMBLE_2("Ui/Audio/SfxMusic/Zote_02.wav"),
     ZOTE_MUMBLE_3("Ui/Audio/SfxMusic/Zote_03.wav"),
     ZOTE_MUMBLE_4("Ui/Audio/SfxMusic/Zote_04.wav"),
+
+    BOSS_JUMP("Ui/Audio/SfxMusic/false_knight_jump.wav"),
+    BOSS_LAND("Ui/Audio/SfxMusic/false_knight_land.wav"),
+    BOSS_MACE_SLAM("Ui/Audio/SfxMusic/false_knight_strike_ground.wav"),
+    BOSS_STUN("Ui/Audio/SfxMusic/boss_stun.wav"),
+    BOSS_RUN("Ui/Audio/SfxMusic/false_knight_roll.wav")
     ;
 
     private final String path;

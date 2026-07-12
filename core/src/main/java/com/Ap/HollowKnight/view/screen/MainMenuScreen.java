@@ -173,52 +173,61 @@ public class MainMenuScreen extends BaseScreen {
         return mainContainer;
     }
 
-    private Table loadGameTable(){
+    private Table loadGameTable() {
         I18NBundle bundle = game.getBundle();
         Table saveMenuTable = new Table();
         saveMenuTable.setFillParent(true);
-        saveMenuTable.center();
+        saveMenuTable.top();
+
         Image topDecor = new Image(AssetLoader.getInstance().getTexture("Ui/TableTop.png"));
         Image bottomDecor = new Image(AssetLoader.getInstance().getTexture("Ui/TableBottom.png"));
-        saveMenuTable.add(topDecor).padTop(20).padBottom(20).row();
-        TextureRegionDrawable blackBackground =new TextureRegionDrawable(getBrightnessTexture());
+
+        saveMenuTable.add(topDecor).padTop(40).padBottom(30).row();
+
+        Table slotsContainer = new Table();
+
         for (int i = 1; i <= 4; i++) {
             final int slotNum = i;
 
-            Table saveCard = new Table();
-            saveCard.setBackground(blackBackground);
-            saveCard.pad(10);
+            Table rowContainer = new Table();
+            rowContainer.padBottom(15).padRight(70);
 
-            TextButton slotBtn = new TextButton("Save Slot Num " + slotNum, buttonStyle);
+            TextButton slotBtn = new TextButton("Save Slot " + slotNum, buttonStyle);
+            slotBtn.getLabel().setFontScale(1.1f);
+
             setupButton(slotBtn, () -> {
                 System.out.println("Loading game from slot " + slotNum + "...");
                 SaveManager.getInstance().setSlotInPending(slotNum);
                 audioManager.stopMusic();
                 ScreenManager.getInstance().removeScreen("GameScreen");
-
                 ScreenManager.getInstance().setScreen("GameScreen");
-
             });
 
             TextButton clearBtn = new TextButton("CLEAR", buttonStyle);
+            clearBtn.getLabel().setFontScale(0.85f);
+
             setupButton(clearBtn, () -> {
                 SaveManager.getInstance().clearSaveSlot(slotNum);
-                slotBtn.setText("Save Slot Num " + slotNum + " (Empty)");
+                slotBtn.setText("Save Slot " + slotNum + " (Empty)");
             });
 
-            saveCard.add(slotBtn).width(500).height(120).padRight(15).align(Align.left);
-            saveCard.add(clearBtn).width(150).height(120).align(Align.right);
+            rowContainer.add(slotBtn).width(480).height(90).padRight(170);
+            rowContainer.add(clearBtn).width(130).height(80).align(Align.center);
 
-            saveMenuTable.add(saveCard).pad(15).center().row();
+            slotsContainer.add(rowContainer).row();
         }
+
+        saveMenuTable.add(slotsContainer).padBottom(30).row();
+
         TextButton backBtn = new TextButton(bundle.get("btn_back"), buttonStyle);
         setupButton(backBtn, () -> {
             saveMenuTable.setVisible(false);
             rootTable.setVisible(true);
         });
 
-        saveMenuTable.add(backBtn).colspan(2).padTop(30).row();
-        saveMenuTable.add(bottomDecor).padBottom(20).row();
+        saveMenuTable.add(backBtn).padBottom(20).row();
+        saveMenuTable.add(bottomDecor).padBottom(40).row();
+
         return saveMenuTable;
     }
 }

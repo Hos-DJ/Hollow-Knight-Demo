@@ -1,11 +1,15 @@
 package com.Ap.HollowKnight.controller;
 
 import com.Ap.HollowKnight.controller.events.GameEvent;
+import com.Ap.HollowKnight.controller.events.GameEventListener;
 import com.Ap.HollowKnight.controller.events.GameEventMessenger;
 import com.Ap.HollowKnight.model.boss.FalseKnight;
+import com.Ap.HollowKnight.model.boss.IdleState;
 import com.Ap.HollowKnight.model.boss.ShockWave;
 import com.Ap.HollowKnight.model.enemy.CrystalGuardian;
 import com.Ap.HollowKnight.model.enemy.EnemyModel;
+import com.Ap.HollowKnight.model.enemy.EnemyState;
+import com.Ap.HollowKnight.model.enemy.Mossfly;
 import com.Ap.HollowKnight.model.level.LevelModel;
 import com.Ap.HollowKnight.model.map.Block;
 import com.Ap.HollowKnight.model.map.BlockType;
@@ -37,6 +41,7 @@ public class GameFlowController {
     private GameEventMessenger messenger = GameEventMessenger.getInstance();
     private Set<EnemyModel> vengedEnemies;
     private boolean isInGreenpath = false;
+    private GameEventListener deathListener;
 
     public GameFlowController(Knight knight, TiledMap map, ArrayList<Block> blocks, GameProcessor gameProcessor,
                               ArrayList<EnemyModel> enemies, Zote zote, GateBlock gateBlock) {
@@ -48,6 +53,15 @@ public class GameFlowController {
         this.zote = zote;
         this.gateBlock = gateBlock;
         this.vengedEnemies = new HashSet<>();
+        deathListener =  (event, data) -> {
+            for(EnemyModel enemy: enemies) {
+                if (!(enemy instanceof FalseKnight)){
+                    enemy.setDead(false);
+                    enemy.resetHp();
+                }
+            }
+        };
+        messenger.addListener(GameEvent.PLAYER_DEATH, deathListener);
     }
 
     public void update(float delta) {
@@ -77,6 +91,8 @@ public class GameFlowController {
     private void handlePlayerInput() {
         if (zote.getStatus() != ZoteState.TALKING) {
             gameProcessor.pollMovement();
+        }if(zote.getStatus() == ZoteState.TALKING){
+            knight.stop();
         }
     }
 
@@ -127,18 +143,33 @@ public class GameFlowController {
 
 
     private void checkZoneTransitionTrigger() {
-        if(paused)return;
-        if (!isInGreenpath && knight.getHitBox().overlaps(gateBlock.getBound())) {
-            isInGreenpath = true;
-            messenger.dispatch(GameEvent.ENTER_GREENPATH, null);
-            for (EnemyModel enemy:enemies) {
-                if(enemy.isDead()&&!(enemy instanceof FalseKnight)){
-                    enemy.setDead(false);
-                }
+        if (paused) return;
+
+        if (knight.getHitBox().overlaps(gateBlock.getBound())) {
+
+            float knightCenterX = knight.getHitBox().x + knight.getHitBox().width / 2f;
+            float gateCenterX = gateBlock.getBound().x + gateBlock.getBound().width / 2f;
+            boolean headingToGreenpath = knightCenterX > gateCenterX;
+
+            if (headingToGreenpath && !isInGreenpath) {
+                isInGreenpath = true;
+                messenger.dispatch(GameEvent.ENTER_GREENPATH, null);
+                respawnBasicEnemies();
+
+            } else if (!headingToGreenpath && isInGreenpath) {
+                isInGreenpath = false;
+                messenger.dispatch(GameEvent.ENTER_CROSSROADS, null);
+                respawnBasicEnemies();
             }
         }
-        else if (isInGreenpath && !knight.getHitBox().overlaps(gateBlock.getBound())) {
-            isInGreenpath = false;
+    }
+
+    private void respawnBasicEnemies() {
+        for (EnemyModel enemy : enemies) {
+            if (enemy.isDead() && !(enemy instanceof FalseKnight)) {
+                enemy.setDead(false);
+                enemy.resetHp();
+            }
         }
     }
 
@@ -152,6 +183,9 @@ public class GameFlowController {
         int damage = knight.getCurrentSpellDamage();
 
         for (EnemyModel enemy : enemies) {
+            if(enemy instanceof Mossfly&& enemy.isDead()){
+                enemy.update(delta,blocks);
+            }
             if (!enemy.isDead()) {
                 enemy.update(delta, blocks);
                 handleVengefulSpiritCollision(spells, enemy, damage);
@@ -194,6 +228,11 @@ public class GameFlowController {
     private void handleFalseKnightMechanics(EnemyModel enemy, float delta) {
         if (enemy instanceof FalseKnight) {
             FalseKnight boss = (FalseKnight) enemy;
+            float distToKnight = Vector2.dst(knight.getPosition().x , knight.getPosition().y , boss.getPosition().x , boss.getPosition().y);
+            if(distToKnight>3000){
+                reachedTheBoss = false;
+            }
+
             List<ShockWave> waves = boss.getShockWaves();
 
             for (int i = waves.size() - 1; i >= 0; i--) {

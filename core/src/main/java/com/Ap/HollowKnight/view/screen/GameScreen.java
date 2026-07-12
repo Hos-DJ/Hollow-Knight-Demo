@@ -6,18 +6,18 @@ import com.Ap.HollowKnight.controller.GameProcessor;
 import com.Ap.HollowKnight.controller.SaveManager;
 import com.Ap.HollowKnight.controller.SettingsController;
 import com.Ap.HollowKnight.controller.events.*;
+import com.Ap.HollowKnight.model.Knight.Knight;
+import com.Ap.HollowKnight.model.Knight.PlayerCondition;
 import com.Ap.HollowKnight.model.boss.FalseKnight;
 import com.Ap.HollowKnight.model.boss.FalseKnightPhase;
 import com.Ap.HollowKnight.model.boss.ShockWave;
+import com.Ap.HollowKnight.model.charms.CollectibleCharm;
 import com.Ap.HollowKnight.model.enemy.*;
 import com.Ap.HollowKnight.model.game.FacingDirection;
 import com.Ap.HollowKnight.model.game.GameCamera;
 import com.Ap.HollowKnight.model.level.LevelModel;
 import com.Ap.HollowKnight.model.map.Block;
 import com.Ap.HollowKnight.model.map.DestructibleWall;
-import com.Ap.HollowKnight.model.charms.CollectibleCharm;
-import com.Ap.HollowKnight.model.Knight.Knight;
-import com.Ap.HollowKnight.model.Knight.PlayerCondition;
 import com.Ap.HollowKnight.model.spells.HowlingWrath;
 import com.Ap.HollowKnight.model.spells.VengefulSprit;
 import com.Ap.HollowKnight.model.zote.Zote;
@@ -38,7 +38,6 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
@@ -93,6 +92,7 @@ public class GameScreen extends BaseScreen {
     private float howlingSpellTime = 0f;
     private boolean wasHowlingActive = false;
     private boolean gameFinished = false;
+    private boolean isInitialized = false;
 
     private FalseKnightPhase previousBossPhase = FalseKnightPhase.IDLE;
     private float bossStateTime = 0f;
@@ -119,46 +119,106 @@ public class GameScreen extends BaseScreen {
     @Override
     public void show() {
         super.show();
-        this.blocks = levelModel.getBlocks();
-        this.batch = new SpriteBatch();
-        this.hudCamera = new OrthographicCamera();
-        hudCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        this.hud = levelModel.getHud();
 
-        Vector2 spawnPoint = new Vector2(levelModel.getSpawnPoint().x, levelModel.getSpawnPoint().y);
-        this.knight = levelModel.getKnight();
-        this.zote = levelModel.getZote();
-        int pendingSlot = SaveManager.getInstance().getSlotInPending();
-        if (pendingSlot != -1) {
-            SaveManager.getInstance().loadGame(pendingSlot);
-        }
-        knight.setOnGround(true);
+        if (!isInitialized) {
+            this.blocks = levelModel.getBlocks();
+            this.batch = new SpriteBatch();
+            this.hudCamera = new OrthographicCamera();
+            hudCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            this.hud = levelModel.getHud();
 
-        this.camera = new GameCamera();
-        this.enemies = levelModel.getEnemies();
-        this.inputController = new GameProcessor(knight, camera, enemies, zote);
-        this.viewport = new ScreenViewport(camera);
-        addInputProcessor(inputController);
-        this.background = new Texture(Gdx.files.internal("background.png"));
-        background.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.ClampToEdge);
-        this.font = loader.getFont("font_24");
+            this.knight = levelModel.getKnight();
+            this.zote = levelModel.getZote();
 
-        this.renderer = new OrthogonalTiledMapRenderer(map);
-        this.shapeRenderer = new ShapeRenderer();
-
-
-        this.gameFlowController = new GameFlowController(this.knight, map, blocks, inputController, enemies, zote, levelModel.getGateBlock());
-        this.glowingDots = new ParticleEffect();
-        glowingDots.load(Gdx.files.internal("particle/glowParticle.p"), Gdx.files.internal("particle"));
-        glowingDots.start();
-
-        pauseModal = new PauseModal(this) {
-            @Override
-            public void onResume() {
-                gameFlowController.setPaused(false);
-                inputController.setPaused(false);
+            int pendingSlot = SaveManager.getInstance().getSlotInPending();
+            if (pendingSlot != -1) {
+                SaveManager.getInstance().loadGame(pendingSlot);
             }
-        };
+            knight.setOnGround(true);
+
+            this.camera = new GameCamera();
+            this.camera.position.set(knight.getPosition().x, knight.getPosition().y, 0);
+            this.camera.update();
+
+            this.enemies = levelModel.getEnemies();
+            this.inputController = new GameProcessor(knight, camera, enemies, zote);
+            this.viewport = new ScreenViewport(camera);
+
+            this.background = new Texture(Gdx.files.internal("background.png"));
+            background.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.ClampToEdge);
+            this.font = loader.getFont("font_24");
+
+            this.renderer = new OrthogonalTiledMapRenderer(map);
+            this.shapeRenderer = new ShapeRenderer();
+
+            this.gameFlowController = new GameFlowController(this.knight, map, blocks, inputController, enemies, zote, levelModel.getGateBlock());
+            this.glowingDots = new ParticleEffect();
+            glowingDots.load(Gdx.files.internal("particle/glowParticle.p"), Gdx.files.internal("particle"));
+            glowingDots.start();
+
+            pauseModal = new PauseModal(this) {
+                @Override
+                public void onResume() {
+                    gameFlowController.setPaused(false);
+                    inputController.setPaused(false);
+                }
+            };
+
+            inventoryModal = new InventoryModal(this) {
+                @Override
+                public void onHide() {
+                    isInventoryOpen = false;
+                    inputController.setInventory(false);
+                }
+            };
+
+            messenger = GameEventMessenger.getInstance();
+            achievementListener = new AchievementListener(this);
+            audioListener = new AudioListener();
+            cameraListener = new CameraListener(camera);
+            statsListener = StatisticsListener.getInstance();
+
+            saveListener = (event, data) -> {
+                int slot = SaveManager.getInstance().getSlotInPending();
+                SaveManager.getInstance().saveGame(slot, isinBossArena, null);
+                SaveManager.getInstance().clearSlotInPending();
+            };
+
+            victoryListener = (event, data) -> {
+                isVictoryTimerRunning = true;
+            };
+
+            bossRoomListener = (event, data) -> {
+                isinBossArena = false;
+                gameFlowController.setReachedTheBoss(false);
+                gameFlowController.resetDoors();
+
+            };
+
+            wallHitListener = (event, data) -> {
+                wallHitTimer = 0f;
+            };
+
+            messenger.dispatch(GameEvent.ENTER_CROSSROADS, null);
+
+            isInitialized = true;
+        }
+
+        addInputProcessor(inputController);
+
+        messenger.addListener(GameEvent.BOSS_DEFEATED, achievementListener);
+        messenger.addListener(GameEvent.ENEMY_KILLED, achievementListener);
+        messenger.addListener(GameEvent.GAME_COMPLETED, achievementListener);
+        messenger.addListener(GameEvent.SECRET_DISCOVERED, achievementListener);
+        messenger.addListener(GameEvent.SPEED_RUN, achievementListener);
+        messenger.addListener(GameEvent.SAVE_GAME, saveListener);
+        addAudioEvents(audioListener);
+        addCameraEvents(cameraListener);
+        messenger.addListener(GameEvent.ENEMY_KILLED, statsListener);
+        messenger.addListener(GameEvent.PLAYER_DEATH, statsListener);
+        messenger.addListener(GameEvent.BOSS_DEFEATED, victoryListener);
+        messenger.addListener(GameEvent.PLAYER_DEATH, bossRoomListener);
+        messenger.addListener(GameEvent.ATTACKING_WALL, wallHitListener);
 
         if (SettingsController.getInstance().isReturnToPauseMenu()) {
             gameFlowController.setPaused(true);
@@ -167,50 +227,6 @@ public class GameScreen extends BaseScreen {
             pauseModal.show();
             SettingsController.getInstance().setReturnToPauseMenu(false);
         }
-        inventoryModal = new InventoryModal(this) {
-            @Override
-            public void onHide() {
-                isInventoryOpen = false;
-                inputController.setInventory(false);
-            }
-        };
-        saveListener = (event, data) -> {
-            SaveManager.getInstance().saveGame(pendingSlot, isinBossArena, null);
-            SaveManager.getInstance().clearSlotInPending();
-        };
-        messenger = GameEventMessenger.getInstance();
-        achievementListener = new AchievementListener(this);
-        messenger.addListener(GameEvent.BOSS_DEFEATED, achievementListener);
-        messenger.addListener(GameEvent.ENEMY_KILLED, achievementListener);
-        messenger.addListener(GameEvent.GAME_COMPLETED, achievementListener);
-        messenger.addListener(GameEvent.SECRET_DISCOVERED, achievementListener);
-        messenger.addListener(GameEvent.SPEED_RUN, achievementListener);
-        messenger.addListener(GameEvent.SAVE_GAME, saveListener);
-        audioListener = new AudioListener();
-        addAudioEvents(audioListener);
-        messenger.dispatch(GameEvent.ENTER_CROSSROADS, null);
-        cameraListener = new CameraListener(camera);
-        addCameraEvents(cameraListener);
-        statsListener = StatisticsListener.getInstance();
-        messenger.addListener(GameEvent.ENEMY_KILLED, statsListener);
-        messenger.addListener(GameEvent.PLAYER_DEATH, statsListener);
-        victoryListener = (event, data) -> {
-            isVictoryTimerRunning = true;
-            System.out.println("Boss defeated! Victory timer started...");
-        };
-        messenger.addListener(GameEvent.BOSS_DEFEATED, victoryListener);
-        bossRoomListener = (event, data) -> {
-            isinBossArena = false;
-            gameFlowController.setReachedTheBoss(false);
-            gameFlowController.resetDoors();
-        };
-        messenger.addListener(GameEvent.PLAYER_DEATH, bossRoomListener);
-
-        wallHitListener = (event, data) -> {
-            wallHitTimer = 0f;
-        };
-        messenger.addListener(GameEvent.ATTACKING_WALL, wallHitListener);
-
     }
 
     @Override
@@ -231,7 +247,6 @@ public class GameScreen extends BaseScreen {
                 inventoryModal.hide();
             }
         }
-
         pauseModal.setVisible(gameFlowController.isPaused());
         boolean currentPaused = gameFlowController.isPaused();
         if (currentPaused && !wasPaused && !gameFinished) {
@@ -297,6 +312,9 @@ public class GameScreen extends BaseScreen {
         isinBossArena = gameFlowController.isReachedTheBoss();
         if (isinBossArena) {
             renderer.render(bossDecor);
+            camera.setBounds(levelModel.getCameraBound());
+        } else {
+            camera.setBounds(null);
         }
 
 
@@ -421,13 +439,19 @@ public class GameScreen extends BaseScreen {
                 effectTimer = dashStateTime;
             } else if (drawEffect == EffectAnimationType.SOUL_BALL || drawEffect == EffectAnimationType.SHADOW_SOUL_BALL) {
                 effectTimer = vengefulSpellTime;
-            } else if (drawEffect == EffectAnimationType.SOUL_SCREAM) {
+            } else if (drawEffect == EffectAnimationType.SOUL_SCREAM || drawEffect == EffectAnimationType.SHADOW_SCREAM) {
                 effectTimer = howlingSpellTime;
             } else {
                 effectTimer = attackStateTime;
             }
             Animation<TextureRegion> effectAnim = loader.getAnimation(drawEffect);
-            TextureRegion currentEffectFrame = effectAnim.getKeyFrame(effectTimer);
+            TextureRegion currentEffectFrame;
+            if (drawEffect == EffectAnimationType.SOUL_SCREAM || drawEffect == EffectAnimationType.SHADOW_SCREAM) {
+                currentEffectFrame = effectAnim.getKeyFrame(effectTimer * 0.5f);
+            } else {
+
+                currentEffectFrame = effectAnim.getKeyFrame(effectTimer);
+            }
 
             handleDrawingEffect(currentEffectFrame, drawEffect, isFacingRight);
         }
@@ -452,7 +476,7 @@ public class GameScreen extends BaseScreen {
                     int frameIndex = Math.min((int) (timerToUse / animation.getFrameDuration()), 2);
                     currentFrame = animation.getKeyFrames()[frameIndex];
                 } else if (cg.getCurrentState() == EnemyState.SHOOTING) {
-                    int frameIndex = 3 ;
+                    int frameIndex = 3;
                     frameIndex = Math.min(frameIndex, animation.getKeyFrames().length - 1);
                     currentFrame = animation.getKeyFrames()[frameIndex];
                 }
@@ -494,14 +518,14 @@ public class GameScreen extends BaseScreen {
                 if (cg.getCurrentState() == EnemyState.SHOOTING) {
                     Animation<TextureRegion> anim = loader.getAnimation(EffectAnimationType.CRYSTAL_LASER);
                     TextureRegion frame;
-                    int frameIndex = 8 ;
+                    int frameIndex = 8;
                     frameIndex = Math.min(frameIndex, anim.getKeyFrames().length - 1);
                     frame = anim.getKeyFrames()[frameIndex];
                     Rectangle laserRect = cg.getLaser();
 
                     batch.draw(
                         frame.getTexture(),
-                        laserRect.x, laserRect.y, laserRect.width, laserRect.height,
+                        laserRect.x, laserRect.y - 20f, laserRect.width, laserRect.height * 1.7f,
                         frame.getRegionX(), frame.getRegionY(), frame.getRegionWidth(), frame.getRegionHeight(),
                         !isFacingRight, false
                     );
@@ -512,574 +536,596 @@ public class GameScreen extends BaseScreen {
     }
 
 
-private void drawZote() {
-    boolean isFacingRight = zote.getFacingDirection() == FacingDirection.RIGHT;
-    ZoteAnimationType drawZote = getZoteAnimationType();
-    Animation<TextureRegion> zoteAnim = loader.getAnimation(drawZote);
-    zoteAnim.setPlayMode(drawZote.getPlayMode());
-    TextureRegion currentZoteFrame = zoteAnim.getKeyFrame(stateTime);
+    private void drawZote() {
+        boolean isFacingRight = zote.getFacingDirection() == FacingDirection.RIGHT;
+        ZoteAnimationType drawZote = getZoteAnimationType();
+        Animation<TextureRegion> zoteAnim = loader.getAnimation(drawZote);
+        zoteAnim.setPlayMode(drawZote.getPlayMode());
+        TextureRegion currentZoteFrame = zoteAnim.getKeyFrame(stateTime);
 
-    batch.draw(
-        currentZoteFrame.getTexture(),
-        zote.getPosition().x,
-        zote.getPosition().y,
-        KNIGHT_SPRITE_WIDTH,
-        KNIGHT_SPRITE_HEIGHT,
-        currentZoteFrame.getRegionX(),
-        currentZoteFrame.getRegionY(),
-        currentZoteFrame.getRegionWidth(),
-        currentZoteFrame.getRegionHeight(),
+        batch.draw(
+            currentZoteFrame.getTexture(),
+            zote.getPosition().x,
+            zote.getPosition().y,
+            KNIGHT_SPRITE_WIDTH,
+            KNIGHT_SPRITE_HEIGHT,
+            currentZoteFrame.getRegionX(),
+            currentZoteFrame.getRegionY(),
+            currentZoteFrame.getRegionWidth(),
+            currentZoteFrame.getRegionHeight(),
 
-        isFacingRight,
-        false
-    );
+            isFacingRight,
+            false
+        );
 
-}
-
-private void handleDrawingEffect(TextureRegion effectFrame, EffectAnimationType type, boolean isFacingRight) {
-    if (effectFrame == null) return;
-
-    float effectX, effectY;
-    float multiplier = 1;
-
-    if (type == EffectAnimationType.SOUL_BALL || type == EffectAnimationType.SHADOW_SOUL_BALL) {
-        VengefulSprit vs = knight.getSpellManager().getVengefulSprit();
-        effectX = vs.getPosition().x - vs.getHitBox().width / 2f;
-        effectY = vs.getPosition().y - vs.getHitBox().height;
-    } else if (type == EffectAnimationType.SOUL_SCREAM) {
-        HowlingWrath hw = knight.getSpellManager().getHowlingWraiths();
-        effectX = hw.getPosition().x - hw.getHitBox().width / 2f;
-        effectY = hw.getPosition().y;
-        multiplier = 2.0f;
-    } else if (type == EffectAnimationType.DASH_EFFECT) {
-        effectX = knight.getHitBox().x + knight.getHitBox().width / 2f - EFFECT_SPRITE_SIZE / 2f;
-        effectX += isFacingRight ? -30f : 30f;
-        effectY = knight.getHitBox().y + knight.getHitBox().height / 2f - EFFECT_SPRITE_SIZE / 2f;
-    } else {
-
-        Rectangle nailHitBox = knight.getNail().getHitBox();
-        effectX = nailHitBox.x + nailHitBox.width / 2f - EFFECT_SPRITE_SIZE / 2f;
-        effectY = nailHitBox.y + nailHitBox.height * 0.75f - EFFECT_SPRITE_SIZE / 2f;
     }
 
-    boolean flipEffectX = (type == EffectAnimationType.DASH_EFFECT ||
-        type == EffectAnimationType.SOUL_BALL ||
-        type == EffectAnimationType.SHADOW_SOUL_BALL) != isFacingRight;
+    private void handleDrawingEffect(TextureRegion effectFrame, EffectAnimationType type, boolean isFacingRight) {
+        if (effectFrame == null) return;
 
-    batch.draw(
-        effectFrame.getTexture(),
-        effectX,
-        effectY,
-        EFFECT_SPRITE_SIZE * multiplier,
-        EFFECT_SPRITE_SIZE * multiplier,
-        effectFrame.getRegionX(),
-        effectFrame.getRegionY(),
-        effectFrame.getRegionWidth(),
-        effectFrame.getRegionHeight(),
-        flipEffectX,
-        false
-    );
-}
+        float effectX, effectY;
+        float multiplier = 1;
 
-public void drawBackGroundImage() {
-    float cameraX = camera.position.x;
-    float cameraY = camera.position.y;
-    float viewW = camera.viewportWidth;
-    float viewH = camera.viewportHeight;
+        if (type == EffectAnimationType.SOUL_BALL || type == EffectAnimationType.SHADOW_SOUL_BALL) {
+            VengefulSprit vs = knight.getSpellManager().getVengefulSprit();
+            effectX = vs.getPosition().x - vs.getHitBox().width / 2f;
+            effectY = vs.getPosition().y - vs.getHitBox().height;
+        } else if (type == EffectAnimationType.SOUL_SCREAM || type == EffectAnimationType.SHADOW_SCREAM) {
+            HowlingWrath hw = knight.getSpellManager().getHowlingWraiths();
+            effectX = hw.getPosition().x - hw.getHitBox().width * 0.7f;
+            effectY = hw.getPosition().y;
+            multiplier = 2.0f;
+        } else if (type == EffectAnimationType.DASH_EFFECT) {
+            effectX = knight.getHitBox().x + knight.getHitBox().width / 2f - EFFECT_SPRITE_SIZE / 2f;
+            effectX += isFacingRight ? -30f : 30f;
+            effectY = knight.getHitBox().y + knight.getHitBox().height / 2f - EFFECT_SPRITE_SIZE / 2f;
+        } else {
 
-    float bgX = cameraX * PARALLAX_FACTOR;
-    float bgY = cameraY * PARALLAX_FACTOR;
+            Rectangle nailHitBox = knight.getNail().getHitBox();
+            effectX = nailHitBox.x + nailHitBox.width / 2f - EFFECT_SPRITE_SIZE / 2f;
+            effectY = nailHitBox.y + nailHitBox.height * 0.75f - EFFECT_SPRITE_SIZE / 2f;
+        }
 
-    float drawX = cameraX - viewW / 2f;
-    float drawY = cameraY - viewH / 2f;
+        boolean flipEffectX = (type == EffectAnimationType.DASH_EFFECT ||
+            type == EffectAnimationType.SOUL_BALL ||
+            type == EffectAnimationType.SHADOW_SOUL_BALL) != isFacingRight;
 
-    int srcX = (int) (bgX) % background.getWidth();
-    int srcY = 0;
+        batch.draw(
+            effectFrame.getTexture(),
+            effectX,
+            effectY,
+            EFFECT_SPRITE_SIZE * multiplier,
+            EFFECT_SPRITE_SIZE * multiplier,
+            effectFrame.getRegionX(),
+            effectFrame.getRegionY(),
+            effectFrame.getRegionWidth(),
+            effectFrame.getRegionHeight(),
+            flipEffectX,
+            false
+        );
+    }
 
-    batch.draw(
-        background,
-        drawX, drawY,
-        viewW, viewH,
-        srcX, srcY,
-        (int) viewW, (int) viewH,
-        false, false
-    );
-}
+    public void drawBackGroundImage() {
+        float cameraX = camera.position.x;
+        float cameraY = camera.position.y;
+        float viewW = camera.viewportWidth;
+        float viewH = camera.viewportHeight;
 
-private void drawZotePrompt() {
-    Zote zote = levelModel.getZote();
-    if (!zote.isPlayerNearby()) return;
+        float bgX = cameraX * PARALLAX_FACTOR;
+        float bgY = cameraY * PARALLAX_FACTOR;
 
-    I18NBundle bundle = game.getBundle();
+        float drawX = cameraX - viewW / 2f;
+        float drawY = cameraY - viewH / 2f;
 
-    float bobbingOffset = (float) Math.sin(Gdx.graphics.getFrameId() * 0.06f) * 4f;
+        int srcX = (int) (bgX) % background.getWidth();
+        int srcY = 0;
 
-    float promptX = zote.getHitBox().x + zote.getHitBox().width / 2f;
-    float promptY = zote.getHitBox().y + zote.getHitBox().height + 20f + bobbingOffset;
+        batch.draw(
+            background,
+            drawX, drawY,
+            viewW, viewH,
+            srcX, srcY,
+            (int) viewW, (int) viewH,
+            false, false
+        );
+    }
 
-    String textToRender = (zote.getStatus() == ZoteState.TALKING) ? zote.showDialogue(bundle) : bundle.get("zote_talk_prompt");
+    private void drawZotePrompt() {
+        Zote zote = levelModel.getZote();
+        if (!zote.isPlayerNearby()) return;
 
-    GlyphLayout layout = new GlyphLayout(font, textToRender);
-    float paddingX = 14f;
-    float paddingY = 8f;
-    float boxWidth = layout.width + (paddingX * 2);
-    float boxHeight = layout.height + (paddingY * 2);
+        I18NBundle bundle = game.getBundle();
 
-    shapeRenderer.setProjectionMatrix(camera.combined);
-    shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-    shapeRenderer.setColor(0f, 0f, 0f, 0.6f);
-    shapeRenderer.rect(promptX - boxWidth / 2f, promptY, boxWidth, boxHeight);
-    shapeRenderer.end();
+        float bobbingOffset = (float) Math.sin(Gdx.graphics.getFrameId() * 0.06f) * 4f;
 
-    batch.setProjectionMatrix(camera.combined);
-    batch.begin();
+        float promptX = zote.getHitBox().x + zote.getHitBox().width / 2f;
+        float promptY = zote.getHitBox().y + zote.getHitBox().height + 20f + bobbingOffset;
 
-    font.draw(batch, layout, promptX - layout.width / 2f, promptY + paddingY + layout.height);
-    batch.end();
+        String textToRender = (zote.getStatus() == ZoteState.TALKING) ? zote.showDialogue(bundle) : bundle.get("zote_talk_prompt");
 
-}
+        GlyphLayout layout = new GlyphLayout(font, textToRender);
+        float paddingX = 14f;
+        float paddingY = 8f;
+        float boxWidth = layout.width + (paddingX * 2);
+        float boxHeight = layout.height + (paddingY * 2);
 
-private void drawCharmPrompt(CollectibleCharm charm) {
-    float bobbingOffset = (float) Math.sin(Gdx.graphics.getFrameId() * 0.06f) * 4f;
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(0f, 0f, 0f, 0.6f);
+        shapeRenderer.rect(promptX - boxWidth / 2f, promptY, boxWidth, boxHeight);
+        shapeRenderer.end();
 
-    float promptX = charm.getHitBox().x + charm.getHitBox().width / 2f;
-    float promptY = charm.getHitBox().y + charm.getHitBox().height + 30f + bobbingOffset;
+        batch.setProjectionMatrix(camera.combined);
+        batch.begin();
 
-    String textToRender = "Press [E] to Pick Up";
+        font.draw(batch, layout, promptX - layout.width / 2f, promptY + paddingY + layout.height);
+        batch.end();
 
-    GlyphLayout layout = new GlyphLayout(font, textToRender);
-    float paddingX = 14f;
-    float paddingY = 8f;
-    float boxWidth = layout.width + (paddingX * 2);
-    float boxHeight = layout.height + (paddingY * 2);
+    }
 
-    shapeRenderer.setProjectionMatrix(camera.combined);
-    shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-    shapeRenderer.setColor(0f, 0f, 0f, 0.6f);
-    shapeRenderer.rect(promptX - boxWidth / 2f, promptY, boxWidth, boxHeight);
-    shapeRenderer.end();
+    private void drawCharmPrompt(CollectibleCharm charm) {
+        float bobbingOffset = (float) Math.sin(Gdx.graphics.getFrameId() * 0.06f) * 4f;
 
-    batch.setProjectionMatrix(camera.combined);
-    batch.begin();
-    font.draw(batch, layout, promptX - layout.width / 2f, promptY + paddingY + layout.height);
-    batch.end();
-}
+        float promptX = charm.getHitBox().x + charm.getHitBox().width / 2f;
+        float promptY = charm.getHitBox().y + charm.getHitBox().height + 30f + bobbingOffset;
 
-private KnightAnimationType getDrawKnight() {
-    switch (knight.getPlayerCondition()) {
-        case MOVING:
-            return KnightAnimationType.KNIGHT_RUN;
-        case DASHING:
-            return (knight.hasSharpShadow()) ? KnightAnimationType.KNIGHT_SHADOW_DASH : KnightAnimationType.KNIGHT_DASH;
-        case FALLING:
-            return KnightAnimationType.KNIGHT_LANDING;
-        case FOCUSING:
-            return KnightAnimationType.KNIGHT_FOCUS;
-        case MONARCHING:
-            return KnightAnimationType.KNIGHT_DOUBLE_JUMP;
-        case JUMPING:
-            return KnightAnimationType.KNIGHT_AIRBORNE;
-        case ATTACKING:
+        String textToRender = "Press [E] to Pick Up";
+
+        GlyphLayout layout = new GlyphLayout(font, textToRender);
+        float paddingX = 14f;
+        float paddingY = 8f;
+        float boxWidth = layout.width + (paddingX * 2);
+        float boxHeight = layout.height + (paddingY * 2);
+
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(0f, 0f, 0f, 0.6f);
+        shapeRenderer.rect(promptX - boxWidth / 2f, promptY, boxWidth, boxHeight);
+        shapeRenderer.end();
+
+        batch.setProjectionMatrix(camera.combined);
+        batch.begin();
+        font.draw(batch, layout, promptX - layout.width / 2f, promptY + paddingY + layout.height);
+        batch.end();
+    }
+
+    private KnightAnimationType getDrawKnight() {
+        switch (knight.getPlayerCondition()) {
+            case DEATH:
+                return KnightAnimationType.KNIGHT_DEATH;
+            case MOVING:
+                return KnightAnimationType.KNIGHT_RUN;
+            case DASHING:
+                return (knight.hasSharpShadow()) ? KnightAnimationType.KNIGHT_SHADOW_DASH : KnightAnimationType.KNIGHT_DASH;
+            case FALLING:
+                return KnightAnimationType.KNIGHT_LANDING;
+            case FOCUSING:
+                return KnightAnimationType.KNIGHT_FOCUS;
+            case MONARCHING:
+                return KnightAnimationType.KNIGHT_DOUBLE_JUMP;
+            case JUMPING:
+                return KnightAnimationType.KNIGHT_AIRBORNE;
+            case ATTACKING:
+                switch (knight.getCurrentAttackDirection()) {
+                    case UP:
+                        return KnightAnimationType.KNIGHT_UP_SLASH;
+                    case DOWN:
+                        return KnightAnimationType.KNIGHT_DOWN_SLASH;
+                    default:
+                        return KnightAnimationType.KNIGHT_SLASH;
+                }
+            case VENGEFUL_SPIRIT:
+                return KnightAnimationType.KNIGHT_FIREBALL_CAST;
+            case HOWLING_WRATH:
+                return KnightAnimationType.KNIGHT_UP_SLASH;
+            case WALL_SLIDING:
+                return KnightAnimationType.KNIGHT_WALL_SLIDE;
+            case WALL_JUMPING:
+                return KnightAnimationType.KNIGHT_WALL_JUMP;
+            default:
+                return KnightAnimationType.KNIGHT_IDLE;
+        }
+    }
+
+
+    private EffectAnimationType getDrawEffect() {
+        if (knight.isDashing()) return EffectAnimationType.DASH_EFFECT;
+        if (knight.getSpellManager().getVengefulSprit().isActive()) {
+            if (knight.hasVoidHeart()) {
+                return EffectAnimationType.SHADOW_SOUL_BALL;
+            } else {
+                return EffectAnimationType.SOUL_BALL;
+            }
+        }
+        if (knight.getSpellManager().getHowlingWraiths().isActive()) {
+            if (knight.hasVoidHeart()) {
+                return EffectAnimationType.SHADOW_SCREAM;
+            } else {
+                return EffectAnimationType.SOUL_SCREAM;
+            }
+        }
+        if (knight.isAttacking()) {
             switch (knight.getCurrentAttackDirection()) {
                 case UP:
-                    return KnightAnimationType.KNIGHT_UP_SLASH;
+                    return EffectAnimationType.NAIL_UP_SLASH;
                 case DOWN:
-                    return KnightAnimationType.KNIGHT_DOWN_SLASH;
+                    return EffectAnimationType.NAIL_DOWN_SLASH;
                 default:
-                    return KnightAnimationType.KNIGHT_SLASH;
+                    return EffectAnimationType.NAIL_SLASH;
             }
-        case VENGEFUL_SPIRIT:
-            return KnightAnimationType.KNIGHT_FIREBALL_CAST;
-        case HOWLING_WRATH:
-            return KnightAnimationType.KNIGHT_UP_SLASH;
-        case WALL_SLIDING:
-            return KnightAnimationType.KNIGHT_WALL_SLIDE;
-        case WALL_JUMPING:
-            return KnightAnimationType.KNIGHT_WALL_JUMP;
-        default:
-            return KnightAnimationType.KNIGHT_IDLE;
-    }
-}
-
-
-private EffectAnimationType getDrawEffect() {
-    if (knight.isDashing()) return EffectAnimationType.DASH_EFFECT;
-    if (knight.getSpellManager().getVengefulSprit().isActive()) {
-        if (knight.hasVoidHeart()) {
-            return EffectAnimationType.SHADOW_SOUL_BALL;
-        } else {
-            return EffectAnimationType.SOUL_BALL;
         }
-    }
-    if (knight.getSpellManager().getHowlingWraiths().isActive()) {
-        return EffectAnimationType.SOUL_SCREAM;
-    }
-    if (knight.isAttacking()) {
-        switch (knight.getCurrentAttackDirection()) {
-            case UP:
-                return EffectAnimationType.NAIL_UP_SLASH;
-            case DOWN:
-                return EffectAnimationType.NAIL_DOWN_SLASH;
-            default:
-                return EffectAnimationType.NAIL_SLASH;
-        }
-    }
-    return null;
-}
-
-private AnimationType getEnemyAnimationType(EnemyModel enemy) {
-    if (enemy instanceof Crawlid) {
-        if (enemy.isDead()) return CrawlidAnimationType.DEATH_LAND;
-
-        switch (enemy.getCurrentState()) {
-            case TURNING:
-                return CrawlidAnimationType.TURN;
-            case PATROLLING:
-            case RUNNING:
-            default:
-                return CrawlidAnimationType.WALK;
-        }
-    } else if (enemy instanceof HuskHornHead) {
-        if (enemy.isDead()) return HuskHornHeadAnimationType.DEATH_LAND;
-
-        switch (enemy.getCurrentState()) {
-            case IDLE:
-                return HuskHornHeadAnimationType.IDLE;
-            case RUNNING:
-                return HuskHornHeadAnimationType.ATTACK;
-            case TURNING:
-                return HuskHornHeadAnimationType.TURN;
-            case PATROLLING:
-            default:
-                return HuskHornHeadAnimationType.WALK;
-        }
-    } else if (enemy instanceof Mossfly) {
-        if (enemy.isDead()) return MossflyAnimationType.DEATH_LAND;
-        switch (enemy.getCurrentState()) {
-            case IDLE:
-                return MossflyAnimationType.SHAKE;
-            case RUNNING:
-                return MossflyAnimationType.FLY;
-        }
-    } else if (enemy instanceof CrystalGuardian) {
-        if (enemy.isDead()) return CrystalGuardianAnimationType.DEATH_LAND;
-
-        return switch (enemy.getCurrentState()) {
-            case IDLE -> CrystalGuardianAnimationType.IDLE;
-            case CHARGING -> CrystalGuardianAnimationType.SHOOT;
-            case RUNNING -> CrystalGuardianAnimationType.RUN;
-            case SHOOTING -> CrystalGuardianAnimationType.SHOOT;
-            case TURNING -> CrystalGuardianAnimationType.TURN;
-            default -> CrystalGuardianAnimationType.IDLE;
-        };
-    } else if (enemy instanceof FalseKnight boss) {
-        return switch (boss.getCurrentPhase()) {
-            case IDLE -> FalseKnightAnimationType.IDLE;
-            case WINDUP -> FalseKnightAnimationType.CHARGING_THE_MACE;
-            case SLAMMING -> FalseKnightAnimationType.MACE_SLAM;
-            case RECOVERING -> FalseKnightAnimationType.RETURN_FROM_ATTACK_TO_IDLE;
-            case RUNNING -> FalseKnightAnimationType.RUN;
-            case JUMPING_ATTACK -> FalseKnightAnimationType.JUMP_ATTACK;
-            case JUMPING_DEFENSE -> FalseKnightAnimationType.JUMP_DEFENSE;
-            case LANDING -> FalseKnightAnimationType.LAND;
-            case GETTING_STUNNED -> FalseKnightAnimationType.GETTING_STUNNED;
-            case STUNNED -> FalseKnightAnimationType.STUNNED_BODY;
-            case WAKING_UP -> FalseKnightAnimationType.STUN_TO_IDLE;
-            case DEAD -> FalseKnightAnimationType.STUNNED_BODY;
-        };
+        return null;
     }
 
-    return null;
-}
+    private AnimationType getEnemyAnimationType(EnemyModel enemy) {
+        if (enemy instanceof Crawlid) {
+            if (enemy.isDead()) return CrawlidAnimationType.DEATH_LAND;
 
-private ZoteAnimationType getZoteAnimationType() {
-    return switch (zote.getStatus()) {
-        case IDLE -> ZoteAnimationType.IDLE;
-        case KNOCKING -> ZoteAnimationType.KNOCK;
-        case ENRAGED -> ZoteAnimationType.ATTACK;
-        case WAKING -> ZoteAnimationType.WAKE;
-        case RESTING -> ZoteAnimationType.REST;
-        case TALKING -> ZoteAnimationType.TALK;
-    };
-}
+            switch (enemy.getCurrentState()) {
+                case TURNING:
+                    return CrawlidAnimationType.TURN;
+                case PATROLLING:
+                case RUNNING:
+                default:
+                    return CrawlidAnimationType.WALK;
+            }
+        } else if (enemy instanceof HuskHornHead) {
+            if (enemy.isDead()) return HuskHornHeadAnimationType.DEATH_LAND;
 
-private void drawDebugHitboxes() {
-    shapeRenderer.setProjectionMatrix(camera.combined);
-    shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-
-    shapeRenderer.setColor(Color.RED);
-    shapeRenderer.rect(knight.getHitBox().x, knight.getHitBox().y, knight.getHitBox().width, knight.getHitBox().height);
-
-    if (knight.isAttacking()) {
-        shapeRenderer.rect(knight.getNail().getHitBox().x, knight.getNail().getHitBox().y, knight.getNail().getHitBox().width, knight.getNail().getHitBox().height);
-    }
-
-    shapeRenderer.setColor(Color.GREEN);
-    for (Block block : blocks) {
-        shapeRenderer.rect(block.getBound().x, block.getBound().y, block.getBound().width, block.getBound().height);
-    }
-    for (EnemyModel enemy : enemies) {
-        shapeRenderer.rect(enemy.getHitBox().x, enemy.getHitBox().y, enemy.getHitBox().width, enemy.getHitBox().height);
-    }
-
-    shapeRenderer.setColor(Color.YELLOW);
-    for (EnemyModel enemy : enemies) {
-        if (enemy instanceof HuskHornHead) {
-            Rectangle fov = ((HuskHornHead) enemy).getFov();
-            shapeRenderer.rect(fov.x, fov.y, fov.width, fov.height);
+            switch (enemy.getCurrentState()) {
+                case IDLE:
+                    return HuskHornHeadAnimationType.IDLE;
+                case RUNNING:
+                    return HuskHornHeadAnimationType.ATTACK;
+                case TURNING:
+                    return HuskHornHeadAnimationType.TURN;
+                case PATROLLING:
+                default:
+                    return HuskHornHeadAnimationType.WALK;
+            }
+        } else if (enemy instanceof Mossfly) {
+            if (enemy.isDead()) return MossflyAnimationType.DEATH_LAND;
+            switch (enemy.getCurrentState()) {
+                case IDLE:
+                    return MossflyAnimationType.SHAKE;
+                case RUNNING:
+                    return MossflyAnimationType.FLY;
+            }
         } else if (enemy instanceof CrystalGuardian) {
-            CrystalGuardian cg = (CrystalGuardian) enemy;
-            shapeRenderer.rect(cg.getFov().x, cg.getFov().y, cg.getFov().width, cg.getFov().height);
+            if (enemy.isDead()) return CrystalGuardianAnimationType.DEATH_LAND;
 
-            shapeRenderer.setColor(Color.MAGENTA);
-            shapeRenderer.rect(cg.getLaser().x, cg.getLaser().y, cg.getLaser().width, cg.getLaser().height);
-
+            return switch (enemy.getCurrentState()) {
+                case IDLE -> CrystalGuardianAnimationType.IDLE;
+                case CHARGING -> CrystalGuardianAnimationType.SHOOT;
+                case RUNNING -> CrystalGuardianAnimationType.RUN;
+                case SHOOTING -> CrystalGuardianAnimationType.SHOOT;
+                case TURNING -> CrystalGuardianAnimationType.TURN;
+                default -> CrystalGuardianAnimationType.IDLE;
+            };
+        } else if (enemy instanceof FalseKnight boss) {
+            return switch (boss.getCurrentPhase()) {
+                case IDLE -> FalseKnightAnimationType.IDLE;
+                case WINDUP -> FalseKnightAnimationType.CHARGING_THE_MACE;
+                case SLAMMING -> FalseKnightAnimationType.MACE_SLAM;
+                case RECOVERING -> FalseKnightAnimationType.RETURN_FROM_ATTACK_TO_IDLE;
+                case RUNNING -> FalseKnightAnimationType.RUN;
+                case JUMPING_ATTACK -> FalseKnightAnimationType.JUMP_ATTACK;
+                case JUMPING_DEFENSE -> FalseKnightAnimationType.JUMP_DEFENSE;
+                case LANDING -> FalseKnightAnimationType.LAND;
+                case GETTING_STUNNED -> FalseKnightAnimationType.GETTING_STUNNED;
+                case STUNNED -> FalseKnightAnimationType.STUNNED_BODY;
+                case WAKING_UP -> FalseKnightAnimationType.STUN_TO_IDLE;
+                case DEAD -> FalseKnightAnimationType.STUNNED_BODY;
+            };
         }
+
+        return null;
     }
 
-    shapeRenderer.setColor(Color.CYAN);
-    for (EnemyModel enemy : enemies) {
-        if (enemy instanceof Mossfly) {
-            Circle patrolCircle = ((Mossfly) enemy).getPatrolCircle();
-            shapeRenderer.circle(patrolCircle.x, patrolCircle.y, patrolCircle.radius);
+    private ZoteAnimationType getZoteAnimationType() {
+        return switch (zote.getStatus()) {
+            case IDLE -> ZoteAnimationType.IDLE;
+            case KNOCKING -> ZoteAnimationType.KNOCK;
+            case ENRAGED -> ZoteAnimationType.ATTACK;
+            case WAKING -> ZoteAnimationType.WAKE;
+            case RESTING -> ZoteAnimationType.REST;
+            case TALKING -> ZoteAnimationType.TALK;
+        };
+    }
+
+    private void drawDebugHitboxes() {
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+
+        shapeRenderer.setColor(Color.RED);
+        shapeRenderer.rect(knight.getHitBox().x, knight.getHitBox().y, knight.getHitBox().width, knight.getHitBox().height);
+
+        if (knight.isAttacking()) {
+            shapeRenderer.rect(knight.getNail().getHitBox().x, knight.getNail().getHitBox().y, knight.getNail().getHitBox().width, knight.getNail().getHitBox().height);
         }
-    }
 
-    shapeRenderer.setColor(Color.ORANGE);
-
-    VengefulSprit vs = knight.getSpellManager().getVengefulSprit();
-    if (vs.isActive()) {
-        shapeRenderer.rect(vs.getHitBox().x, vs.getHitBox().y, vs.getHitBox().width, vs.getHitBox().height);
-    }
-
-    HowlingWrath hw = knight.getSpellManager().getHowlingWraiths();
-    if (hw.isActive()) {
-        shapeRenderer.rect(hw.getHitBox().x, hw.getHitBox().y, hw.getHitBox().width, hw.getHitBox().height);
-    }
-    shapeRenderer.setColor(Color.MAGENTA);
-    for (EnemyModel enemy : enemies) {
-        if (enemy instanceof FalseKnight) {
-            FalseKnight boss = (FalseKnight) enemy;
-            shapeRenderer.rect(
-                boss.getMaceHitBox().x,
-                boss.getMaceHitBox().y,
-                boss.getMaceHitBox().width,
-                boss.getMaceHitBox().height
-            );
+        shapeRenderer.setColor(Color.GREEN);
+        for (Block block : blocks) {
+            shapeRenderer.rect(block.getBound().x, block.getBound().y, block.getBound().width, block.getBound().height);
         }
-    }
-    shapeRenderer.setColor(Color.ORANGE);
-    for (EnemyModel enemy : enemies) {
-        if (enemy instanceof FalseKnight) {
-            FalseKnight boss = (FalseKnight) enemy;
-            for (ShockWave wave : boss.getShockWaves()) {
-                shapeRenderer.rect(wave.getHitBox().x, wave.getHitBox().y, wave.getHitBox().width, wave.getHitBox().height);
+        for (EnemyModel enemy : enemies) {
+            shapeRenderer.rect(enemy.getHitBox().x, enemy.getHitBox().y, enemy.getHitBox().width, enemy.getHitBox().height);
+        }
+
+        shapeRenderer.setColor(Color.YELLOW);
+        for (EnemyModel enemy : enemies) {
+            if (enemy instanceof HuskHornHead) {
+                Rectangle fov = ((HuskHornHead) enemy).getFov();
+                shapeRenderer.rect(fov.x, fov.y, fov.width, fov.height);
+            } else if (enemy instanceof CrystalGuardian) {
+                CrystalGuardian cg = (CrystalGuardian) enemy;
+                shapeRenderer.rect(cg.getFov().x, cg.getFov().y, cg.getFov().width, cg.getFov().height);
+
+                shapeRenderer.setColor(Color.MAGENTA);
+                shapeRenderer.rect(cg.getLaser().x, cg.getLaser().y, cg.getLaser().width, cg.getLaser().height);
+
             }
         }
-    }
-    shapeRenderer.end();
-}
 
-private void drawWallHitEffect(float delta) {
-    if (wallHitTimer >= 0) {
-        wallHitTimer += delta;
+        shapeRenderer.setColor(Color.CYAN);
+        for (EnemyModel enemy : enemies) {
+            if (enemy instanceof Mossfly) {
+                Circle patrolCircle = ((Mossfly) enemy).getPatrolCircle();
+                shapeRenderer.circle(patrolCircle.x, patrolCircle.y, patrolCircle.radius);
+            }
+        }
 
-        EffectAnimationType hitAnimType = EffectAnimationType.DASH_EFFECT;
-        Animation<TextureRegion> anim = loader.getAnimation(hitAnimType);
+        shapeRenderer.setColor(Color.ORANGE);
 
-        if (anim.isAnimationFinished(wallHitTimer)) {
-            wallHitTimer = -1f;
-        } else {
-            TextureRegion frame = anim.getKeyFrame(wallHitTimer);
-            DestructibleWall wall = levelModel.getDestructibleWall();
+        VengefulSprit vs = knight.getSpellManager().getVengefulSprit();
+        if (vs.isActive()) {
+            shapeRenderer.rect(vs.getHitBox().x, vs.getHitBox().y, vs.getHitBox().width, vs.getHitBox().height);
+        }
 
-            if (wall != null && !wall.isDestroyed()) {
-                float effectX = wall.getBound().x - (EFFECT_SPRITE_SIZE / 2f);
-                float effectY = wall.getBound().y + (wall.getBound().height / 2f) - (EFFECT_SPRITE_SIZE / 2f);
-                effectY += (float) (Math.random() * 40 - 20);
-
-                batch.draw(
-                    frame.getTexture(),
-                    effectX,
-                    effectY,
-                    EFFECT_SPRITE_SIZE,
-                    EFFECT_SPRITE_SIZE,
-                    frame.getRegionX(),
-                    frame.getRegionY(),
-                    frame.getRegionWidth(),
-                    frame.getRegionHeight(),
-                    false,
-                    false
+        HowlingWrath hw = knight.getSpellManager().getHowlingWraiths();
+        if (hw.isActive()) {
+            shapeRenderer.rect(hw.getHitBox().x, hw.getHitBox().y, hw.getHitBox().width, hw.getHitBox().height);
+        }
+        shapeRenderer.setColor(Color.MAGENTA);
+        for (EnemyModel enemy : enemies) {
+            if (enemy instanceof FalseKnight) {
+                FalseKnight boss = (FalseKnight) enemy;
+                shapeRenderer.rect(
+                    boss.getMaceHitBox().x,
+                    boss.getMaceHitBox().y,
+                    boss.getMaceHitBox().width,
+                    boss.getMaceHitBox().height
                 );
             }
         }
+        shapeRenderer.setColor(Color.ORANGE);
+        for (EnemyModel enemy : enemies) {
+            if (enemy instanceof FalseKnight) {
+                FalseKnight boss = (FalseKnight) enemy;
+                for (ShockWave wave : boss.getShockWaves()) {
+                    shapeRenderer.rect(wave.getHitBox().x, wave.getHitBox().y, wave.getHitBox().width, wave.getHitBox().height);
+                }
+            }
+        }
+        shapeRenderer.end();
     }
-}
 
-private void drawBossShockWaves() {
-    for (EnemyModel enemy : enemies) {
-        if (enemy instanceof FalseKnight) {
-            FalseKnight boss = (FalseKnight) enemy;
+    private void drawWallHitEffect(float delta) {
+        if (wallHitTimer >= 0) {
+            wallHitTimer += delta;
 
-            EffectAnimationType shockWaveAnimType = EffectAnimationType.SHOCK_WAVE;
-            Animation<TextureRegion> anim = loader.getAnimation(shockWaveAnimType);
-            anim.setPlayMode(Animation.PlayMode.LOOP);
+            EffectAnimationType hitAnimType = EffectAnimationType.DASH_EFFECT;
+            Animation<TextureRegion> anim = loader.getAnimation(hitAnimType);
 
-            TextureRegion frame = anim.getKeyFrame(stateTime);
+            if (anim.isAnimationFinished(wallHitTimer)) {
+                wallHitTimer = -1f;
+            } else {
+                TextureRegion frame = anim.getKeyFrame(wallHitTimer);
+                DestructibleWall wall = levelModel.getDestructibleWall();
 
-            for (ShockWave wave : boss.getShockWaves()) {
-                if (wave.isActive()) {
-                    boolean isFacingRight = wave.getFacingDirection() == FacingDirection.RIGHT;
-
-                    float drawWidth = wave.getHitBox().width * 2.0f;
-                    float drawHeight = wave.getHitBox().height * 1.2f;
-
-                    float drawX = wave.getHitBox().x - (drawWidth - wave.getHitBox().width) / 2f;
-                    float drawY = wave.getHitBox().y;
+                if (wall != null && !wall.isDestroyed()) {
+                    float effectX = wall.getBound().x - (EFFECT_SPRITE_SIZE / 2f);
+                    float effectY = wall.getBound().y + (wall.getBound().height / 2f) - (EFFECT_SPRITE_SIZE / 2f);
+                    effectY += (float) (Math.random() * 40 - 20);
 
                     batch.draw(
                         frame.getTexture(),
-                        drawX,
-                        drawY,
-                        drawWidth,
-                        drawHeight,
+                        effectX,
+                        effectY,
+                        EFFECT_SPRITE_SIZE,
+                        EFFECT_SPRITE_SIZE,
                         frame.getRegionX(),
                         frame.getRegionY(),
                         frame.getRegionWidth(),
                         frame.getRegionHeight(),
-                        !isFacingRight,
+                        false,
                         false
                     );
                 }
             }
         }
     }
-}
 
-private void addAudioEvents(AudioListener audioListener) {
-    messenger.addListener(GameEvent.ENTER_CROSSROADS, audioListener);
-    messenger.addListener(GameEvent.ENTER_GREENPATH, audioListener);
-    messenger.addListener(GameEvent.ENTERED_BOSS_ROOM, audioListener);
-    messenger.addListener(GameEvent.BOSS_DEFEATED, audioListener);
+    private void drawBossShockWaves() {
+        for (EnemyModel enemy : enemies) {
+            if (enemy instanceof FalseKnight) {
+                FalseKnight boss = (FalseKnight) enemy;
 
-    messenger.addListener(GameEvent.PLAYER_STARTED_WALKING, audioListener);
-    messenger.addListener(GameEvent.PLAYER_ENDED_WALKING, audioListener);
-    messenger.addListener(GameEvent.PLAYER_FOCUS_START, audioListener);
-    messenger.addListener(GameEvent.PLAYER_FOCUS_END, audioListener);
-    messenger.addListener(GameEvent.PLAYER_STARTED_WALL_SLIDING, audioListener);
-    messenger.addListener(GameEvent.PLAYER_ENDED_WALL_SLIDING, audioListener);
-    messenger.addListener(GameEvent.ZOTE_STARTED_ATTACKING, audioListener);
-    messenger.addListener(GameEvent.ZOTE_ENDED_ATTACKING, audioListener);
-    messenger.dispatch(GameEvent.ENTER_CROSSROADS, null);
-    messenger.addListener(GameEvent.PLAYER_DASH, audioListener);
-    messenger.addListener(GameEvent.PLAYER_MONARCH_WINGS, audioListener);
-    messenger.addListener(GameEvent.PLAYER_ATTACKING, audioListener);
-    messenger.addListener(GameEvent.POGO_SPIKE, audioListener);
-    messenger.addListener(GameEvent.PLAYER_VENGEFUL, audioListener);
-    messenger.addListener(GameEvent.PLAYER_HOWLING, audioListener);
+                EffectAnimationType shockWaveAnimType = EffectAnimationType.SHOCK_WAVE;
+                Animation<TextureRegion> anim = loader.getAnimation(shockWaveAnimType);
+                anim.setPlayMode(Animation.PlayMode.LOOP);
 
-    messenger.addListener(GameEvent.ATTACKING_WALL, audioListener);
-    messenger.addListener(GameEvent.WALL_DESTROYED, audioListener);
+                TextureRegion frame = anim.getKeyFrame(stateTime);
 
-    messenger.addListener(GameEvent.ENEMY_HURT, audioListener);
-    messenger.addListener(GameEvent.ENEMY_KILLED, audioListener);
-    messenger.addListener(GameEvent.PLAYER_HURT, audioListener);
-    messenger.addListener(GameEvent.PLAYER_DOUBLE_HURT, audioListener);
-    messenger.addListener(GameEvent.PLAYER_DEATH, audioListener);
-    messenger.addListener(GameEvent.PLAYER_SOUL_GAIN, audioListener);
-    messenger.addListener(GameEvent.SLAM_MACE, audioListener);
+                for (ShockWave wave : boss.getShockWaves()) {
+                    if (wave.isActive()) {
+                        boolean isFacingRight = wave.getFacingDirection() == FacingDirection.RIGHT;
 
-    messenger.addListener(GameEvent.ZOTE_IS_TALKING, audioListener);
-}
+                        float drawWidth = wave.getHitBox().width * 2.0f;
+                        float drawHeight = wave.getHitBox().height * 1.2f;
 
-public void addCameraEvents(CameraListener cameraListener) {
-    messenger.addListener(GameEvent.PLAYER_HURT, cameraListener);
-    messenger.addListener(GameEvent.PLAYER_DOUBLE_HURT, cameraListener);
-    messenger.addListener(GameEvent.SLAM_MACE, cameraListener);
+                        float drawX = wave.getHitBox().x - (drawWidth - wave.getHitBox().width) / 2f;
+                        float drawY = wave.getHitBox().y;
 
-    messenger.addListener(GameEvent.PLAYER_VENGEFUL, cameraListener);
-    messenger.addListener(GameEvent.PLAYER_HOWLING, cameraListener);
-}
-
-@Override
-public void resize(int width, int height) {
-    super.resize(width, height);
-    camera.setToOrtho(false, width, height);
-    hudCamera.setToOrtho(false, width, height);
-}
-
-public boolean isSecretRevealed() {
-    return secretRevealed;
-}
-
-public void setSecretRevealed(boolean secretRevealed) {
-    this.secretRevealed = secretRevealed;
-}
-
-public boolean isIsinBossArena() {
-    return isinBossArena;
-}
-
-public void setIsinBossArena(boolean isinBossArena) {
-    this.isinBossArena = isinBossArena;
-}
-
-@Override
-public void hide() {
-    super.hide();
-    isVictoryTimerRunning = false;
-    victoryTimer = 10.0f;
-    if (messenger != null) {
-        messenger.removeListener(GameEvent.BOSS_DEFEATED, achievementListener);
-        messenger.removeListener(GameEvent.ENEMY_KILLED, achievementListener);
-        messenger.removeListener(GameEvent.GAME_COMPLETED, achievementListener);
-        messenger.removeListener(GameEvent.SECRET_DISCOVERED, achievementListener);
-
-        messenger.removeListener(GameEvent.SAVE_GAME, saveListener);
-
-        messenger.removeListener(GameEvent.ENTER_CROSSROADS, audioListener);
-        messenger.removeListener(GameEvent.ENTER_GREENPATH, audioListener);
-        messenger.removeListener(GameEvent.ENTERED_BOSS_ROOM, audioListener);
-        messenger.removeListener(GameEvent.BOSS_DEFEATED, audioListener);
-        messenger.removeListener(GameEvent.PLAYER_STARTED_WALKING, audioListener);
-        messenger.removeListener(GameEvent.PLAYER_ENDED_WALKING, audioListener);
-        messenger.removeListener(GameEvent.PLAYER_FOCUS_START, audioListener);
-        messenger.removeListener(GameEvent.PLAYER_FOCUS_END, audioListener);
-        messenger.removeListener(GameEvent.PLAYER_STARTED_WALL_SLIDING, audioListener);
-        messenger.removeListener(GameEvent.PLAYER_ENDED_WALL_SLIDING, audioListener);
-        messenger.removeListener(GameEvent.ZOTE_STARTED_ATTACKING, audioListener);
-        messenger.removeListener(GameEvent.ZOTE_ENDED_ATTACKING, audioListener);
-        messenger.removeListener(GameEvent.PLAYER_DASH, audioListener);
-        messenger.removeListener(GameEvent.PLAYER_MONARCH_WINGS, audioListener);
-        messenger.removeListener(GameEvent.PLAYER_ATTACKING, audioListener);
-        messenger.removeListener(GameEvent.POGO_SPIKE, audioListener);
-        messenger.removeListener(GameEvent.PLAYER_VENGEFUL, audioListener);
-        messenger.removeListener(GameEvent.PLAYER_HOWLING, audioListener);
-        messenger.removeListener(GameEvent.ATTACKING_WALL, audioListener);
-        messenger.removeListener(GameEvent.WALL_DESTROYED, audioListener);
-        messenger.removeListener(GameEvent.ENEMY_HURT, audioListener);
-        messenger.removeListener(GameEvent.ENEMY_KILLED, audioListener);
-        messenger.removeListener(GameEvent.PLAYER_HURT, audioListener);
-        messenger.removeListener(GameEvent.PLAYER_DOUBLE_HURT, audioListener);
-        messenger.removeListener(GameEvent.PLAYER_DEATH, audioListener);
-        messenger.removeListener(GameEvent.PLAYER_SOUL_GAIN, audioListener);
-        messenger.removeListener(GameEvent.SLAM_MACE, audioListener);
-        messenger.removeListener(GameEvent.ZOTE_IS_TALKING, audioListener);
-
-        messenger.removeListener(GameEvent.PLAYER_HURT, cameraListener);
-        messenger.removeListener(GameEvent.PLAYER_DOUBLE_HURT, cameraListener);
-        messenger.removeListener(GameEvent.SLAM_MACE, cameraListener);
-        messenger.removeListener(GameEvent.PLAYER_VENGEFUL, cameraListener);
-        messenger.removeListener(GameEvent.PLAYER_HOWLING, cameraListener);
-
-
-        messenger.removeListener(GameEvent.ENEMY_KILLED, statsListener);
-        messenger.removeListener(GameEvent.PLAYER_DEATH, statsListener);
-
-        messenger.removeListener(GameEvent.BOSS_DEFEATED, victoryListener);
-
-        messenger.removeListener(GameEvent.PLAYER_DEATH, bossRoomListener);
-        messenger.removeListener(GameEvent.ATTACKING_WALL, wallHitListener);
+                        batch.draw(
+                            frame.getTexture(),
+                            drawX,
+                            drawY,
+                            drawWidth,
+                            drawHeight,
+                            frame.getRegionX(),
+                            frame.getRegionY(),
+                            frame.getRegionWidth(),
+                            frame.getRegionHeight(),
+                            !isFacingRight,
+                            false
+                        );
+                    }
+                }
+            }
+        }
     }
-}
+
+    private void addAudioEvents(AudioListener audioListener) {
+        messenger.addListener(GameEvent.ENTER_CROSSROADS, audioListener);
+        messenger.addListener(GameEvent.ENTER_GREENPATH, audioListener);
+        messenger.addListener(GameEvent.ENTERED_BOSS_ROOM, audioListener);
+        messenger.addListener(GameEvent.BOSS_DEFEATED, audioListener);
+
+        messenger.addListener(GameEvent.PLAYER_STARTED_WALKING, audioListener);
+        messenger.addListener(GameEvent.PLAYER_ENDED_WALKING, audioListener);
+        messenger.addListener(GameEvent.PLAYER_FOCUS_START, audioListener);
+        messenger.addListener(GameEvent.PLAYER_FOCUS_END, audioListener);
+        messenger.addListener(GameEvent.PLAYER_STARTED_WALL_SLIDING, audioListener);
+        messenger.addListener(GameEvent.PLAYER_ENDED_WALL_SLIDING, audioListener);
+        messenger.addListener(GameEvent.ZOTE_STARTED_ATTACKING, audioListener);
+        messenger.addListener(GameEvent.ZOTE_ENDED_ATTACKING, audioListener);
+        messenger.dispatch(GameEvent.ENTER_CROSSROADS, null);
+        messenger.addListener(GameEvent.PLAYER_DASH, audioListener);
+        messenger.addListener(GameEvent.PLAYER_MONARCH_WINGS, audioListener);
+        messenger.addListener(GameEvent.PLAYER_ATTACKING, audioListener);
+        messenger.addListener(GameEvent.POGO_SPIKE, audioListener);
+        messenger.addListener(GameEvent.PLAYER_VENGEFUL, audioListener);
+        messenger.addListener(GameEvent.PLAYER_HOWLING, audioListener);
+
+        messenger.addListener(GameEvent.ATTACKING_WALL, audioListener);
+        messenger.addListener(GameEvent.WALL_DESTROYED, audioListener);
+
+        messenger.addListener(GameEvent.ENEMY_HURT, audioListener);
+        messenger.addListener(GameEvent.ENEMY_KILLED, audioListener);
+        messenger.addListener(GameEvent.PLAYER_HURT, audioListener);
+        messenger.addListener(GameEvent.PLAYER_DOUBLE_HURT, audioListener);
+        messenger.addListener(GameEvent.PLAYER_DEATH, audioListener);
+        messenger.addListener(GameEvent.PLAYER_SOUL_GAIN, audioListener);
+
+        messenger.addListener(GameEvent.ZOTE_IS_TALKING, audioListener);
+
+        messenger.addListener(GameEvent.SLAM_MACE, audioListener);
+        messenger.addListener(GameEvent.BOSS_JUMP, audioListener);
+        messenger.addListener(GameEvent.BOSS_LAND, audioListener);
+        messenger.addListener(GameEvent.BOSS_STUN, audioListener);
+        messenger.addListener(GameEvent.POWER_SLAM_MACE, audioListener);
+
+        messenger.addListener(GameEvent.BOSS_BEGIN_RUNNING, audioListener);
+        messenger.addListener(GameEvent.BOSS_ENDED_RUNNING, audioListener);
+    }
+
+    public void addCameraEvents(CameraListener cameraListener) {
+        messenger.addListener(GameEvent.PLAYER_HURT, cameraListener);
+        messenger.addListener(GameEvent.PLAYER_DOUBLE_HURT, cameraListener);
+        messenger.addListener(GameEvent.SLAM_MACE, cameraListener);
+
+        messenger.addListener(GameEvent.PLAYER_VENGEFUL, cameraListener);
+        messenger.addListener(GameEvent.PLAYER_HOWLING, cameraListener);
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        super.resize(width, height);
+        camera.setToOrtho(false, width, height);
+        hudCamera.setToOrtho(false, width, height);
+    }
+
+    public boolean isSecretRevealed() {
+        return secretRevealed;
+    }
+
+    public void setSecretRevealed(boolean secretRevealed) {
+        this.secretRevealed = secretRevealed;
+    }
+
+    public boolean isIsinBossArena() {
+        return isinBossArena;
+    }
+
+    public void setIsinBossArena(boolean isinBossArena) {
+        this.isinBossArena = isinBossArena;
+    }
+
+    @Override
+    public void hide() {
+        super.hide();
+        isVictoryTimerRunning = false;
+        victoryTimer = 10.0f;
+        if (messenger != null) {
+            messenger.removeListener(GameEvent.BOSS_DEFEATED, achievementListener);
+            messenger.removeListener(GameEvent.ENEMY_KILLED, achievementListener);
+            messenger.removeListener(GameEvent.GAME_COMPLETED, achievementListener);
+            messenger.removeListener(GameEvent.SECRET_DISCOVERED, achievementListener);
+
+            messenger.removeListener(GameEvent.SAVE_GAME, saveListener);
+
+            messenger.removeListener(GameEvent.ENTER_CROSSROADS, audioListener);
+            messenger.removeListener(GameEvent.ENTER_GREENPATH, audioListener);
+            messenger.removeListener(GameEvent.ENTERED_BOSS_ROOM, audioListener);
+            messenger.removeListener(GameEvent.BOSS_DEFEATED, audioListener);
+            messenger.removeListener(GameEvent.PLAYER_STARTED_WALKING, audioListener);
+            messenger.removeListener(GameEvent.PLAYER_ENDED_WALKING, audioListener);
+            messenger.removeListener(GameEvent.PLAYER_FOCUS_START, audioListener);
+            messenger.removeListener(GameEvent.PLAYER_FOCUS_END, audioListener);
+            messenger.removeListener(GameEvent.PLAYER_STARTED_WALL_SLIDING, audioListener);
+            messenger.removeListener(GameEvent.PLAYER_ENDED_WALL_SLIDING, audioListener);
+            messenger.removeListener(GameEvent.ZOTE_STARTED_ATTACKING, audioListener);
+            messenger.removeListener(GameEvent.ZOTE_ENDED_ATTACKING, audioListener);
+            messenger.removeListener(GameEvent.PLAYER_DASH, audioListener);
+            messenger.removeListener(GameEvent.PLAYER_MONARCH_WINGS, audioListener);
+            messenger.removeListener(GameEvent.PLAYER_ATTACKING, audioListener);
+            messenger.removeListener(GameEvent.POGO_SPIKE, audioListener);
+            messenger.removeListener(GameEvent.PLAYER_VENGEFUL, audioListener);
+            messenger.removeListener(GameEvent.PLAYER_HOWLING, audioListener);
+            messenger.removeListener(GameEvent.ATTACKING_WALL, audioListener);
+            messenger.removeListener(GameEvent.WALL_DESTROYED, audioListener);
+            messenger.removeListener(GameEvent.ENEMY_HURT, audioListener);
+            messenger.removeListener(GameEvent.ENEMY_KILLED, audioListener);
+            messenger.removeListener(GameEvent.PLAYER_HURT, audioListener);
+            messenger.removeListener(GameEvent.PLAYER_DOUBLE_HURT, audioListener);
+            messenger.removeListener(GameEvent.PLAYER_DEATH, audioListener);
+            messenger.removeListener(GameEvent.PLAYER_SOUL_GAIN, audioListener);
+            messenger.removeListener(GameEvent.ZOTE_IS_TALKING, audioListener);
+
+            messenger.removeListener(GameEvent.PLAYER_HURT, cameraListener);
+            messenger.removeListener(GameEvent.PLAYER_DOUBLE_HURT, cameraListener);
+            messenger.removeListener(GameEvent.SLAM_MACE, cameraListener);
+            messenger.removeListener(GameEvent.PLAYER_VENGEFUL, cameraListener);
+            messenger.removeListener(GameEvent.PLAYER_HOWLING, cameraListener);
+
+
+            messenger.removeListener(GameEvent.ENEMY_KILLED, statsListener);
+            messenger.removeListener(GameEvent.PLAYER_DEATH, statsListener);
+
+            messenger.removeListener(GameEvent.BOSS_DEFEATED, victoryListener);
+
+            messenger.removeListener(GameEvent.PLAYER_DEATH, bossRoomListener);
+            messenger.removeListener(GameEvent.ATTACKING_WALL, wallHitListener);
+
+            messenger.removeListener(GameEvent.SLAM_MACE, audioListener);
+            messenger.removeListener(GameEvent.BOSS_JUMP, audioListener);
+            messenger.removeListener(GameEvent.BOSS_LAND, audioListener);
+            messenger.removeListener(GameEvent.BOSS_STUN, audioListener);
+            messenger.removeListener(GameEvent.POWER_SLAM_MACE, audioListener);
+
+            messenger.removeListener(GameEvent.BOSS_BEGIN_RUNNING, audioListener);
+            messenger.removeListener(GameEvent.BOSS_ENDED_RUNNING, audioListener);
+        }
+    }
 }

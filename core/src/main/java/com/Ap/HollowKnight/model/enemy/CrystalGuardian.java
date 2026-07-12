@@ -13,7 +13,7 @@ public class CrystalGuardian extends EnemyModel {
     private final Rectangle fov = new Rectangle();
     private final Rectangle laser = new Rectangle();
 
-    private static final float LASER_WIDTH = 700f;
+    private static final float LASER_WIDTH = 1200f;
     private static final float LASER_HEIGHT = 40f;
     private static final float FOV_WIDTH = 300f;
     private static final float FOV_HEIGHT = 80f;
@@ -21,7 +21,7 @@ public class CrystalGuardian extends EnemyModel {
     private static final float CHARGE_WIND_UP = 2.0f;
     private static final float LASER_DURATION = 2.25f;
     private static final float ENRAGE_DURATION = 4.0f;
-    private static final float LASER_OFFSET_Y = 20f;
+    private static final float LASER_OFFSET_Y = 45f;
     private static final float TURN_DELAY_DURATION = 0.3f;
 
     private float chargeTimer = 0f;
@@ -138,7 +138,7 @@ public class CrystalGuardian extends EnemyModel {
     }
 
     @Override
-    protected void resetHp() {
+    public void resetHp() {
         this.setHp(60);
     }
 

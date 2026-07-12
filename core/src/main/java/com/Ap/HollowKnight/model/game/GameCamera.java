@@ -70,14 +70,26 @@ public class GameCamera extends OrthographicCamera {
         this.position.y += (targetY - this.position.y) * lerp;
 
         if (bounds != null) {
-            float halfWidth = bounds.width / 2f;
-            float halfHeight = bounds.height / 2f;
+            float halfWidth = this.viewportWidth / 2f;
+            float halfHeight = this.viewportHeight / 2f;
 
-            position.x = Math.clamp(position.x,
-                bounds.x + halfWidth, bounds.x + bounds.width - halfWidth);
+            float minX = bounds.x + halfWidth;
+            float maxX = bounds.x + bounds.width - halfWidth;
 
-            position.y = Math.clamp(position.y,
-                bounds.y + halfHeight, bounds.y + bounds.height - halfHeight);
+            if (minX <= maxX) {
+                position.x = Math.clamp(position.x, minX, maxX);
+            } else {
+                position.x = bounds.x + bounds.width / 2f;
+            }
+
+            float minY = bounds.y + halfHeight;
+            float maxY = bounds.y + bounds.height - halfHeight;
+
+            if (minY <= maxY) {
+                position.y = Math.clamp(position.y, minY, maxY);
+            } else {
+                position.y = bounds.y + bounds.height / 2f;
+            }
         }
         this.shaker(delta);
         this.update();

@@ -9,7 +9,7 @@ import java.util.Random;
 
 public class IdleState implements BossState{
     private float timer  = 0f;
-    private static float IDLE_DURATION = 1f;
+    private static float IDLE_DURATION = 0.75f;
     private Random random = new Random();
     boolean knightIsInArea = false;
 
@@ -30,6 +30,9 @@ public class IdleState implements BossState{
     @Override
     public void enter(FalseKnight boss, Knight knight) {
         boss.getVelocity().x = 0f;
+        if(boss.isPhaseTwo()){
+            IDLE_DURATION  = 0.375f;
+        }
     }
 
     private void nextMove(FalseKnight boss, Knight knight){
@@ -38,14 +41,15 @@ public class IdleState implements BossState{
         BossState nextState;
         if(distance <250f){
             knightIsInArea = true;
-            nextState= (random.nextInt(100)>=30)? ((boss.isPhaseTwo()? new PowerMaceSlamState():new MaceSlamState()))
+            nextState= (random.nextInt(100)>=30)? new MaceSlamState()
                 : new DefensiveLeapState();
         }else if (fisa_distance>1700){
             nextState = new IdleState();
         }
         else{
             knightIsInArea = true;
-            nextState =(random.nextInt(100)>=50)? new ChargeRunState() : new OffensiveLeapState();
+            nextState =(random.nextInt(100)>=50)? new ChargeRunState() :
+                (boss.isPhaseTwo())? new PowerMaceSlamState(): new OffensiveLeapState();
         }
         if(boss.getPreviousState()!=null&& boss.getPreviousState().equals(nextState.getClass())&&knightIsInArea){
             boss.setSpamCount(boss.getSpamCount()+1);

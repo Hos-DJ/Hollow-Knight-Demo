@@ -95,6 +95,8 @@ public class SaveManager {
                 knight.getPosition().set(rs.getFloat("player_x"), rs.getFloat("player_y"));
                 knight.setCurrentMasks(rs.getInt("masks"));
                 knight.setCurrentSoul(rs.getInt("soul"));
+                knight.getHud().masksAndSoulAfterLoad(knight.getCurrentSoul(),knight.getCurrentMasks());
+
 
                 if (rs.getBoolean("boss_dead")) {
                     levelModel.getEnemies().removeIf(enemy -> enemy instanceof FalseKnight);

@@ -44,6 +44,10 @@ public class GameProcessor extends InputAdapter {
         if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             paused = true;
         }
+        else if (knight.getPlayerCondition() == PlayerCondition.DEATH)
+        {
+            return true;
+        }
         GameKeypad key = GameKeypad.fromKeycode(keycode);
         if (key == GameKeypad.INVENTORY) {
             if (!paused) {
@@ -159,7 +163,7 @@ public class GameProcessor extends InputAdapter {
     @Override
     public boolean keyUp(int keycode) {
         GameKeypad key = GameKeypad.fromKeycode(keycode);
-        if(isInventory){
+        if(isInventory || knight.getPlayerCondition() == PlayerCondition.DEATH){
             return true;
         }
         if (key == null) {

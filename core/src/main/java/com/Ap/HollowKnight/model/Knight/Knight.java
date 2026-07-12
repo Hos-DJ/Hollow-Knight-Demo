@@ -51,7 +51,7 @@ public class Knight extends PhysicalPart {
     private final float DASH_SPEED_MULTIPLIER = 1.2f;
     private final float ATTACK_COOLDOWN_MULTIPLIER = 0.5f;
     private final float FOCUS_DURATION_MULTIPLIER = 0.5f;
-
+    private final float DEATH_DURATION  = 1.5f;
     private int currentMasks = 5;
     private int currentSoul = 99;
 
@@ -83,6 +83,7 @@ public class Knight extends PhysicalPart {
     private float respawnTimer = 0f;
     private float castDurationTimer = 0f;
     private float wallJumpTimer = 0f;
+    private float deathTimer = 0f;
 
     private Vector2 lastCheckpoint;
     private Nail nail;
@@ -116,6 +117,13 @@ public class Knight extends PhysicalPart {
                 playerCondition = isOnGround() ? PlayerCondition.IDLE : PlayerCondition.FALLING;
                 setCooldown(true);
                 getVelocity().x = 0;
+            }
+        }
+        if(deathTimer > 0f) {
+            deathTimer -= delta;
+            if(deathTimer <= 0) {
+                resetStats();
+                playerCondition = isOnGround() ? PlayerCondition.IDLE : PlayerCondition.FALLING;
             }
         }
 
@@ -227,7 +235,7 @@ public class Knight extends PhysicalPart {
 
     @Override
     public void takeDamage(int amount) {
-        if (isInvincible()||immortal) return;
+        if (isInvincible()||immortal || playerCondition ==PlayerCondition.DEATH) return;
         currentMasks = Math.max(0, currentMasks - amount);
         if (playerCondition == PlayerCondition.FOCUSING) {
             cancelFocus();
@@ -249,7 +257,7 @@ public class Knight extends PhysicalPart {
 
     @Override
     public void hazardReact() {
-        if(immortal||isInvincible)return;
+        if(immortal||isInvincible||playerCondition == PlayerCondition.DEATH)return;
         currentMasks = Math.max(0, currentMasks - 1);
         if (currentMasks == 0) {
             die();
@@ -388,6 +396,14 @@ public class Knight extends PhysicalPart {
     public void die() {
         lastCheckpoint.set(getSpawnPoint());
         messenger.dispatch(GameEvent.PLAYER_DEATH,null);
+        playerCondition = PlayerCondition.DEATH;
+        deathTimer = DEATH_DURATION;
+        setGravityIncluded(false);
+        stop();
+
+    }
+
+    private void resetStats() {
         setPosition(new Vector2(getSpawnPoint().x, getSpawnPoint().y));
         updateHitBox();
         setCurrentMasks(MAX_MASKS);
@@ -396,6 +412,7 @@ public class Knight extends PhysicalPart {
         getKnockBackVelocity().setZero();
         playerCondition = PlayerCondition.IDLE;
         setInvincible(false);
+        setGravityIncluded(true);
         hud.resetMasks();
         stop();
         dashTimer = 0;
@@ -545,6 +562,10 @@ public class Knight extends PhysicalPart {
 
     public int getCurrentSpellDamage() {
         return currentSpellDamage;
+    }
+
+    public PlayerHUD getHud() {
+        return hud;
     }
 
     public boolean isImmortal() {

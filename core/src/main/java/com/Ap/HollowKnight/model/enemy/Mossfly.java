@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class Mossfly extends EnemyModel {
 
     private static final float PATROL_RADIUS = 200.0f;
-    private static final float SPEED_SCALE = 0.7f;
+    private static final float SPEED = 120f;
     private static final float OFFSET_Y = 30.0f;
     private static final float FOLLOW_DURATION = 0.2f;
 
@@ -29,6 +29,12 @@ public class Mossfly extends EnemyModel {
 
     @Override
     public void update(float delta, ArrayList<Block> blocks) {
+        if (isDead()) {
+            this.getVelocity().x = 0;
+            this.getVelocity().y = -300;
+            movingY(delta, blocks);
+            return;
+        }
         Knight knight = LevelModel.getInstance().getKnight();
         updateCircle();
         if (this.patrolCircle.contains(knight.getPosition().x, knight.getPosition().y) && this.getCurrentState() != EnemyState.RUNNING) {
@@ -55,17 +61,30 @@ public class Mossfly extends EnemyModel {
         return patrolCircle;
     }
 
+    @Override
+    protected void die() {
+        super.die();
+
+        this.setGravityIncluded(true);
+
+        this.getVelocity().x = 0;
+        this.getVelocity().y = 0;
+    }
+
     private void patrol(Knight knight) {
         this.setCurrentState(EnemyState.RUNNING);
-        float x = (knight.getPosition().x - this.getPosition().x) * SPEED_SCALE;
-        float y = (knight.getPosition().y - this.getPosition().y + OFFSET_Y) * SPEED_SCALE;
-        Vector2 velocity = new Vector2(x, y);
+        float x = (knight.getPosition().x - this.getPosition().x) ;
+        float y = (knight.getPosition().y - this.getPosition().y + OFFSET_Y) ;
+        float z =(float) Math.sqrt(x*x+y*y);
+        float veloX = x/z*SPEED;
+        float veloY = y/z*SPEED;
+        Vector2 velocity = new Vector2(veloX, veloY);
         this.setVelocity(velocity);
         this.followTimer = FOLLOW_DURATION;
     }
 
     @Override
-    protected void resetHp() {
+    public void resetHp() {
         this.setHp(25);
     }
 }

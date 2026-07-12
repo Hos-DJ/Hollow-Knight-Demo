@@ -91,6 +91,19 @@ public class PlayerHUD {
         }
     }
 
+    public void masksAndSoulAfterLoad(float soulAmount, int masks) {
+        for (int i = 0; i < maskData.length; i++) {
+            if (i < masks) {
+                maskData[i].state = MaskState.FULL;
+            } else {
+                maskData[i].state = MaskState.EMPTY;
+            }
+            maskData[i].timer = 0f;
+        }
+
+        displayedSoul = soulAmount;
+    }
+
 
     private void drawMasks(float delta) {
         float startX = HUD_X_OFFSET +MASK_START_X_OFFSET;

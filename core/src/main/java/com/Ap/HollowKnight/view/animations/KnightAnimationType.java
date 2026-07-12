@@ -6,7 +6,7 @@ public enum KnightAnimationType implements AnimationType {
     KNIGHT_AIRBORNE("animation/Airborne.png", 12, 1, 12, Animation.PlayMode.NORMAL),
     KNIGHT_DASH("animation/Dash.png", 12, 1, 12, Animation.PlayMode.LOOP),
     KNIGHT_SHADOW_DASH("animation/Shadow Dash.png",11,1,11,Animation.PlayMode.NORMAL),
-    KNIGHT_DEATH("animation/Death.png", 18, 1, 18, Animation.PlayMode.LOOP),
+    KNIGHT_DEATH("animation/Death.png", 18, 1, 18, Animation.PlayMode.NORMAL),
     KNIGHT_DOUBLE_JUMP("animation/Double Jump.png", 8, 1, 8, Animation.PlayMode.NORMAL),
     KNIGHT_SLASH("animation/Slash.png", 5, 1, 5, Animation.PlayMode.NORMAL),
     KNIGHT_UP_SLASH("animation/UpSlash.png", 5, 1, 5, Animation.PlayMode.NORMAL),

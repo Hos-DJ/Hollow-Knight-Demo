@@ -16,7 +16,7 @@ public class MaceSlamState implements BossState {
     private static final float ACTIVE_TIME = 0.4f;
     private static final float RECOVERY_TIME = 0.4f;
     private static final float DURATION = WINDUP_TIME + ACTIVE_TIME + RECOVERY_TIME;
-
+    private boolean audioPlayed = false;
     @Override
     public void enter(FalseKnight boss, Knight knight) {
         boss.getVelocity().x = 0;
@@ -34,7 +34,11 @@ public class MaceSlamState implements BossState {
             boss.setCurrentPhase(FalseKnightPhase.WINDUP);
         } else if (timer < WINDUP_TIME + ACTIVE_TIME) {
             boss.setCurrentPhase(FalseKnightPhase.SLAMMING);
-            GameEventMessenger.getInstance().dispatch(GameEvent.SLAM_MACE,null);
+            if(!audioPlayed)
+            {
+                GameEventMessenger.getInstance().dispatch(GameEvent.POWER_SLAM_MACE, null);
+                audioPlayed = true;
+            }
             checkDamage(boss, knight);
             updateMaceHitBox(boss);
         } else {

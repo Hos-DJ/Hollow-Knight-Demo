@@ -28,6 +28,7 @@ public class FalseKnight extends EnemyModel {
     private static final float MAX_SPAM = 2;
     private static final int BASE_HP = 70;
     int cnt = 1;
+    private int stunHitCounter = 0;
 
     private int currentArmorHp;
     private int currentHp;
@@ -50,7 +51,7 @@ public class FalseKnight extends EnemyModel {
         if (currentState != null) {
             currentState.update(this, LevelModel.getInstance().getKnight(), blocks, delta);
         }
-
+        shockWaves.removeIf(shockWave -> !shockWave.isActive());
         Vector2 knightPos = LevelModel.getInstance().getKnight().getPosition();
         if (Vector2.dst(knightPos.x, knightPos.y, getPosition().x, getPosition().y) > 3000) {
             bossBegins = false;
@@ -69,30 +70,39 @@ public class FalseKnight extends EnemyModel {
     public void takeDamage(int amount) {
         if (currentState instanceof StunState) {
             currentHp -= amount;
+            stunHitCounter++;
+
             if (currentHp <= 0) {
                 GameEventMessenger.getInstance().dispatch(GameEvent.BOSS_DEFEATED, this);
                 currentPhase = FalseKnightPhase.DEAD;
                 die();
+            } else if (stunHitCounter >= 3) {
+                ((StunState) currentState).forceWakeUp();
             }
         } else {
             currentArmorHp -= amount;
             if (currentArmorHp <= BASE_ARMOR_HP / 2 && !firstStunned) {
                 isPhaseTwo = true;
                 firstStunned = true;
+                stunHitCounter = 0;
                 changeState(new StunState());
+                GameEventMessenger.getInstance().dispatch(GameEvent.BOSS_STUN, null);
             } else if (currentArmorHp <= 0) {
+                stunHitCounter = 0;
                 changeState(new StunState());
+                GameEventMessenger.getInstance().dispatch(GameEvent.BOSS_STUN, null);
             } else {
                 damageCounter++;
             }
         }
-        if (damageCounter >= 3 || random.nextInt(100) >= 80) {
+
+        if (!(currentState instanceof StunState) && (damageCounter >= 3 || random.nextInt(100) >= 80)) {
             changeState(new DefensiveLeapState());
             damageCounter = 0;
         }
+
         GameEventMessenger.getInstance().dispatch(GameEvent.ENEMY_HURT, this);
     }
-
     public void changeState(BossState newState) {
         if (currentState != null) {
             previousState = currentState.getClass();
@@ -103,8 +113,8 @@ public class FalseKnight extends EnemyModel {
     }
 
     public void spawnShockwave() {
-        float waveWidth = 60f;
-        float waveHeight = 120f;
+        float waveWidth = 90;
+        float waveHeight = 200;
 
         float startX = (getFacingDirection() == FacingDirection.RIGHT)
             ? getHitBox().x + getHitBox().width + 10f

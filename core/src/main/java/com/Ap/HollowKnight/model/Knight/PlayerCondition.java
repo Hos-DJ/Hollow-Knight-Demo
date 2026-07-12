@@ -3,6 +3,7 @@ package com.Ap.HollowKnight.model.Knight;
 public enum PlayerCondition {
     IDLE,
     MOVING,
+    DEATH,
     ATTACKING,
     HOWLING_WRATH,
     FOCUSING,

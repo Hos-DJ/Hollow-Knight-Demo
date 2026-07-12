@@ -33,7 +33,7 @@ public class ShockWave extends PhysicalPart {
 
         applyPhysics(delta, blocks);
 
-        if (isHittingWall(blocks)) {
+        if (this.getVelocity().x == 0 || isHittingWall(blocks)) {
             isActive = false;
         }
     }
@@ -55,7 +55,6 @@ public class ShockWave extends PhysicalPart {
         float checkY = getHitBox().y + getHitBox().height / 2f;
 
         for (Block block : blocks) {
-            if (block.getType() != BlockType.WALL) continue;
             if (block.getBound().contains(checkX, checkY)) {
                 return true;
             }

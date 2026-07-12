@@ -10,9 +10,9 @@ import java.util.ArrayList;
 
 public class HuskHornHead extends EnemyModel {
     private static final float PATROL_SPEED = 100.0f;
-    private static final float RUNNING_SPEED = 220.0f;
-    private static final float WALK_DURATION = 2.5f;
-    private static final float REST_DURATION = 6.0f;
+    private static final float RUNNING_SPEED = 400f;
+    private static final float WALK_DURATION = 5.0f;
+    private static final float REST_DURATION = 3.0f;
     private static final float TURN_DURATION = 1.0f;
     private static final float FOV_WIDTH = 400f;
     private static final float FOV_VERTICAL_PAD = 16f;
@@ -110,7 +110,7 @@ public class HuskHornHead extends EnemyModel {
     }
 
     @Override
-    protected void resetHp() {
+    public void resetHp() {
         this.setHp(30);
     }
 }
