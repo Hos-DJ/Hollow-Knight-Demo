@@ -1,6 +1,6 @@
 package com.Ap.HollowKnight.view;
 
-import com.Ap.HollowKnight.model.player.Charm;
+import com.Ap.HollowKnight.model.charms.Charm;
 import com.Ap.HollowKnight.view.animations.*;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
@@ -14,7 +14,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
-import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 
 import java.util.HashMap;
 
@@ -40,9 +39,8 @@ public class AssetLoader {
         params.fontParameters.borderWidth = 1.5f;
         params.fontParameters.borderColor = Color.BLACK;
         internalManager.load("font_24.ttf", BitmapFont.class, params);
-        //for dialogue;
         FreetypeFontLoader.FreeTypeFontLoaderParameter params14 = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
-        params14.fontFileName = "font/primary_font.ttf"; // Same file path!
+        params14.fontFileName = "font/primary_font.ttf";
         params14.fontParameters.size = 14;
         params14.fontParameters.color = Color.LIGHT_GRAY;
         internalManager.load("font_14.ttf", BitmapFont.class, params14);

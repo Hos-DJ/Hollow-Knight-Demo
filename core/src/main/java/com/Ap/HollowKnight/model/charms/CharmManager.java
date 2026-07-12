@@ -1,18 +1,27 @@
-package com.Ap.HollowKnight.model.player;
+package com.Ap.HollowKnight.model.charms;
+
+import com.Ap.HollowKnight.model.Knight.Knight;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class CharmManager {
     private final Charm[] activeCharms = new Charm[3];
-
+    private final Set<Charm> unlockedCharms = new HashSet<>();
     public CharmManager() {
         activeCharms[0] = null;
         activeCharms[1] = null;
         activeCharms[2] = null;
+        for(Charm charm : Charm.values()) {
+            if(charm.equals(Charm.VOID_HEART))
+                continue;
+            unlockedCharms.add(charm);
+        }
     }
 
 
     public boolean equipCharm(Charm charm, Knight knight) {
         if (isEquipped(charm)) {
-            System.out.println("This charm is already equipped!");
             return false;
         }
 
@@ -20,12 +29,10 @@ public class CharmManager {
             if (activeCharms[i] == null) {
                 activeCharms[i] = charm;
                 charm.equipEffect(knight);
-                System.out.println(charm.name() + " equipped at slot " + i);
                 return true;
             }
         }
 
-        System.out.println("Charm slots are full!");
         return false;
     }
 
@@ -35,8 +42,6 @@ public class CharmManager {
             if (activeCharms[i] == charm) {
                 charm.unequipEffect(knight);
                 activeCharms[i] = null;
-                System.out.println(charm.name() + " unequipped from slot " + i);
-
                 recalculateStats(knight);
                 return true;
             }
@@ -66,5 +71,13 @@ public class CharmManager {
 
     public Charm[] getActiveCharms() {
         return activeCharms;
+    }
+
+    public void unlockCharm(Charm charm) {
+        unlockedCharms.add(charm);
+    }
+
+    public boolean isUnlocked(Charm charm) {
+        return unlockedCharms.contains(charm);
     }
 }

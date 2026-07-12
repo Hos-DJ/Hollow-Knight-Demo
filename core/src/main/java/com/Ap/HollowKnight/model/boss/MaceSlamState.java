@@ -4,7 +4,7 @@ import com.Ap.HollowKnight.controller.events.GameEvent;
 import com.Ap.HollowKnight.controller.events.GameEventMessenger;
 import com.Ap.HollowKnight.model.game.FacingDirection;
 import com.Ap.HollowKnight.model.map.Block;
-import com.Ap.HollowKnight.model.player.Knight;
+import com.Ap.HollowKnight.model.Knight.Knight;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;

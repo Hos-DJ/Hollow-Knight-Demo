@@ -2,7 +2,7 @@ package com.Ap.HollowKnight.model.enemy;
 
 import com.Ap.HollowKnight.model.level.LevelModel;
 import com.Ap.HollowKnight.model.map.Block;
-import com.Ap.HollowKnight.model.player.Knight;
+import com.Ap.HollowKnight.model.Knight.Knight;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -64,5 +64,8 @@ public class Mossfly extends EnemyModel {
         this.followTimer = FOLLOW_DURATION;
     }
 
-
+    @Override
+    protected void resetHp() {
+        this.setHp(25);
+    }
 }

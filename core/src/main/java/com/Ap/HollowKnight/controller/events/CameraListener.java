@@ -18,7 +18,6 @@ public class CameraListener implements GameEventListener {
             case SLAM_MACE, POWER_SLAM_MACE -> onBossMace();
             case PLAYER_HOWLING, PLAYER_VENGEFUL -> onSpellCast();
             case BOSS_JUMP,BOSS_LAND -> onBossMove();
-
         }
     }
 

@@ -1,6 +1,6 @@
 package com.Ap.HollowKnight.model.game;
 
-import com.Ap.HollowKnight.model.player.Knight;
+import com.Ap.HollowKnight.model.Knight.Knight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Rectangle;
@@ -10,7 +10,7 @@ public class GameCamera extends OrthographicCamera {
     private float shakeDuration = 0;
     private boolean lookingUp = false;
     private boolean lookingDown = false;
-
+    private Rectangle bounds = null;
     public float getShake() {
         return shake;
     }
@@ -54,7 +54,7 @@ public class GameCamera extends OrthographicCamera {
             }
         }
     }
-    public void updatePosition(Knight knight, Rectangle bounds, float delta) {
+    public void updatePosition(Knight knight, float delta) {
         float speed = 5.0f;
         float lerp = speed * Gdx.graphics.getDeltaTime();
         float targetX = knight.getHitBox().x + knight.getHitBox().width / 2f;
@@ -83,4 +83,11 @@ public class GameCamera extends OrthographicCamera {
         this.update();
     }
 
+    public Rectangle getBounds() {
+        return bounds;
+    }
+
+    public void setBounds(Rectangle bounds) {
+        this.bounds = bounds;
+    }
 }

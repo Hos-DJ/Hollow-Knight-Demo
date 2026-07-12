@@ -1,4 +1,4 @@
-package com.Ap.HollowKnight.view;
+package com.Ap.HollowKnight.controller;
 
 import com.Ap.HollowKnight.view.sounds.MusicType;
 import com.Ap.HollowKnight.view.sounds.SfxType;

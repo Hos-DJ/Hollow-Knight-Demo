@@ -33,5 +33,11 @@ public class AchievementManager {
 
         }
     }
+
+    public void resetAllAchievements() {
+        preferences.clear();
+        preferences.flush();
+        System.out.println("All achievements have been completely reset!");
+    }
 }
 

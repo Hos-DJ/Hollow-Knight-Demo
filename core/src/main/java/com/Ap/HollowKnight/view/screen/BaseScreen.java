@@ -3,7 +3,7 @@ package com.Ap.HollowKnight.view.screen;
 import com.Ap.HollowKnight.HollowKnight;
 import com.Ap.HollowKnight.controller.SettingsController;
 import com.Ap.HollowKnight.view.AssetLoader;
-import com.Ap.HollowKnight.view.AudioManager;
+import com.Ap.HollowKnight.controller.AudioManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;

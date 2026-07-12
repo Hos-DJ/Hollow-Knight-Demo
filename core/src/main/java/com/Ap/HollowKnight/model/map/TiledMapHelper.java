@@ -2,6 +2,8 @@ package com.Ap.HollowKnight.model.map;
 
 import com.Ap.HollowKnight.model.boss.FalseKnight;
 import com.Ap.HollowKnight.model.enemy.*;
+import com.Ap.HollowKnight.model.charms.Charm;
+import com.Ap.HollowKnight.model.charms.CollectibleCharm;
 import com.Ap.HollowKnight.model.zote.Zote;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
@@ -27,7 +29,7 @@ public class TiledMapHelper {
         MapLayer layer = tiledMap.getLayers().get("collision objects");
         for (MapObject object : layer.getObjects()) {
 
-            if (object instanceof RectangleMapObject) {
+            if (object instanceof RectangleMapObject&& object.getProperties().containsKey("type")) {
 
                 Rectangle rect = ((RectangleMapObject) object).getRectangle();
                 String type = object.getProperties().get("type", String.class);
@@ -46,7 +48,7 @@ public class TiledMapHelper {
         MapLayer layer = tiledMap.getLayers().get("collision objects");
         for (MapObject object : layer.getObjects()) {
 
-            if (object instanceof RectangleMapObject) {
+            if (object instanceof RectangleMapObject&& object.getProperties().containsKey("type")) {
 
                 Rectangle rect = ((RectangleMapObject) object).getRectangle();
                 String type = object.getProperties().get("type", String.class);
@@ -64,7 +66,7 @@ public class TiledMapHelper {
         MapLayer layer = tiledMap.getLayers().get("collision objects");
         for (MapObject object : layer.getObjects()) {
 
-            if (object instanceof RectangleMapObject) {
+            if (object instanceof RectangleMapObject&& object.getProperties().containsKey("type")) {
 
                 Rectangle rect = ((RectangleMapObject) object).getRectangle();
                 String type = object.getProperties().get("type", String.class);
@@ -136,6 +138,22 @@ public class TiledMapHelper {
         return enemies;
     }
 
+    public ArrayList<CollectibleCharm> getCollectibleCharms() {
+        ArrayList<CollectibleCharm> charms = new ArrayList<>();
+        MapLayer layer = tiledMap.getLayers().get("collision objects");
+        if (layer == null) return charms;
+
+        for (MapObject object : layer.getObjects()) {
+            if (object instanceof PointMapObject && object.getProperties().containsKey("charmType")) {
+                float x = object.getProperties().get("x", Float.class);
+                float y = object.getProperties().get("y", Float.class);
+                String charmName = object.getProperties().get("charmType", String.class);
+                charms.add(new CollectibleCharm(new Vector2(x, y), Charm.valueOf(charmName)));
+            }
+        }
+        return charms;
+    }
+
     public Zote getZote() {
         MapLayer layer = tiledMap.getLayers().get("collision objects");
         for (MapObject object : layer.getObjects()) {
@@ -151,6 +169,19 @@ public class TiledMapHelper {
         }
         return null;
 
+    }
+
+    public Rectangle getCameraBound() {
+        MapLayer layer = tiledMap.getLayers().get("collision objects");
+        for (MapObject object : layer.getObjects()) {
+
+            if (object instanceof RectangleMapObject && object.getProperties().containsKey("bound")) {
+
+                Rectangle rect = ((RectangleMapObject) object).getRectangle();
+                return rect;
+            }
+        }
+        return null;
     }
 
 }

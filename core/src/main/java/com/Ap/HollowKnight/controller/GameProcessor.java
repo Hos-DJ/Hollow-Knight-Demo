@@ -6,8 +6,9 @@ import com.Ap.HollowKnight.model.game.FacingDirection;
 import com.Ap.HollowKnight.model.game.GameCamera;
 import com.Ap.HollowKnight.model.level.LevelModel;
 import com.Ap.HollowKnight.model.map.DestructibleWall;
-import com.Ap.HollowKnight.model.player.Knight;
-import com.Ap.HollowKnight.model.player.PlayerCondition;
+import com.Ap.HollowKnight.model.charms.CollectibleCharm;
+import com.Ap.HollowKnight.model.Knight.Knight;
+import com.Ap.HollowKnight.model.Knight.PlayerCondition;
 import com.Ap.HollowKnight.model.zote.Zote;
 import com.Ap.HollowKnight.model.zote.ZoteState;
 import com.Ap.HollowKnight.view.animations.EffectAnimationType;
@@ -29,6 +30,7 @@ public class GameProcessor extends InputAdapter {
     private boolean inventoryTriggered = false;
     private boolean isWallDestroyed = false;
     private boolean isActivatorPressed = false;
+    private CollectibleCharm nearbyCharm = null;
     public GameProcessor(Knight knight, GameCamera camera, ArrayList<EnemyModel> enemies,Zote zote) {
         this.knight = knight;
         this.camera = camera;
@@ -125,7 +127,13 @@ public class GameProcessor extends InputAdapter {
                     handleAttacking();
                 }
                 case FOCUS -> {
-                    if (zote.isPlayerNearby() && Gdx.input.isKeyJustPressed(GameKeypad.FOCUS.getKeyNumber())) {
+                    if (nearbyCharm != null && !nearbyCharm.isPickedUp() && Gdx.input.isKeyJustPressed(GameKeypad.FOCUS.getKeyNumber())) {
+                        nearbyCharm.setPickedUp(true);
+                        knight.getCharmManager().unlockCharm(nearbyCharm.getCharmType());
+                        nearbyCharm = null;
+                        knight.setVelocity(Vector2.Zero);
+                    }
+                    else if (zote.isPlayerNearby() && Gdx.input.isKeyJustPressed(GameKeypad.FOCUS.getKeyNumber())) {
                         zote.startTalking(knight.getPosition());
                         knight.setVelocity(Vector2.Zero);
                     }
@@ -288,4 +296,7 @@ public class GameProcessor extends InputAdapter {
     public void setWallDestroyed(boolean wallDestroyed) {
         isWallDestroyed = wallDestroyed;
     }
+
+    public CollectibleCharm getNearbyCharm() { return nearbyCharm; }
+    public void setNearbyCharm(CollectibleCharm nearbyCharm) { this.nearbyCharm = nearbyCharm; }
 }

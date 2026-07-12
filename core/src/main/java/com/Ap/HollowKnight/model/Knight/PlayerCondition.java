@@ -1,4 +1,4 @@
-package com.Ap.HollowKnight.model.player;
+package com.Ap.HollowKnight.model.Knight;
 
 public enum PlayerCondition {
     IDLE,

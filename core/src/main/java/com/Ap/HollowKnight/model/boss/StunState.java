@@ -1,7 +1,7 @@
 package com.Ap.HollowKnight.model.boss;
 
 import com.Ap.HollowKnight.model.map.Block;
-import com.Ap.HollowKnight.model.player.Knight;
+import com.Ap.HollowKnight.model.Knight.Knight;
 
 import java.util.ArrayList;
 

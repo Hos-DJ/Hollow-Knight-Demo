@@ -4,7 +4,7 @@ import com.Ap.HollowKnight.controller.events.GameEvent;
 import com.Ap.HollowKnight.controller.events.GameEventMessenger;
 import com.Ap.HollowKnight.model.game.FacingDirection;
 import com.Ap.HollowKnight.model.map.Block;
-import com.Ap.HollowKnight.model.player.Knight;
+import com.Ap.HollowKnight.model.Knight.Knight;
 
 import java.util.ArrayList;
 
@@ -21,6 +21,7 @@ public class PowerMaceSlamState implements BossState {
         FacingDirection dir = (knight.getPosition().x > boss.getPosition().x) ?
             FacingDirection.RIGHT : FacingDirection.LEFT;
         boss.setFacingDirection(dir);
+        boss.setCurrentPhase(FalseKnightPhase.SLAMMING);
     }
 
     @Override

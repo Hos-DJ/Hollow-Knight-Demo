@@ -1,6 +1,7 @@
 package com.Ap.HollowKnight.model.enemy;
 
 import com.Ap.HollowKnight.model.game.FacingDirection;
+import com.Ap.HollowKnight.model.level.LevelModel;
 import com.Ap.HollowKnight.model.map.Block;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -18,13 +19,15 @@ public class CrystalGuardian extends EnemyModel {
     private static final float FOV_HEIGHT = 80f;
     private static final float ENRAGED_SPEED = 400f;
     private static final float CHARGE_WIND_UP = 2.0f;
-    private static final float LASER_DURATION = 1.0f;
+    private static final float LASER_DURATION = 2.25f;
     private static final float ENRAGE_DURATION = 4.0f;
     private static final float LASER_OFFSET_Y = 20f;
+    private static final float TURN_DELAY_DURATION = 0.3f;
 
     private float chargeTimer = 0f;
     private float laserTimer = 0f;
     private float enragedTimer = 0f;
+    private float turnDelayTimer = 0f;
     private float lastKnownKnightX;
 
     public CrystalGuardian(Vector2 position, Rectangle hitBox, Vector2 spawnPoint, int hp) {
@@ -32,13 +35,13 @@ public class CrystalGuardian extends EnemyModel {
         setFacingDirection(FacingDirection.LEFT);
         setGravityIncluded(true);
         setCurrentState(EnemyState.IDLE);
-        // stationary — no velocity needed
     }
 
     @Override
     public void update(float delta, ArrayList<Block> blocks) {
         updateFov();
         updateLaser();
+        lastKnownKnightX = LevelModel.getInstance().getKnight().getPosition().x;
 
         if (chargeTimer > 0) {
             chargeTimer -= delta;
@@ -46,6 +49,7 @@ public class CrystalGuardian extends EnemyModel {
                 fireLaser();
             }
         }
+
         if (laserTimer > 0) {
             laserTimer -= delta;
             setAttacking(laserTimer > 0);
@@ -53,20 +57,41 @@ public class CrystalGuardian extends EnemyModel {
                 enrage();
             }
         }
+
         if (enragedTimer > 0) {
             enragedTimer -= delta;
+
             if (isHeadingForWall(blocks) || isHeadingForCliff(blocks)) {
                 getVelocity().x *= -1;
+                setFacingDirection(getFacingDirection() == FacingDirection.LEFT ? FacingDirection.RIGHT : FacingDirection.LEFT);
+                turnDelayTimer = 0f;
+            } else {
+                boolean shouldFaceRight = lastKnownKnightX > getPosition().x;
+                FacingDirection targetDirection = shouldFaceRight ? FacingDirection.RIGHT : FacingDirection.LEFT;
+
+                if (getFacingDirection() != targetDirection) {
+                    if (turnDelayTimer <= 0) {
+                        turnDelayTimer = TURN_DELAY_DURATION;
+                    }
+                    turnDelayTimer -= delta;
+
+                    if (turnDelayTimer <= 0) {
+                        setFacingDirection(targetDirection);
+                        getVelocity().x = shouldFaceRight ? ENRAGED_SPEED : -ENRAGED_SPEED;
+                    }
+                } else {
+                    turnDelayTimer = 0f;
+                    getVelocity().x = shouldFaceRight ? ENRAGED_SPEED : -ENRAGED_SPEED;
+                }
             }
+
             if (enragedTimer <= 0) {
                 returnToIdle();
             }
         }
-//        System.out.println(this.getCurrentState());
         super.update(delta, blocks);
     }
 
-    // Called by GameFlowController — no Knight reference needed inside the model
     public void onPlayerSpotted(Vector2 knightPosition) {
         if (getCurrentState() != EnemyState.IDLE) return;
         lastKnownKnightX = knightPosition.x;
@@ -83,19 +108,17 @@ public class CrystalGuardian extends EnemyModel {
 
     private void enrage() {
         setAttacking(false);
-        if (lastKnownKnightX > getPosition().x) {
-            setFacingDirection(FacingDirection.RIGHT);
-            getVelocity().x = ENRAGED_SPEED;
-        } else {
-            setFacingDirection(FacingDirection.LEFT);
-            getVelocity().x = -ENRAGED_SPEED;
-        }
+        boolean shouldFaceRight = lastKnownKnightX > getPosition().x;
+        setFacingDirection(shouldFaceRight ? FacingDirection.RIGHT : FacingDirection.LEFT);
+        getVelocity().x = shouldFaceRight ? ENRAGED_SPEED : -ENRAGED_SPEED;
+
         enragedTimer = ENRAGE_DURATION;
         setCurrentState(EnemyState.RUNNING);
     }
 
     private void returnToIdle() {
         getVelocity().x = 0f;
+        turnDelayTimer = 0f;
         setCurrentState(EnemyState.IDLE);
     }
 
@@ -112,6 +135,11 @@ public class CrystalGuardian extends EnemyModel {
             : getHitBox().x - LASER_WIDTH;
         float y = getHitBox().y + LASER_OFFSET_Y;
         laser.set(x, y, LASER_WIDTH, LASER_HEIGHT);
+    }
+
+    @Override
+    protected void resetHp() {
+        this.setHp(60);
     }
 
     public Rectangle getFov() {

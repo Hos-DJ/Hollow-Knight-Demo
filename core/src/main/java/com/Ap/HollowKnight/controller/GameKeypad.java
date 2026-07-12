@@ -8,7 +8,7 @@ public enum GameKeypad {
     UP(Input.Keys.W, 'W'),
     DOWN(Input.Keys.S, 'S'),
     JUMP(Input.Keys.SPACE, ' '),
-    DASH(Input.Keys.SHIFT_LEFT, 'L'), // L = Left Shift
+    DASH(Input.Keys.SHIFT_LEFT, 'L'),
     ATTACK(Input.Keys.J, 'J'),
     FOCUS(Input.Keys.E, 'E'),
     INVENTORY(Input.Keys.I, 'I'),

@@ -16,7 +16,7 @@ public class SpellManager {
 
     public void update(float delta, ArrayList<Block> blocks) {
         vengefulSprit.update(delta, blocks);
-        howlingWrathSpell.update(delta, blocks);//
+        howlingWrathSpell.update(delta, blocks);
     }
 
     public boolean castVengefulSpirit(Rectangle knightHitBox, FacingDirection facingDirection) {

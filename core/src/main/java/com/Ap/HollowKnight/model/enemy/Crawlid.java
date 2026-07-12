@@ -39,5 +39,8 @@ public class Crawlid extends EnemyModel {
 
     }
 
-
+    @Override
+    protected void resetHp() {
+        this.setHp(30);
+    }
 }

@@ -1,6 +1,6 @@
 package com.Ap.HollowKnight.controller.events;
 
-import com.Ap.HollowKnight.view.AudioManager;
+import com.Ap.HollowKnight.controller.AudioManager;
 import com.Ap.HollowKnight.view.sounds.MusicType;
 import com.Ap.HollowKnight.view.sounds.SfxType;
 

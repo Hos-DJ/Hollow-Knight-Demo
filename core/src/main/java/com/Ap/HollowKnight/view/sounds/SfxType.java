@@ -1,7 +1,6 @@
 package com.Ap.HollowKnight.view.sounds;
 
 public enum SfxType {
-    // --- PLAYER MOVEMENT & ACTIONS ---
     KNIGHT_FOOTSTEP("Ui/Audio/SfxMusic/knight_runStone.wav"),
     KNIGHT_DASH("Ui/Audio/SfxMusic/knight_dash.wav"),
     KNIGHT_MONARCH("Ui/Audio/SfxMusic/knight_wings.wav"),
@@ -16,7 +15,6 @@ public enum SfxType {
     SOUL_GAIN_6("Ui/Audio/SfxMusic/soul_pickup_6.wav"),
     SOUL_GAIN_7("Ui/Audio/SfxMusic/soul_pickup_7.wav"),
 
-    // --- PLAYER COMBAT ---
     NAIL_SLASH("Ui/Audio/SfxMusic/hero_evade.wav"),
     NAIL_POGO_BOUNCE("Ui/Audio/SfxMusic/sword_hit_reject.wav"),
 
@@ -24,11 +22,9 @@ public enum SfxType {
     NAIL_HIT_WALL("Ui/Audio/SfxMusic/breakable_wall_hit_1.wav"),
     WALL_BROKEN("Ui/Audio/SfxMusic/breakable_wall_death.wav"),
 
-    // --- SPELLS ---
     CAST_FIREBALL("Ui/Audio/SfxMusic/knight_fireball.wav"),
     CAST_HOWLING("Ui/Audio/SfxMusic/hero_scream_spell.wav"),
 
-    // --- DAMAGE & IMPACTS ---
     ENEMY_DAMAGE("Ui/Audio/SfxMusic/enemy_damage.wav"),
     ENEMY_DEATH("Ui/Audio/SfxMusic/enemy_death_sword.wav"),
     KNIGHT_HURT("Ui/Audio/SfxMusic/knight_damage.wav"),
@@ -36,7 +32,6 @@ public enum SfxType {
     MACE_SLAM("Ui/Audio/SfxMusic/breakable_wall_hit_1.wav"),
     KNIGHT_DEATH("Ui/Audio/SfxMusic/knight_death.wav"),
 
-    // --- ZOTE SFX ---
     ZOTE_ATTACK("Ui/Audio/SfxMusic/Zote_battle_attack_loop.wav"),
     ZOTE_MUMBLE_1("Ui/Audio/SfxMusic/Zote_01.wav"),
     ZOTE_MUMBLE_2("Ui/Audio/SfxMusic/Zote_02.wav"),

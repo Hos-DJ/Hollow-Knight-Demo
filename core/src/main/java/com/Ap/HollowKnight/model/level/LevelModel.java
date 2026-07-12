@@ -5,7 +5,8 @@ import com.Ap.HollowKnight.model.enemy.EnemyModel;
 import com.Ap.HollowKnight.model.map.Block;
 import com.Ap.HollowKnight.model.map.DestructibleWall;
 import com.Ap.HollowKnight.model.map.GateBlock;
-import com.Ap.HollowKnight.model.player.Knight;
+import com.Ap.HollowKnight.model.charms.CollectibleCharm;
+import com.Ap.HollowKnight.model.Knight.Knight;
 import com.Ap.HollowKnight.model.zote.Zote;
 import com.Ap.HollowKnight.view.PlayerHUD;
 import com.badlogic.gdx.math.Rectangle;
@@ -17,7 +18,7 @@ public class LevelModel {
     private static LevelModel instance;
 
     private ArrayList<Block> blocks;
-    private DestructibleWall  destructibleWall;
+    private DestructibleWall destructibleWall;
     private ArrayList<Vector2> safeSpots;
     private Vector2 spawnPoint;
     private ArrayList<EnemyModel> enemies;
@@ -28,7 +29,8 @@ public class LevelModel {
     private float mapWidth;
     private float mapHeight;
     private GateBlock gateBlock;
-
+    private ArrayList<CollectibleCharm> collectibleCharms;
+    private Rectangle cameraBound;
     private LevelModel() {
     }
 
@@ -41,17 +43,20 @@ public class LevelModel {
 
     public static LevelModel getInstance(ArrayList<Block> blocks, ArrayList<EnemyModel> enemies, float mapWidth,
                                          float mapHeight, ArrayList<Vector2> safeSpots, Vector2 spawnPoint,
-                                         Zote zote,DestructibleWall wall,GateBlock gateBlock) {
+                                         Zote zote, DestructibleWall wall, GateBlock gateBlock,
+                                         ArrayList<CollectibleCharm> charms ,Rectangle cameraBound) {
         if (instance == null) {
             instance = new LevelModel();
         }
-        instance.initialize(blocks, enemies, mapWidth, mapHeight, safeSpots, spawnPoint,zote,wall,gateBlock);
+        instance.initialize(blocks, enemies, mapWidth, mapHeight, safeSpots, spawnPoint, zote,
+            wall, gateBlock, charms,cameraBound);
         return instance;
     }
 
     private void initialize(ArrayList<Block> blocks, ArrayList<EnemyModel> enemies, float mapWidth,
-                            float mapHeight, ArrayList<Vector2> safeSpots, Vector2 spawnPoint ,
-                            Zote zote,DestructibleWall wall,GateBlock gateBlock) {
+                            float mapHeight, ArrayList<Vector2> safeSpots, Vector2 spawnPoint,
+                            Zote zote, DestructibleWall wall, GateBlock gateBlock, ArrayList<CollectibleCharm> charms,
+                            Rectangle cameraBound) {
         this.blocks = blocks;
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
@@ -61,13 +66,15 @@ public class LevelModel {
         this.hud = new PlayerHUD();
         this.knight = new Knight(new Vector2(spawnPoint),
             new Rectangle(0, 0, 35, 75),
-            new Vector2(spawnPoint), this.safeSpots,hud);
-        //mozakhraf tarin bug momken bood
+            new Vector2(spawnPoint), this.safeSpots, hud);
         this.enemies = enemies;
-        this.destructibleWall= wall;
+        this.destructibleWall = wall;
         this.blocks.add(wall);
         this.gateBlock = gateBlock;
+        this.collectibleCharms = charms;
+        this.cameraBound = cameraBound;
     }
+
 
     public ArrayList<Block> getBlocks() {
         return blocks;
@@ -151,5 +158,17 @@ public class LevelModel {
 
     public void setGateBlock(GateBlock gateBlock) {
         this.gateBlock = gateBlock;
+    }
+
+    public ArrayList<CollectibleCharm> getCollectibleCharms() {
+        return collectibleCharms;
+    }
+
+    public Rectangle getCameraBound() {
+        return cameraBound;
+    }
+
+    public void setCameraBound(Rectangle cameraBound) {
+        this.cameraBound = cameraBound;
     }
 }

@@ -1,7 +1,5 @@
 package com.Ap.HollowKnight.controller;
 
-import com.Ap.HollowKnight.view.AudioManager;
-
 public class SettingsController {
     private static SettingsController instance;
     private String previousScreen = "MainMenuScreen";

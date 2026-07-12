@@ -4,8 +4,8 @@ import com.Ap.HollowKnight.model.AttackDirection;
 import com.Ap.HollowKnight.model.boss.FalseKnight;
 import com.Ap.HollowKnight.model.enemy.EnemyModel;
 import com.Ap.HollowKnight.model.map.DestructibleWall;
-import com.Ap.HollowKnight.model.player.Knight;
-import com.Ap.HollowKnight.model.player.PlayerCondition;
+import com.Ap.HollowKnight.model.Knight.Knight;
+import com.Ap.HollowKnight.model.Knight.PlayerCondition;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.Ap.HollowKnight.model.player.PlayerCondition.DASHING;
+import static com.Ap.HollowKnight.model.Knight.PlayerCondition.DASHING;
 
 public class CombatController {
     private static CombatController instance;

@@ -1,6 +1,6 @@
 package com.Ap.HollowKnight.view;
 
-import com.Ap.HollowKnight.model.player.Knight;
+import com.Ap.HollowKnight.model.Knight.Knight;
 import com.Ap.HollowKnight.view.animations.HudAnimationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -48,7 +48,6 @@ public class PlayerHUD {
         }
     }
 
-    // ── public entry ──────────────────────────────────────────────────────────
 
     public void render(Knight knight, OrthographicCamera hudCamera, float delta) {
         displayedSoul += (knight.getCurrentSoul() - displayedSoul) * SOUL_LERP_SPEED * delta;
@@ -127,7 +126,6 @@ public class PlayerHUD {
         };
     }
 
-    // ── soul orb ──────────────────────────────────────────────────────────────
 
     private void drawSoulOrb() {
         Animation<TextureRegion> soulOrbAnimation = AssetLoader.getInstance().getAnimation(HudAnimationType.SOUL_ORB);

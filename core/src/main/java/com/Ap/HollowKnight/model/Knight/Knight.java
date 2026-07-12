@@ -1,9 +1,9 @@
-package com.Ap.HollowKnight.model.player;
+package com.Ap.HollowKnight.model.Knight;
 
 import com.Ap.HollowKnight.controller.events.GameEvent;
 import com.Ap.HollowKnight.controller.events.GameEventMessenger;
 import com.Ap.HollowKnight.model.AttackDirection;
-import com.Ap.HollowKnight.model.Nail;
+import com.Ap.HollowKnight.model.charms.CharmManager;
 import com.Ap.HollowKnight.model.game.FacingDirection;
 import com.Ap.HollowKnight.model.game.PhysicalPart;
 import com.Ap.HollowKnight.model.map.Block;
@@ -56,7 +56,6 @@ public class Knight extends PhysicalPart {
     private int currentSoul = 99;
 
     GameEventMessenger messenger = GameEventMessenger.getInstance();
-    // Current
     private float currentDashCooldown = DASH_COOLDOWN;
     private int currentNailDamage = NAIL_DAMAGE;
     private int currentSoulPerHit =  SOUL_PER_HIT;
@@ -135,7 +134,6 @@ public class Knight extends PhysicalPart {
                 setCooldown(false);
             }
         }
-
         if (playerCondition == PlayerCondition.FOCUSING) {
             focusTimer += delta;
             if (focusTimer >= currentFocusDuration) {
@@ -207,7 +205,7 @@ public class Knight extends PhysicalPart {
         }
 
         applyPhysics(delta, blocks);
-//        System.out.println(getPosition().x + " , "+ getPosition().y);
+//        System.out.println(getPosition().x+ "  "+ getPosition().y);
 
         if (!isOnGround() && isTouchingWall() && getVelocity().y < 0) {
             playerCondition = PlayerCondition.WALL_SLIDING;
@@ -508,7 +506,6 @@ public class Knight extends PhysicalPart {
         }
     }
 
-    // ---------- Getters for CombatController and SpellManager ----------
     public float getCurrentKnockBack() { return currentKnockBack; }
     public int getCurrentNailDamage() { return currentNailDamage; }
     public int getCurrentSoulPerHit() { return currentSoulPerHit; }
@@ -525,7 +522,6 @@ public class Knight extends PhysicalPart {
     public boolean hasVoidHeart() { return hasVoidHeart; }
     public void setHasVoidHeart(boolean hasVoidHeart) { this.hasVoidHeart = hasVoidHeart; }
 
-    // ---------- Other Existing Setters/Getters ----------
 
     public boolean isInvincible() { return isInvincible; }
     public void setInvincible(boolean invincible) { isInvincible = invincible; }

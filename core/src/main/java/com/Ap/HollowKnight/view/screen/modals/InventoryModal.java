@@ -1,7 +1,7 @@
 package com.Ap.HollowKnight.view.screen.modals;
 
 import com.Ap.HollowKnight.controller.InventoryController;
-import com.Ap.HollowKnight.model.player.Charm;
+import com.Ap.HollowKnight.model.charms.Charm;
 import com.Ap.HollowKnight.view.AssetLoader;
 import com.Ap.HollowKnight.view.screen.BaseScreen;
 import com.badlogic.gdx.graphics.Color;
@@ -129,6 +129,12 @@ public class InventoryModal extends Modal{
         for (int i = 0; i < allCharms.length; i++) {
             availableCharmButtons[i].clearChildren();
 
+            if (!inventoryController.isUnlocked(allCharms[i])) {
+                availableCharmButtons[i].setVisible(false);
+                continue;
+            }
+            availableCharmButtons[i].setVisible(true);
+
             Texture charmTex = AssetLoader.getInstance().getTexture("Ui/Charms/" + allCharms[i].name() + ".png");
             Image charmImage = new Image(charmTex);
             availableCharmButtons[i].add(charmImage).size(80f, 80f).center();
@@ -155,5 +161,7 @@ public class InventoryModal extends Modal{
             case VOID_HEART -> bundle.get("charm_void_heart");
         };
     }
+
+
 
 }

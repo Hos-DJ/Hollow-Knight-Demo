@@ -14,7 +14,8 @@ public enum EffectAnimationType implements AnimationType {
     SHADOW_SCREAM("animation/Effects/ShadowScream.png", 13, 1, 14, Animation.PlayMode.NORMAL),
     SOUL_SCREAM("animation/Effects/SoulScream.png", 13, 1, 13, Animation.PlayMode.NORMAL),
     SOUL_BALL("animation/Projectile/SoulBall.png",4,1,4, Animation.PlayMode.NORMAL),
-    SHADOW_SOUL_BALL("animation/Projectile/ShadowBall.png", 6, 1,6, Animation.PlayMode.NORMAL),;
+    SHADOW_SOUL_BALL("animation/Projectile/ShadowBall.png", 6, 1,6, Animation.PlayMode.NORMAL),
+    SHOCK_WAVE("animation/Projectile/Shockwave.png",8,1,8, Animation.PlayMode.LOOP);
     private final Spec spec;
 
     EffectAnimationType(String path, int frameCount, int rowCount, int colCount, Animation.PlayMode playMode) {

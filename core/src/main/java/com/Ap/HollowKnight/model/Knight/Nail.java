@@ -1,4 +1,4 @@
-package com.Ap.HollowKnight.model;
+package com.Ap.HollowKnight.model.Knight;
 
 import com.Ap.HollowKnight.model.game.PhysicalPart;
 import com.Ap.HollowKnight.model.map.Block;

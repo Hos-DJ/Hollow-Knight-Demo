@@ -1,9 +1,9 @@
 package com.Ap.HollowKnight.controller;
 
 import com.Ap.HollowKnight.model.level.LevelModel;
-import com.Ap.HollowKnight.model.player.Charm;
-import com.Ap.HollowKnight.model.player.CharmManager;
-import com.Ap.HollowKnight.model.player.Knight;
+import com.Ap.HollowKnight.model.charms.Charm;
+import com.Ap.HollowKnight.model.charms.CharmManager;
+import com.Ap.HollowKnight.model.Knight.Knight;
 
 public class InventoryController {
     private final Knight knight;
@@ -28,6 +28,9 @@ public class InventoryController {
 
     public Charm[] getActiveCharms() {
         return charmManager.getActiveCharms();
+    }
+    public boolean isUnlocked(Charm charm) {
+        return charmManager.isUnlocked(charm);
     }
 
 }

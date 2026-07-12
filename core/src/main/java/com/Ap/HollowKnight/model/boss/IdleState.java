@@ -1,7 +1,8 @@
 package com.Ap.HollowKnight.model.boss;
 
 import com.Ap.HollowKnight.model.map.Block;
-import com.Ap.HollowKnight.model.player.Knight;
+import com.Ap.HollowKnight.model.Knight.Knight;
+import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -33,12 +34,13 @@ public class IdleState implements BossState{
 
     private void nextMove(FalseKnight boss, Knight knight){
         float distance =Math.abs(boss.getPosition().x - knight.getPosition().x);
+        float fisa_distance = Vector2.dst(boss.getPosition().x,boss.getPosition().y,knight.getPosition().x, knight.getPosition().y);
         BossState nextState;
         if(distance <250f){
             knightIsInArea = true;
             nextState= (random.nextInt(100)>=30)? ((boss.isPhaseTwo()? new PowerMaceSlamState():new MaceSlamState()))
                 : new DefensiveLeapState();
-        }else if (distance>1800f){
+        }else if (fisa_distance>1700){
             nextState = new IdleState();
         }
         else{

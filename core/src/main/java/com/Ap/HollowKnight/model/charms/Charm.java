@@ -1,4 +1,6 @@
-package com.Ap.HollowKnight.model.player;
+package com.Ap.HollowKnight.model.charms;
+
+import com.Ap.HollowKnight.model.Knight.Knight;
 
 public enum Charm {
 
@@ -63,7 +65,6 @@ public enum Charm {
         public void equipEffect(Knight knight) {
             float multiplier = knight.getFOCUS_DURATION_MULTIPLIER();
             float base = knight.getFOCUS_DURATION();
-            // زمان فوکوس کمتر می‌شود
             knight.setCurrentFocusDuration(base * multiplier);
         }
 

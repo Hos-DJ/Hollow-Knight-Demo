@@ -19,14 +19,14 @@ public class FalseKnight extends EnemyModel {
     private Rectangle maceHitBox;
     private int spamCount = 0;
     private boolean isPhaseTwo = false;
-    private int damageCounter= 0;
+    private int damageCounter = 0;
     private ArrayList<ShockWave> shockWaves = new ArrayList<>();
     private boolean bossBegins = false;
-
-    private Random random  = new Random();
-    private static final int BASE_ARMOR_HP = 200;
+    private boolean firstStunned = false;
+    private Random random = new Random();
+    private static final int BASE_ARMOR_HP = 250;
     private static final float MAX_SPAM = 2;
-    private static final int BASE_HP = 60;
+    private static final int BASE_HP = 70;
     int cnt = 1;
 
     private int currentArmorHp;
@@ -37,59 +37,64 @@ public class FalseKnight extends EnemyModel {
         currentState = new IdleState();
         currentArmorHp = BASE_ARMOR_HP;
         currentHp = BASE_HP;
-        maceHitBox = new Rectangle(position.x, position.y,180,120);
+        maceHitBox = new Rectangle(position.x, position.y, 180, 120);
         currentPhase = FalseKnightPhase.IDLE;
     }
+
     @Override
-    public void update(float delta, ArrayList<Block> blocks){
-        if(!bossBegins&&!(currentState instanceof IdleState)&&!isDead()){
+    public void update(float delta, ArrayList<Block> blocks) {
+        if (!bossBegins && !(currentState instanceof IdleState) && !isDead()) {
             bossBegins = true;
-            GameEventMessenger.getInstance().dispatch(GameEvent.ENTERED_BOSS_ROOM,null);
+            GameEventMessenger.getInstance().dispatch(GameEvent.ENTERED_BOSS_ROOM, null);
         }
         if (currentState != null) {
             currentState.update(this, LevelModel.getInstance().getKnight(), blocks, delta);
         }
-//        if(cnt<=30){
-//            cnt++;
-//        }
-//        else{
-////            System.out.println(currentState.toString());
-//            cnt = 1;
-//        }
 
         Vector2 knightPos = LevelModel.getInstance().getKnight().getPosition();
-        if(Vector2.dst(knightPos.x , knightPos.y,getPosition().x, getPosition().y) >3000){
+        if (Vector2.dst(knightPos.x, knightPos.y, getPosition().x, getPosition().y) > 3000) {
             bossBegins = false;
         }
     }
 
     @Override
+    protected void die() {
+        super.die();
+        for(ShockWave shockWave : shockWaves) {
+            shockWave.setActive(false);
+        }
+    }
+
+    @Override
     public void takeDamage(int amount) {
-        if(currentState instanceof StunState){
+        if (currentState instanceof StunState) {
             currentHp -= amount;
-            if(currentHp <= 0){
-                GameEventMessenger.getInstance().dispatch(GameEvent.BOSS_DEFEATED,this);
+            if (currentHp <= 0) {
+                GameEventMessenger.getInstance().dispatch(GameEvent.BOSS_DEFEATED, this);
                 currentPhase = FalseKnightPhase.DEAD;
                 die();
             }
-        }else{
+        } else {
             currentArmorHp -= amount;
-            if(currentArmorHp <= BASE_ARMOR_HP/2){
+            if (currentArmorHp <= BASE_ARMOR_HP / 2 && !firstStunned) {
                 isPhaseTwo = true;
+                firstStunned = true;
                 changeState(new StunState());
-                //eventListener
+            } else if (currentArmorHp <= 0) {
+                changeState(new StunState());
+            } else {
+                damageCounter++;
             }
-            damageCounter++;
         }
-        if(damageCounter>=3||random.nextInt(100)>=80){
+        if (damageCounter >= 3 || random.nextInt(100) >= 80) {
             changeState(new DefensiveLeapState());
             damageCounter = 0;
         }
         GameEventMessenger.getInstance().dispatch(GameEvent.ENEMY_HURT, this);
     }
 
-    public void changeState(BossState newState){
-        if(currentState != null){
+    public void changeState(BossState newState) {
+        if (currentState != null) {
             previousState = currentState.getClass();
             currentState.exit(this);
         }
@@ -112,8 +117,6 @@ public class FalseKnight extends EnemyModel {
         this.shockWaves.add(wave);
 
     }
-
-
 
     public BossState getBossCurrentState() {
         return currentState;

@@ -108,4 +108,9 @@ public class HuskHornHead extends EnemyModel {
     public void takeDamage(int amount) {
         super.takeDamage(amount);
     }
+
+    @Override
+    protected void resetHp() {
+        this.setHp(30);
+    }
 }

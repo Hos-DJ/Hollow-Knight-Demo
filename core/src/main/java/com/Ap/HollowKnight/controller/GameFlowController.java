@@ -10,7 +10,8 @@ import com.Ap.HollowKnight.model.level.LevelModel;
 import com.Ap.HollowKnight.model.map.Block;
 import com.Ap.HollowKnight.model.map.BlockType;
 import com.Ap.HollowKnight.model.map.GateBlock;
-import com.Ap.HollowKnight.model.player.Knight;
+import com.Ap.HollowKnight.model.charms.CollectibleCharm;
+import com.Ap.HollowKnight.model.Knight.Knight;
 import com.Ap.HollowKnight.model.spells.HowlingWrath;
 import com.Ap.HollowKnight.model.spells.SpellManager;
 import com.Ap.HollowKnight.model.zote.Zote;
@@ -61,6 +62,16 @@ public class GameFlowController {
         checkBossArenaTrigger();
         checkZoneTransitionTrigger();
         handleCombatAndSpells(delta);
+        CollectibleCharm currentNearby = null;
+        for (CollectibleCharm charm : LevelModel.getInstance().getCollectibleCharms()) {
+            if (!charm.isPickedUp() && charm.getInteractionZone().overlaps(knight.getHitBox())) {
+                charm.setPlayerNearby(true);
+                currentNearby = charm;
+            } else {
+                charm.setPlayerNearby(false);
+            }
+        }
+        gameProcessor.setNearbyCharm(currentNearby);
     }
 
     private void handlePlayerInput() {
@@ -91,15 +102,16 @@ public class GameFlowController {
     }
 
     private void checkBossArenaTrigger() {
-        if (!reachedTheBoss && knight.getPosition().x > 17638 && knight.getPosition().y > 1800) {
+        if (!reachedTheBoss && knight.getPosition().x > 17638 && knight.getPosition().y > 6000) {
 
             reachedTheBoss = true;
 
-
+            if(reachedTheBoss) {
             for (Block block : blocks) {
                 if (block.getType() == BlockType.DOOR) {
                     block.setType(BlockType.DOOR_WALL);
                 }
+            }
             }
         }
     }
@@ -119,6 +131,11 @@ public class GameFlowController {
         if (!isInGreenpath && knight.getHitBox().overlaps(gateBlock.getBound())) {
             isInGreenpath = true;
             messenger.dispatch(GameEvent.ENTER_GREENPATH, null);
+            for (EnemyModel enemy:enemies) {
+                if(enemy.isDead()&&!(enemy instanceof FalseKnight)){
+                    enemy.setDead(false);
+                }
+            }
         }
         else if (isInGreenpath && !knight.getHitBox().overlaps(gateBlock.getBound())) {
             isInGreenpath = false;

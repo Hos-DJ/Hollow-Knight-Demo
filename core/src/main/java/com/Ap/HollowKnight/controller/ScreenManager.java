@@ -47,7 +47,8 @@ public class ScreenManager {
         float mapHeight = mainLayer.getHeight() * mainLayer.getTileHeight();
         LevelModel.getInstance(mapHelper.getRectangles(), mapHelper.getEnemies(), mapWidth,
             mapHeight, mapHelper.getSafeSpots(), mapHelper.spawnPoint(),
-            mapHelper.getZote(),mapHelper.getDestructibleWall(),mapHelper.getTheGate());
+            mapHelper.getZote(),mapHelper.getDestructibleWall(),mapHelper.getTheGate(),mapHelper.getCollectibleCharms(),
+            mapHelper.getCameraBound());
         screens.put(name, new GameScreen(game, map));
     }
 

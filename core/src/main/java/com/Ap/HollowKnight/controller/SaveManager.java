@@ -5,7 +5,7 @@ import com.Ap.HollowKnight.model.data.DatabaseManager;
 import com.Ap.HollowKnight.model.boss.FalseKnight;
 import com.Ap.HollowKnight.model.enemy.EnemyModel;
 import com.Ap.HollowKnight.model.level.LevelModel;
-import com.Ap.HollowKnight.model.player.Knight;
+import com.Ap.HollowKnight.model.Knight.Knight;
 import com.badlogic.gdx.math.Vector2;
 
 import java.sql.Connection;

@@ -24,7 +24,9 @@ public abstract class EnemyModel extends PhysicalPart {
         super(position, hitBox, spawnPoint);
         this.hp = hp;
     }
+     protected void resetHp(){
 
+     }
     public boolean isHeadingForCliff(ArrayList<Block> blocks) {
         if (!isOnGround()) return false;
 

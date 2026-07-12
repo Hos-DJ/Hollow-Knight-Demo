@@ -66,7 +66,12 @@ public class AchievementsScreen extends BaseScreen {
             bundle.get("achiev_speedrun"),
             AchievementsAssets.SPEEDRUN);
         rootTable.add(bottomImage).colspan(2).center().padTop(10).row();
-
+        TextButton resetButton = new TextButton(bundle.get("achiev-reset"),buttonStyle);
+        setupButton(resetButton,()->{
+            manager.resetAllAchievements();
+            ScreenManager.getInstance().setScreen("AchievementsScreen");
+        });
+        rootTable.add(resetButton).colspan(2).center().padTop(5).padBottom(10).row();
         TextButton backButton = new TextButton(bundle.get("btn_back"), buttonStyle);
         setupButton(backButton,()->{
             ScreenManager.getInstance().setScreen("MainMenuScreen");

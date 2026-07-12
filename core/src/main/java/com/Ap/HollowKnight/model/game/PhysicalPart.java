@@ -2,7 +2,7 @@ package com.Ap.HollowKnight.model.game;
 
 import com.Ap.HollowKnight.model.map.Block;
 import com.Ap.HollowKnight.model.map.BlockType;
-import com.Ap.HollowKnight.model.player.Knight;
+import com.Ap.HollowKnight.model.Knight.Knight;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
