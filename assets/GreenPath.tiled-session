@@ -1,0 +1,170 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "Forgotton main.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "fileStates": {
+        "FG_eggs_03_0000_04.tsx": {
+            "scaleInDock": 1
+        },
+        "FG_eggs_10_0001_04.tsx": {
+            "scaleInDock": 1
+        },
+        "Forgotton main.tmx": {
+            "scale": 2,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 16572.75,
+                "y": 9174.75
+            }
+        },
+        "Forgotton main.tmx#highway_01_layered_0004_Layer-5": {
+            "scaleInDock": 1
+        },
+        "Grimm_town_signs_0000_2.tsx": {
+            "scaleInDock": 1
+        },
+        "cd_floor_02.tsx": {
+            "scaleInDock": 1
+        },
+        "cd_floor_highway_06.tsx": {
+            "scaleInDock": 1
+        },
+        "cd_wall_01.tsx": {
+            "scaleInDock": 1
+        },
+        "cd_wall_04.tsx": {
+            "scaleInDock": 1
+        },
+        "flames.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "floor_layered_0000_04_green.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "fung_new_0094_Layer-263.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "fung_new_0118_Layer-248.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "fung_new_0127_02.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "fung_new_0128_01.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "fung_new_0129_Layer-240.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "fung_new_0133_Layer-236.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "fung_new_0136_Layer-233.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "fung_pillar_wall_0000_3.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "fung_pillar_wall_0001_2.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "highway_FG_0007_Layer-78.tsx": {
+            "scaleInDock": 1
+        },
+        "hunter_scenery_0001_a.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "hunter_scenery_0002_a.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "light.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "mine_globe_02.tsx": {
+            "scaleInDock": 1
+        },
+        "ruin_village_thing_0000_a.tsx": {
+            "scaleInDock": 1
+        },
+        "shelf_short.tsx": {
+            "scaleInDock": 1
+        },
+        "shelf_tall.tsx": {
+            "scaleInDock": 1
+        },
+        "shop_0000_a.tsx": {
+            "scaleInDock": 1
+        },
+        "spikes0002.tsx": {
+            "scaleInDock": 1
+        },
+        "spikes_still.tsx": {
+            "scaleInDock": 1
+        },
+        "statue_07.tsx": {
+            "scaleInDock": 1
+        },
+        "statue_07_base.tsx": {
+            "scaleInDock": 1
+        },
+        "vil_floor_01.tsx": {
+            "scaleInDock": 1
+        },
+        "well_extension_0000_2.tsx": {
+            "scaleInDock": 1
+        },
+        "wp_additions_01_0006_a.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        }
+    },
+    "frame.defaultDuration": 100,
+    "last.imagePath": "C:/Users/Hosein/Downloads/Compressed/animations/animation/Particles & Effects",
+    "map.height": 2000,
+    "map.tileHeight": 8,
+    "map.tileWidth": 8,
+    "map.width": 3000,
+    "openFiles": [
+        "Forgotton main.tmx",
+        "wp_additions_01_0006_a.tsx"
+    ],
+    "project": "GreenPath.tiled-project",
+    "recentFiles": [
+        "wp_additions_01_0006_a.tsx",
+        "Forgotton main.tmx",
+        "flames.tsx",
+        "light.tsx",
+        "floor_layered_0000_04_green.tsx",
+        "fung_new_0118_Layer-248.tsx",
+        "fung_new_0094_Layer-263.tsx",
+        "fung_new_0136_Layer-233.tsx",
+        "fung_pillar_wall_0001_2.tsx",
+        "fung_pillar_wall_0000_3.tsx",
+        "fung_new_0128_01.tsx",
+        "fung_new_0127_02.tsx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 8,
+        "width": 8
+    }
+}

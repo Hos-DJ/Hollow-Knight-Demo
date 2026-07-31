@@ -1,0 +1,156 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "Forgotton main.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "fileStates": {
+        "FG_eggs_03_0000_04.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "FG_eggs_10_0001_04.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Forgotton main.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 13098.666666666666,
+                "y": 9030
+            }
+        },
+        "Forgotton main.tmx#highway_01_layered_0004_Layer-5": {
+            "scaleInDock": 1
+        },
+        "Grimm_town_signs_0000_2.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Main_tent_chain.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "cd_floor_02.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "cd_floor_highway_06.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "cd_wall_01.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "cd_wall_04.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "final_boss_chain.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "highway_01_layered_0004_Layer-5.tsx": {
+            "scaleInDock": 2,
+            "scaleInEditor": 1
+        },
+        "highway_FG_0007_Layer-78.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "mine_globe_02.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "ruin_layered_0057_l.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "ruin_village_thing_0000_a.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "shelf_short.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "shelf_tall.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "shop_0000_a.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "spikes0002.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "spikes_still.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "statue_07.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "statue_07_base.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "vil_floor_01.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "wallpaper_small.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "well_extension_0000_2.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        }
+    },
+    "last.imagePath": "C:/Users/Hosein/Downloads/Compressed/animations/animation/Architecture & Environment/Area specfic architecture/Dirtmouth/Grimm Tents",
+    "map.height": 200,
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 8,
+    "map.tileWidth": 8,
+    "map.width": 300,
+    "openFiles": [
+        "Forgotton main.tmx",
+        "statue_07_base.tsx",
+        "highway_FG_0007_Layer-78.tsx",
+        "FG_eggs_10_0001_04.tsx",
+        "FG_eggs_03_0000_04.tsx",
+        "ruin_village_thing_0000_a.tsx",
+        "Grimm_town_signs_0000_2.tsx",
+        "shop_0000_a.tsx"
+    ],
+    "project": "ForgottonCrossRoads.tiled-project",
+    "property.type": "string",
+    "recentFiles": [
+        "shop_0000_a.tsx",
+        "Grimm_town_signs_0000_2.tsx",
+        "ruin_village_thing_0000_a.tsx",
+        "FG_eggs_03_0000_04.tsx",
+        "FG_eggs_10_0001_04.tsx",
+        "highway_FG_0007_Layer-78.tsx",
+        "statue_07_base.tsx",
+        "Forgotton main.tmx",
+        "statue_07.tsx",
+        "mine_globe_02.tsx",
+        "shelf_tall.tsx",
+        "shelf_short.tsx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 8,
+        "width": 8
+    }
+}
