@@ -1,33 +1,53 @@
-# HollowKnight
+# 🗡️ Hollow Knight 2D: LibGDX Implementation
 
-A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://github.com/libgdx/gdx-liftoff).
+<div align="center">
+  <img src="assets/banner.jpg" alt="Hollow Knight Demo Banner" width="100%"/>
+  <br/><br/>
+  
+  [![Java](https://img.shields.io/badge/Java-17%2B-ED8B00?style=for-the-badge&logo=java&logoColor=white)](https://www.java.com/)
+  [![LibGDX](https://img.shields.io/badge/LibGDX-1.12.0-E34F26?style=for-the-badge)](https://libgdx.com/)
+  [![Gradle](https://img.shields.io/badge/Gradle-Build_Tool-02303A?style=for-the-badge&logo=gradle&logoColor=white)](https://gradle.org/)
+  [![Architecture](https://img.shields.io/badge/Architecture-MVC-8A2BE2?style=for-the-badge)](#-architecture--design)
+  
+  <p><strong>A technically rigorous 2D action-platformer engine recreation inspired by Hollow Knight.</strong></p>
+</div>
 
-This project was generated with a template including simple application launchers and an `ApplicationAdapter` extension that draws libGDX logo.
+---
 
-## Platforms
+## 📖 About The Project
 
-- `core`: Main module with the application logic shared by all platforms.
-- `lwjgl3`: Primary desktop platform using LWJGL3; was called 'desktop' in older docs.
+This project is a high-performance 2D game demo built from scratch using **Java** and the **LibGDX** framework. Rather than just a visual clone, this repository demonstrates robust software engineering practices, specifically focusing on the **Model-View-Controller (MVC)** architecture, efficient memory management, and decoupled game systems.
 
-## Gradle
+Generated initially via **GDX Liftoff**, the project is structured to scale, handling complex state machines, physics logic, and dynamic rendering pipelines.
 
-This project uses [Gradle](https://gradle.org/) to manage dependencies.
-The Gradle wrapper was included, so you can run Gradle tasks using `gradlew.bat` or `./gradlew` commands.
-Useful Gradle tasks and flags:
+## ✨ Core Systems & Mechanics
 
-- `--continue`: when using this flag, errors will not stop the tasks from running.
-- `--daemon`: thanks to this flag, Gradle daemon will be used to run chosen tasks.
-- `--offline`: when using this flag, cached dependency archives will be used.
-- `--refresh-dependencies`: this flag forces validation of all dependencies. Useful for snapshot versions.
-- `build`: builds sources and archives of every project.
-- `cleanEclipse`: removes Eclipse project data.
-- `cleanIdea`: removes IntelliJ project data.
-- `clean`: removes `build` folders, which store compiled classes and built archives.
-- `eclipse`: generates Eclipse project data.
-- `idea`: generates IntelliJ project data.
-- `lwjgl3:jar`: builds application's runnable jar, which can be found at `lwjgl3/build/libs`.
-- `lwjgl3:run`: starts the application.
-- `test`: runs unit tests (if any).
+* 🏗️ **MVC Architecture:** Strict separation of game logic (Model), rendering (View), and input handling (Controller) to ensure maintainable and modular code.
+* 🎥 **Advanced Camera System:** Custom Orthographic camera implementation featuring strict coordinate clamping mechanics to keep the viewport perfectly constrained within level boundaries.
+* 🏃 **Precision Movement Controls:** Highly responsive physics controller handling acceleration, friction, jumping logic, and mid-air dashing.
+* 🎞️ **Sprite Animation Loader:** A custom pipeline for parsing and managing frame-by-frame sprite sheets, dynamically switching states (Idle, Run, Jump, Dash, Attack).
+* 🖥️ **UI Modals & Screen Management:** Robust screen transitions and UI modal systems (e.g., Pause Menus, Inventory stubs) overlaying the main game loop without halting the core thread unexpectedly.
 
-Note that most tasks that are not specific to a single project can be run with `name:` prefix, where the `name` should be replaced with the ID of a specific project.
-For example, `core:clean` removes `build` folder only from the `core` project.
+---
+
+## 📂 Project Structure
+
+The repository follows a clean, multi-module Gradle structure standard to modern LibGDX applications:
+
+```text
+Hollow-Knight-Demo/
+├── lwjgl3/                              # Desktop launcher (LWJGL 3 backend)
+│   └── src/main/java/.../DesktopLauncher.java
+├── core/                                # Main game logic & systems
+│   └── src/main/java/com/hosdj/game/
+│       ├── model/                       # Data structures, Entities, Physics State
+│       ├── view/                        # Rendering loops, Sprite loaders, UI Modals
+│       ├── controller/                  # Input processors, Movement controls
+│       ├── screens/                     # Screen implementations (PlayScreen, MenuScreen)
+│       └── managers/                    # AssetManager wrappers, Camera configuration
+├── assets/                              # Resource directory
+│   ├── sprites/                         # Packed texture atlases (.atlas, .png)
+│   ├── maps/                            # Tiled map files (.tmx)
+│   ├── ui/                              # UI skins and modal backgrounds
+│   └── sounds/                          # Audio assets
+└── build.gradle                         # Root GDX Liftoff Gradle build script
